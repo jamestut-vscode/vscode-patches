@@ -1,0 +1,10 @@
+base-commit: ee2b180d582a7f601fa6ecfdad8d9fd269ab1884
+final-commit: 50316a7311a295bc81195e726a07a8d1d83ce40d
+
+common/0001-Allow-proposed-API-for-all-extensions.patch
+
+xterm-patches/0001-Use-jamestut-custom-xterm.patch
+xterm-patches/0002-Add-option-to-disable-terminal-mouse-reporting.patch
+
+remote/0001-Statusbar-reconnecting-state.patch
+remote/0002-Reconnecting-timeout-logic-tweak.patch

@@ -1,0 +1,31 @@
+From 76b13973df14db3c8341068cf7289b684a8fc09e Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sat, 25 Mar 2023 11:47:26 +1100
+Subject: Allow proposed API for all extensions
+
+---
+ .../services/extensions/common/abstractExtensionService.ts  | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/src/vs/workbench/services/extensions/common/abstractExtensionService.ts b/src/vs/workbench/services/extensions/common/abstractExtensionService.ts
+index ea6247d4f43..3c09c8a451c 100644
+--- a/src/vs/workbench/services/extensions/common/abstractExtensionService.ts
++++ b/src/vs/workbench/services/extensions/common/abstractExtensionService.ts
+@@ -1488,14 +1488,10 @@ class ProposedApiController {
+
+ 		this._envEnabledExtensions = new Set((_environmentService.extensionEnabledProposedApi ?? []).map(id => ExtensionIdentifier.toKey(id)));
+
+-		this._envEnablesProposedApiForAll =
+-			!_environmentService.isBuilt || // always allow proposed API when running out of sources
+-			(_environmentService.isExtensionDevelopment && productService.quality !== 'stable') || // do not allow proposed API against stable builds when developing an extension
+-			(this._envEnabledExtensions.size === 0 && Array.isArray(_environmentService.extensionEnabledProposedApi)); // always allow proposed API if --enable-proposed-api is provided without extension ID
++		this._envEnablesProposedApiForAll = true;
+
+ 		this._productEnabledExtensions = new Map<string, ApiProposalName[]>();
+
+-
+ 		// NEW world - product.json spells out what proposals each extension can use
+ 		if (productService.extensionEnabledApiProposals) {
+ 			for (const [k, value] of Object.entries(productService.extensionEnabledApiProposals)) {
+--
+2.37.1 (Apple Git-137.1)

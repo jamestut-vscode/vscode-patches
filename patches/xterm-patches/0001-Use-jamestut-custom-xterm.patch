@@ -1,0 +1,43 @@
+From 34368a3f82d626c9bfe6a039ead923748cf6d3db Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sun, 9 Apr 2023 20:30:34 +1000
+Subject: Use jamestut's custom xterm.js
+
+---
+ package.json | 2 +-
+ yarn.lock    | 7 +++----
+ 2 files changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/package.json b/package.json
+index 6faaf59143c..cf6540326d6 100644
+--- a/package.json
++++ b/package.json
+@@ -87,7 +87,7 @@
+     "vscode-proxy-agent": "^0.12.0",
+     "vscode-regexpp": "^3.1.0",
+     "vscode-textmate": "9.0.0",
+-    "xterm": "5.2.0-beta.29",
++    "xterm": "https://github.com/jamestut-vscode/xterm.js-patches/releases/download/5.2.0-beta.29-m4/xtermjs.tar.gz",
+     "xterm-addon-canvas": "0.4.0-beta.7",
+     "xterm-addon-search": "0.11.0",
+     "xterm-addon-serialize": "0.9.0",
+diff --git a/yarn.lock b/yarn.lock
+index e4e5585ac46..ff030aa7258 100644
+--- a/yarn.lock
++++ b/yarn.lock
+@@ -11868,10 +11868,9 @@ xterm-headless@5.2.0-beta.29:
+   resolved "https://registry.yarnpkg.com/xterm-headless/-/xterm-headless-5.2.0-beta.29.tgz#dd08312fdb4292c217e685d9e2e8b1957364e298"
+   integrity sha512-1P4urIeDTkl2C+zGb4WUnKJMACZMPGYHwVXMjkB0WhMISbkt6M34MH9ljxHhnL99dHwlx2Lvi6wvhnpyZucWCg==
+
+-xterm@5.2.0-beta.29:
+-  version "5.2.0-beta.29"
+-  resolved "https://registry.yarnpkg.com/xterm/-/xterm-5.2.0-beta.29.tgz#99764aff5cd8cdb4335f5d59466b134cfcb45e3e"
+-  integrity sha512-zx5RKcQqo78bza4R/m3WtxAJCBAF4U61fy6cxqb1PkqXF9/qdYlySUCVOauMxv+6n6cAxt3EQWwLlgvbvQBbsw==
++"xterm@https://github.com/jamestut-vscode/xterm.js-patches/releases/download/5.2.0-beta.29-m4/xtermjs.tar.gz":
++  version "5.2.0-beta.29-m4"
++  resolved "https://github.com/jamestut-vscode/xterm.js-patches/releases/download/5.2.0-beta.29-m4/xtermjs.tar.gz#416e6a447ff1e9299b94977dbd6ac96bacdcebd9"
+
+ y18n@^3.2.1:
+   version "3.2.2"
+--
+2.37.1 (Apple Git-137.1)
