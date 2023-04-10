@@ -1,0 +1,35 @@
+From 89bb6c1d98aa40b196e73fdcba23b59779141aa1 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Mon, 10 Apr 2023 21:22:34 +1000
+Subject: Disable REH shorten reconnection grace time
+Do not shorten the reconnection grace period for other disconnected clients if there is a new client being connected.
+
+---
+ src/vs/server/node/remoteExtensionHostAgentServer.ts | 12 ------------
+ 1 file changed, 12 deletions(-)
+
+diff --git a/src/vs/server/node/remoteExtensionHostAgentServer.ts b/src/vs/server/node/remoteExtensionHostAgentServer.ts
+index f97d796b770..9a271d417ec 100644
+--- a/src/vs/server/node/remoteExtensionHostAgentServer.ts
++++ b/src/vs/server/node/remoteExtensionHostAgentServer.ts
+@@ -391,18 +391,6 @@ class RemoteExtensionHostAgentServer extends Disposable implements IServerAPI {
+ 					}
+ 				}
+
+-				// We have received a new connection.
+-				// This indicates that the server owner has connectivity.
+-				// Therefore we will shorten the reconnection grace period for disconnected connections!
+-				for (const key in this._managementConnections) {
+-					const managementConnection = this._managementConnections[key];
+-					managementConnection.shortenReconnectionGraceTimeIfNecessary();
+-				}
+-				for (const key in this._extHostConnections) {
+-					const extHostConnection = this._extHostConnections[key];
+-					extHostConnection.shortenReconnectionGraceTimeIfNecessary();
+-				}
+-
+ 				state = State.Done;
+ 				listener.dispose();
+ 				this._handleConnectionType(remoteAddress, logPrefix, protocol, socket, isReconnection, reconnectionToken, msg2);
+--
+2.37.1 (Apple Git-137.1)

@@ -1,5 +1,5 @@
 base-commit: b7886d7461186a5eac768481578c1d7ca80e2d21
-final-commit: 62318e1def44e162d63884973ec43e3699266d5d
+final-commit: 132ad9ed7a5a3b7749160e69649b564d12280577
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 
@@ -8,3 +8,5 @@ xterm-patches/0002-Add-option-to-disable-terminal-mouse-reporting.patch
 
 remote/0001-Statusbar-reconnecting-state.patch
 remote/0002-Reconnecting-timeout-logic-tweak.patch
+
+reh/0001-Disable-shorten-reconnection-grace-time.patch

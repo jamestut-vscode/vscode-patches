@@ -10,6 +10,8 @@ This fork contains my personal modifications to Visual Studio Code that are not 
   All extensions can now use proposed APIs without having to run this version of VSCode with a special command line argument.
 - **Tweak reconnection timeout.**  
   When connection to remote fails, immediately shows the dialog that prompts user to reconnect or reload window. When reconnecting, the timeout is set to 15 seconds per stage instead of 40 seconds globally.
+- **Disable shorten reconnect grace period.**  
+  When there are ungracefully-disconnected client on VSCode's REH server, do not reduce their grace reconnection period when a new client is reconnected.
 
 ## Build Instructions
 
