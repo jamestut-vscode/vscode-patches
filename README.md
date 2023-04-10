@@ -8,8 +8,8 @@ This fork contains my personal modifications to Visual Studio Code that are not 
   The built-in terminal now uses my own [xterm.js fork](https://github.com/jamestut/xterm.js). The differences are described there.
 - **Enable proposed API for all extensions.**  
   All extensions can now use proposed APIs without having to run this version of VSCode with a special command line argument.
-- **Reduced remote reconnecting timeout.**  
-  When connection to remote fails, immediately shows the dialog that prompts user to reconnect or reload window. When reconnecting, connection timeout (initial TCP handshake) is reduced to just 3 seconds instead of 40 seconds.
+- **Tweak reconnection timeout.**  
+  When connection to remote fails, immediately shows the dialog that prompts user to reconnect or reload window. When reconnecting, the timeout is set to 15 seconds per stage instead of 40 seconds globally.
 
 ## Build Instructions
 

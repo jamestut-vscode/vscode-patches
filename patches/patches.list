@@ -1,5 +1,5 @@
 base-commit: b7886d7461186a5eac768481578c1d7ca80e2d21
-final-commit: 725140c659b8e3d4c8e6050b6404581112c85c1c
+final-commit: 62318e1def44e162d63884973ec43e3699266d5d
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 
