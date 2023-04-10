@@ -20,9 +20,22 @@ This fork contains my personal modifications to Visual Studio Code that are not 
   - Applies the patches on top of the cloned repo using the Simple Patch Manager.
 - Proceed with the usual [VSCode's build instructions](https://github.com/microsoft/vscode/wiki/How-to-Contribute).
 
+## Packaging Instructions
+
+The script to create the release package is located in `packaging/package-vscode.sh`. **This script only runs on arm64 version of macOS** and will generate these packages:
+
+- Visual Studio Code app for macOS arm64.
+- Visual Studio Code REH (Remote Extension Host) for the following platforms:
+  - macOS arm64
+  - Linux x64
+  - Linux arm64
+
+Additionally, **this script requires `7z`** to be present to generate zip files.
+
 ### Build Prerequisite
 
 In addition to [VSCode's build requirements](https://github.com/microsoft/vscode/wiki/How-to-Contribute), this repo also requires:
 
 - Python 3.8 or newer is required for running the [Simple Patch Manager](https://github.com/jamestut/spm).
 - The [zsh shell](https://www.zsh.org) and [curl](https://curl.se) is required for running `build-repo.sh`.
+- For creating packages, the `7z` tool is required.
