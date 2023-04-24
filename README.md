@@ -12,6 +12,9 @@ This fork contains my personal modifications to Visual Studio Code that are not 
   When connection to remote fails, immediately shows the dialog that prompts user to reconnect or reload window. When reconnecting, the timeout is set to 15 seconds per stage instead of 40 seconds globally.
 - **Disable shorten reconnect grace period.**  
   When there are ungracefully-disconnected client on VSCode's REH server, do not reduce their grace reconnection period when a new client is reconnected.
+- **Increase input polling to max 250 Hz.**  
+  Maximum input polling is increased to 250 Hz (vs 120 Hz previously). This only changes the maximum: if your device have 120 Hz display, it will still be capped at 120 Hz.
+- **Use Metal backend.**
 
 ## Build Instructions
 

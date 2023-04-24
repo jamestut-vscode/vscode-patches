@@ -1,7 +1,9 @@
-base-commit: b7886d7461186a5eac768481578c1d7ca80e2d21
-final-commit: 132ad9ed7a5a3b7749160e69649b564d12280577
+base-commit: 704ed70d4fd1c6bd6342c436f1ede30d1cff4710
+final-commit: 28445db5b97b8b630187feae7954d6c489446b67
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
+common/0002-Change-GPU-settings.patch
+common/0003-Decrease-event-listener-minimum-delay.patch
 
 xterm-patches/0001-Use-jamestut-custom-xterm.patch
 xterm-patches/0002-Add-option-to-disable-terminal-mouse-reporting.patch

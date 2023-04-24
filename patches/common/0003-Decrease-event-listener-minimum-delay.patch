@@ -1,0 +1,31 @@
+From 126712afc96ac6a60a31e347a451c491319ebd03 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Mon, 24 Apr 2023 11:27:27 +1000
+Subject: Decrease event listener minimum delay
+
+---
+ src/vs/base/browser/dom.ts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/vs/base/browser/dom.ts b/src/vs/base/browser/dom.ts
+index e31eedaaabd..b8ee93133ab 100644
+--- a/src/vs/base/browser/dom.ts
++++ b/src/vs/base/browser/dom.ts
+@@ -237,13 +237,13 @@ export function modify(callback: () => void): IDisposable {
+ }
+
+ /**
+- * Add a throttled listener. `handler` is fired at most every 8.33333ms or with the next animation frame (if browser supports it).
++ * Add a throttled listener. `handler` is fired at most every 4ms or with the next animation frame (if browser supports it).
+  */
+ export interface IEventMerger<R, E> {
+ 	(lastEvent: R | null, currentEvent: E): R;
+ }
+
+-const MINIMUM_TIME_MS = 8;
++const MINIMUM_TIME_MS = 4;
+ const DEFAULT_EVENT_MERGER: IEventMerger<Event, Event> = function (lastEvent: Event | null, currentEvent: Event) {
+ 	return currentEvent;
+ };
+--
+2.37.1 (Apple Git-137.1)
