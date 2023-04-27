@@ -37,13 +37,26 @@ fi
 BASE_COMMIT=${${(s: :)PATCHLINE}[2]}
 echo "VSCode base commit is $BASE_COMMIT"
 
-# begin gulping!
+# install deps
 cd vscode
-echo "Building VSCode client for macOS arm"
-yarn gulp vscode-darwin-arm64-min
+if ! [[ -d node_modules ]]
+then
+    echo "Running yarn to install dependencies ..."
+    yarn
+fi
 
-echo "Building VSCode REH for macOS arm"
-yarn gulp vscode-reh-darwin-arm64-min
+# begin gulping!
+if ! [[ -d ../VSCode-darwin-arm64 ]]
+then
+    echo "Building VSCode client for macOS arm"
+    yarn gulp vscode-darwin-arm64-min
+fi
+
+if ! [[ -d ../vscode-reh-darwin-arm64 ]]
+then
+    echo "Building VSCode REH for macOS arm"
+    yarn gulp vscode-reh-darwin-arm64-min
+fi
 
 # archive the easy part first: those targetting macOS
 cd ..
@@ -53,8 +66,13 @@ packaging/create-archive.sh VSCode-darwin-arm64 packaging/out/VSCode-darwin-arm6
 echo "Creating archive for VSCode REH macOS ..."
 packaging/create-archive.sh vscode-reh-darwin-arm64 packaging/out/vscode-reh-darwin-arm64.zip
 
+# list node_modules with native components: we're going to replace them from official release
+# for Linux REH builds
+cd vscode-reh-darwin-arm64/node_modules
+NATIVE_REH_LIBS=($(find . -name '*.node' | cut -d '/' -f 2 | sort -u))
+
 # linux REH targets
-cd packaging
+cd ../../packaging
 mkdir -p reh-linux
 cd reh-linux
 
@@ -73,10 +91,14 @@ do
 
     echo "Preparing package for Linux $TGT ..."
     cp -r ../../vscode-reh-darwin-arm64 $TARGET_DIR
-    rm -rf $TARGET_DIR/node $TARGET_DIR/node_modules
 
+    # replace native bits from release ver
     cp $SRC_DIR/node $TARGET_DIR/node
-    cp -r $SRC_DIR/node_modules $TARGET_DIR/node_modules
+    for NATIVELIB in $NATIVE_REH_LIBS
+    do
+        rm -rf $TARGET_DIR/node_modules/$NATIVELIB
+        cp -r $SRC_DIR/node_modules/$NATIVELIB $TARGET_DIR/node_modules/$NATIVELIB
+    done
 
     echo "Archiving VSCode REH for Linux $TGT ..."
     ../create-archive.sh $TARGET_DIR ../out/vscode-reh-linux-$TGT.zip
