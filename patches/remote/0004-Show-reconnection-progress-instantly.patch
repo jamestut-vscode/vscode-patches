@@ -1,0 +1,71 @@
+From 97ca402a674921e87d2107d793c76f00c1893151 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Fri, 28 Apr 2023 10:01:53 +1000
+Subject: Show reconnection progress instantly
+
+---
+ .../contrib/remote/browser/remote.ts          | 33 +++++++------------
+ 1 file changed, 12 insertions(+), 21 deletions(-)
+
+diff --git a/src/vs/workbench/contrib/remote/browser/remote.ts b/src/vs/workbench/contrib/remote/browser/remote.ts
+index 58084f9711e..840180f19de 100644
+--- a/src/vs/workbench/contrib/remote/browser/remote.ts
++++ b/src/vs/workbench/contrib/remote/browser/remote.ts
+@@ -755,11 +755,6 @@ class ReconnectionTimer implements IDisposable {
+ 	}
+ }
+
+-/**
+- * The time when a prompt is shown to the user
+- */
+-const DISCONNECT_PROMPT_TIME = 40 * 1000; // 40 seconds
+-
+ export class RemoteAgentConnectionStatusListener extends Disposable implements IWorkbenchContribution {
+
+ 	private _reloadWindowShown: boolean = false;
+@@ -893,12 +888,10 @@ export class RemoteAgentConnectionStatusListener extends Disposable implements I
+ 							reconnectionToken: e.reconnectionToken,
+ 						});
+
+-						if (visibleProgress || e.millisSinceLastIncomingData > DISCONNECT_PROMPT_TIME) {
+-							if (!visibleProgress) {
+-								visibleProgress = showProgress(null, [reconnectButton, reloadButton]);
+-							}
+-							visibleProgress.report(nls.localize('connectionLost', "Connection Lost"));
++						if (!visibleProgress) {
++							visibleProgress = showProgress(null, [reconnectButton, reloadButton]);
+ 						}
++						visibleProgress.report(nls.localize('connectionLost', "Connection Lost"));
+ 						break;
+
+ 					case PersistentConnectionEventType.ReconnectionWait:
+@@ -935,18 +928,16 @@ export class RemoteAgentConnectionStatusListener extends Disposable implements I
+ 							attempt: e.attempt
+ 						});
+
+-						if (visibleProgress || e.millisSinceLastIncomingData > DISCONNECT_PROMPT_TIME) {
+-							visibleProgress = showProgress(null, [reloadButton]);
+-							visibleProgress.report(nls.localize('reconnectionRunning', "Disconnected. Attempting to reconnect..."));
++						visibleProgress = showProgress(null, [reloadButton]);
++						visibleProgress.report(nls.localize('reconnectionRunning', "Disconnected. Attempting to reconnect..."));
+
+-							// Register to listen for quick input is opened
+-							disposableListener = quickInputService.onShow(() => {
+-								// Need to move from dialog if being shown and user needs to type in a prompt
+-								if (visibleProgress && visibleProgress.location === ProgressLocation.Dialog) {
+-									visibleProgress = showProgress(ProgressLocation.Notification, [reloadButton], visibleProgress.lastReport);
+-								}
+-							});
+-						}
++						// Register to listen for quick input is opened
++						disposableListener = quickInputService.onShow(() => {
++							// Need to move from dialog if being shown and user needs to type in a prompt
++							if (visibleProgress && visibleProgress.location === ProgressLocation.Dialog) {
++								visibleProgress = showProgress(ProgressLocation.Notification, [reloadButton], visibleProgress.lastReport);
++							}
++						});
+
+ 						break;
+
+--
+2.37.1 (Apple Git-137.1)

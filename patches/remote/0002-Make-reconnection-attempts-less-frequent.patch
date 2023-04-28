@@ -1,0 +1,24 @@
+From 62fefb292d21b5907e1c151ae628fa8e37da3c33 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Fri, 28 Apr 2023 10:01:01 +1000
+Subject: Make reconnection attempts less frequent
+
+---
+ src/vs/platform/remote/common/remoteAgentConnection.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/vs/platform/remote/common/remoteAgentConnection.ts b/src/vs/platform/remote/common/remoteAgentConnection.ts
+index c2d24eab3d9..c577a7a704c 100644
+--- a/src/vs/platform/remote/common/remoteAgentConnection.ts
++++ b/src/vs/platform/remote/common/remoteAgentConnection.ts
+@@ -664,7 +664,7 @@ export abstract class PersistentConnection extends Disposable {
+ 		const logPrefix = commonLogPrefix(this._connectionType, this.reconnectionToken, true);
+ 		this._options.logService.info(`${logPrefix} starting reconnecting loop. You can get more information with the trace log level.`);
+ 		this._onDidStateChange.fire(new ConnectionLostEvent(this.reconnectionToken, this.protocol.getMillisSinceLastIncomingData()));
+-		const TIMES = [0, 5, 5, 10, 10, 10, 10, 10, 30];
++		const TIMES = [0, 5, 30, 60];
+ 		let attempt = -1;
+ 		do {
+ 			attempt++;
+--
+2.37.1 (Apple Git-137.1)

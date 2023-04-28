@@ -1,15 +1,14 @@
-From 1b8f95f66ae1c3ed2c7040304f0a373289da1a65 Mon Sep 17 00:00:00 2001
+From 3532af47dbc4ca9e88957e0c8b2bcb57c96ea5f1 Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
 Date: Sat, 25 Mar 2023 21:34:44 +1100
 Subject: Tweak remote reconnecting timeout
 
 ---
  .../remote/common/remoteAgentConnection.ts    | 58 +++++++++----------
- .../contrib/remote/browser/remote.ts          |  2 +-
- 2 files changed, 29 insertions(+), 31 deletions(-)
+ 1 file changed, 28 insertions(+), 30 deletions(-)
 
 diff --git a/src/vs/platform/remote/common/remoteAgentConnection.ts b/src/vs/platform/remote/common/remoteAgentConnection.ts
-index bbbddcc39d5..c2d24eab3d9 100644
+index b38355078b1..9369459b28e 100644
 --- a/src/vs/platform/remote/common/remoteAgentConnection.ts
 +++ b/src/vs/platform/remote/common/remoteAgentConnection.ts
 @@ -20,7 +20,7 @@ import { RemoteAuthorityResolverError } from 'vs/platform/remote/common/remoteAu
@@ -175,7 +174,7 @@ index bbbddcc39d5..c2d24eab3d9 100644
  				this._options.logService.info(`${logPrefix} reconnected!`);
  				this._onDidStateChange.fire(new ConnectionGainEvent(this.reconnectionToken, this.protocol.getMillisSinceLastIncomingData(), attempt + 1));
 
-@@ -760,7 +758,7 @@ export abstract class PersistentConnection extends Disposable {
+@@ -753,7 +751,7 @@ export abstract class PersistentConnection extends Disposable {
  		this.protocol.pauseSocketWriting();
  	}
 
@@ -184,7 +183,7 @@ index bbbddcc39d5..c2d24eab3d9 100644
  }
 
  export class ManagementPersistentConnection extends PersistentConnection {
-@@ -775,8 +773,8 @@ export class ManagementPersistentConnection extends PersistentConnection {
+@@ -768,8 +766,8 @@ export class ManagementPersistentConnection extends PersistentConnection {
  		}, options.ipcLogger));
  	}
 
@@ -195,7 +194,7 @@ index bbbddcc39d5..c2d24eab3d9 100644
  	}
  }
 
-@@ -791,8 +789,8 @@ export class ExtensionHostPersistentConnection extends PersistentConnection {
+@@ -784,8 +782,8 @@ export class ExtensionHostPersistentConnection extends PersistentConnection {
  		this.debugPort = debugPort;
  	}
 
@@ -205,19 +204,6 @@ index bbbddcc39d5..c2d24eab3d9 100644
 +		await doConnectRemoteAgentExtensionHost(options, this._startArguments);
  	}
  }
-
-diff --git a/src/vs/workbench/contrib/remote/browser/remote.ts b/src/vs/workbench/contrib/remote/browser/remote.ts
-index 58084f9711e..db026f0f287 100644
---- a/src/vs/workbench/contrib/remote/browser/remote.ts
-+++ b/src/vs/workbench/contrib/remote/browser/remote.ts
-@@ -758,7 +758,7 @@ class ReconnectionTimer implements IDisposable {
- /**
-  * The time when a prompt is shown to the user
-  */
--const DISCONNECT_PROMPT_TIME = 40 * 1000; // 40 seconds
-+const DISCONNECT_PROMPT_TIME = 1000; // in milliseconds
-
- export class RemoteAgentConnectionStatusListener extends Disposable implements IWorkbenchContribution {
 
 --
 2.37.1 (Apple Git-137.1)
