@@ -1,0 +1,122 @@
+From 8114ecc44d89ecaecc3f1dd4b991708215484273 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Fri, 28 Apr 2023 22:10:40 +1000
+Subject: Non intrusive autocomplete
+
+Do not use silent mode on file picker
+---
+ .../dialogs/browser/simpleFileDialog.ts       | 34 +++++--------------
+ 1 file changed, 8 insertions(+), 26 deletions(-)
+
+diff --git a/src/vs/workbench/services/dialogs/browser/simpleFileDialog.ts b/src/vs/workbench/services/dialogs/browser/simpleFileDialog.ts
+index 09a171641cb..d7e3b4254f6 100644
+--- a/src/vs/workbench/services/dialogs/browser/simpleFileDialog.ts
++++ b/src/vs/workbench/services/dialogs/browser/simpleFileDialog.ts
+@@ -260,7 +260,6 @@ export class SimpleFileDialog implements ISimpleFileDialog {
+ 		this.isWindows = await this.checkIsWindowsOS();
+ 		let homedir: URI = this.options.defaultUri ? this.options.defaultUri : this.workspaceContextService.getWorkspace().folders[0].uri;
+ 		let stat: IFileStatWithPartialMetadata | undefined;
+-		const ext: string = resources.extname(homedir);
+ 		if (this.options.defaultUri) {
+ 			try {
+ 				stat = await this.fileService.stat(this.options.defaultUri);
+@@ -301,12 +300,16 @@ export class SimpleFileDialog implements ISimpleFileDialog {
+
+ 			let isResolving: number = 0;
+ 			let isAcceptHandled = false;
+-			this.currentFolder = resources.dirname(homedir);
++			this.currentFolder = homedir;
+ 			this.userEnteredPathSegment = '';
+ 			this.autoCompletePathSegment = '';
+
+ 			this.filePickBox.title = this.options.title;
+-			this.filePickBox.value = this.pathFromUri(this.currentFolder, true);
++			if (this.trailing) {
++				this.filePickBox.value = this.pathFromUri(resources.joinPath(this.currentFolder, this.trailing), false);
++			} else {
++				this.filePickBox.value = this.pathFromUri(this.currentFolder, true);
++			}
+ 			this.filePickBox.valueSelection = [this.filePickBox.value.length, this.filePickBox.value.length];
+ 			this.filePickBox.items = [];
+
+@@ -382,10 +385,6 @@ export class SimpleFileDialog implements ISimpleFileDialog {
+ 				if ((i.length === 1) && this.isSelectionChangeFromUser()) {
+ 					this.filePickBox.validationMessage = undefined;
+ 					const userPath = this.constructFullUserPath();
+-					if (!equalsIgnoreCase(this.filePickBox.value.substring(0, userPath.length), userPath)) {
+-						this.filePickBox.valueSelection = [0, this.filePickBox.value.length];
+-						this.insertText(userPath, userPath);
+-					}
+ 					this.setAutoComplete(userPath, this.userEnteredPathSegment, i[0], true);
+ 				}
+ 			});
+@@ -402,12 +401,7 @@ export class SimpleFileDialog implements ISimpleFileDialog {
+
+ 			this.filePickBox.show();
+ 			this.contextKey.set(true);
+-			this.updateItems(homedir, true, this.trailing).then(() => {
+-				if (this.trailing) {
+-					this.filePickBox.valueSelection = [this.filePickBox.value.length - this.trailing.length, this.filePickBox.value.length - ext.length];
+-				} else {
+-					this.filePickBox.valueSelection = [this.filePickBox.value.length, this.filePickBox.value.length];
+-				}
++			this.updateItems(homedir, false, this.trailing).then(() => {
+ 				this.busy = false;
+ 			});
+ 		});
+@@ -497,7 +491,7 @@ export class SimpleFileDialog implements ISimpleFileDialog {
+ 			const item = this.filePickBox.selectedItems[0];
+ 			if (item.isFolder) {
+ 				if (this.trailing) {
+-					await this.updateItems(item.uri, true, this.trailing);
++					await this.updateItems(item.uri, true);
+ 				} else {
+ 					// When possible, cause the update to happen by modifying the input box.
+ 					// This allows all input box updates to happen first, and uses the same code path as the user typing.
+@@ -710,14 +704,11 @@ export class SimpleFileDialog implements ISimpleFileDialog {
+
+ 	private insertText(wholeValue: string, insertText: string) {
+ 		if (this.filePickBox.inputHasFocus()) {
+-			document.execCommand('insertText', false, insertText);
+ 			if (this.filePickBox.value !== wholeValue) {
+ 				this.filePickBox.value = wholeValue;
+-				this.handleValueChange(wholeValue);
+ 			}
+ 		} else {
+ 			this.filePickBox.value = wholeValue;
+-			this.handleValueChange(wholeValue);
+ 		}
+ 	}
+
+@@ -849,7 +840,6 @@ export class SimpleFileDialog implements ISimpleFileDialog {
+ 	private async updateItems(newFolder: URI, force: boolean = false, trailing?: string): Promise<boolean> {
+ 		this.busy = true;
+ 		this.autoCompletePathSegment = '';
+-		const isSave = !!trailing;
+ 		let result = false;
+
+ 		const updatingPromise = createCancelablePromise(async token => {
+@@ -876,7 +866,6 @@ export class SimpleFileDialog implements ISimpleFileDialog {
+ 				}
+
+ 				this.filePickBox.items = items;
+-				this.filePickBox.activeItems = [<FileQuickPickItem>this.filePickBox.items[0]];
+ 				this.filePickBox.activeItems = [];
+
+ 				// the user might have continued typing while we were updating. Only update the input box if it doesn't match the directory.
+@@ -884,13 +873,6 @@ export class SimpleFileDialog implements ISimpleFileDialog {
+ 					this.filePickBox.valueSelection = [0, this.filePickBox.value.length];
+ 					this.insertText(newValue, newValue);
+ 				}
+-				if (force && trailing && isSave) {
+-					// Keep the cursor position in front of the save as name.
+-					this.filePickBox.valueSelection = [this.filePickBox.value.length - trailing.length, this.filePickBox.value.length - trailing.length];
+-				} else if (!trailing) {
+-					// If there is trailing, we don't move the cursor. If there is no trailing, cursor goes at the end.
+-					this.filePickBox.valueSelection = [this.filePickBox.value.length, this.filePickBox.value.length];
+-				}
+ 				this.busy = false;
+ 				this.updatingPromise = undefined;
+ 				return result;
+--
+2.37.1 (Apple Git-137.1)

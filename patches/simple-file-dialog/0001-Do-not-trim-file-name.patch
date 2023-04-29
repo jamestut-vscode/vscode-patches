@@ -1,0 +1,24 @@
+From ad93824d44b370316d021b1fadacffa56d85e8c3 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Fri, 28 Apr 2023 22:10:20 +1000
+Subject: Do not trim file name when opening simple open dialog
+
+---
+ .../services/dialogs/browser/abstractFileDialogService.ts       | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/src/vs/workbench/services/dialogs/browser/abstractFileDialogService.ts b/src/vs/workbench/services/dialogs/browser/abstractFileDialogService.ts
+index 9cfbfab9cfb..0da670e56fb 100644
+--- a/src/vs/workbench/services/dialogs/browser/abstractFileDialogService.ts
++++ b/src/vs/workbench/services/dialogs/browser/abstractFileDialogService.ts
+@@ -64,8 +64,6 @@ export abstract class AbstractFileDialogService implements IFileDialogService {
+ 		// ...then for last active file root
+ 		if (!candidate) {
+ 			candidate = this.historyService.getLastActiveWorkspaceRoot(schemeFilter);
+-		} else {
+-			candidate = resources.dirname(candidate);
+ 		}
+
+ 		if (!candidate) {
+--
+2.37.1 (Apple Git-137.1)

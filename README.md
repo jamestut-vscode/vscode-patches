@@ -16,6 +16,8 @@ This fork contains my personal modifications to Visual Studio Code that are not 
   Maximum input polling is increased to 250 Hz (vs 120 Hz previously). This only changes the maximum: if your device have 120 Hz display, it will still be capped at 120 Hz.
 - **Use Metal backend.**  
   For lower typing latency and more consistent scrolling FPS on macOS.
+- **Non intrusive autocomplete.**  
+  Just type or copy-paste the file or folder path that you want to open, even on high latency connections to Remote Extension Host! The auto-complete will not interfere with what you've typed/pasted!
 
 ## Build Instructions
 
