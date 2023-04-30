@@ -66,13 +66,8 @@ packaging/create-archive.sh VSCode-darwin-arm64 packaging/out/VSCode-darwin-arm6
 echo "Creating archive for VSCode REH macOS ..."
 packaging/create-archive.sh vscode-reh-darwin-arm64 packaging/out/vscode-reh-darwin-arm64.zip
 
-# list node_modules with native components: we're going to replace them from official release
-# for Linux REH builds
-cd vscode-reh-darwin-arm64/node_modules
-NATIVE_REH_LIBS=($(find . -name '*.node' | cut -d '/' -f 2 | sort -u))
-
 # linux REH targets
-cd ../../packaging
+cd packaging
 mkdir -p reh-linux
 cd reh-linux
 
@@ -91,14 +86,13 @@ do
 
     echo "Preparing package for Linux $TGT ..."
     cp -r ../../vscode-reh-darwin-arm64 $TARGET_DIR
+    rm -rf $TARGET_DIR/node $TARGET_DIR/node_modules
 
-    # replace native bits from release ver
     cp $SRC_DIR/node $TARGET_DIR/node
-    for NATIVELIB in $NATIVE_REH_LIBS
-    do
-        rm -rf $TARGET_DIR/node_modules/$NATIVELIB
-        cp -r $SRC_DIR/node_modules/$NATIVELIB $TARGET_DIR/node_modules/$NATIVELIB
-    done
+    cp -r $SRC_DIR/node_modules $TARGET_DIR/node_modules
+
+    # need to remove vsda as our REH is not signed
+    rm -rf $TARGET_DIR/node_modules/vsda
 
     echo "Archiving VSCode REH for Linux $TGT ..."
     ../create-archive.sh $TARGET_DIR ../out/vscode-reh-linux-$TGT.zip
