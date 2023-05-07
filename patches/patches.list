@@ -1,9 +1,10 @@
-base-commit: 704ed70d4fd1c6bd6342c436f1ede30d1cff4710
-final-commit: 6fae5f0ad81e0639a8d0d51f2be06b0b9d5674b5
+base-commit: 252e5463d60e63238250799aef7375787f68b4ee
+final-commit: b10720854d7f9b68f4e59a7ef8f230d14c1b0f9a
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Change-GPU-settings.patch
 common/0003-Decrease-event-listener-minimum-delay.patch
+common/0004-Enable-marketplace.patch
 
 xterm-patches/0001-Use-jamestut-custom-xterm.patch
 xterm-patches/0002-Add-option-to-disable-terminal-mouse-reporting.patch

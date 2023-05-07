@@ -1,0 +1,27 @@
+From 6aea3fb85affde764cbc9c447c3b982dbd8f0348 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sun, 7 May 2023 19:36:04 +1000
+Subject: Enable marketplace
+
+---
+ product.json | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/product.json b/product.json
+index 56048315511..04778d821f8 100644
+--- a/product.json
++++ b/product.json
+@@ -32,6 +32,11 @@
+ 	"reportIssueUrl": "https://github.com/microsoft/vscode/issues/new",
+ 	"urlProtocol": "code-oss",
+ 	"webviewContentExternalBaseUrlTemplate": "https://{{uuid}}.vscode-cdn.net/insider/ef65ac1ba57f57f2a3961bfe94aa20481caca4c6/out/vs/workbench/contrib/webview/browser/pre/",
++	"extensionsGallery": {
++		"serviceUrl": "https://marketplace.visualstudio.com/_apis/public/gallery",
++		"cacheUrl": "https://vscode.blob.core.windows.net/gallery/index",
++		"itemUrl": "https://marketplace.visualstudio.com/items"
++	},
+ 	"builtInExtensions": [
+ 		{
+ 			"name": "ms-vscode.js-debug-companion",
+--
+2.37.1 (Apple Git-137.1)
