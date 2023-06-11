@@ -1,27 +1,27 @@
-From c7d1224438e033fc9b99dcd76c8ee43f88974317 Mon Sep 17 00:00:00 2001
+From b02f6ca8e64132c3a30d73d4dbddbda1e1c38837 Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
 Date: Sun, 26 Mar 2023 09:19:57 +1100
-Subject: Show status bar remote indicator as disconnected when
- waiting for reconnect.
+Subject: Show status bar remote indicator as disconnected when waiting
+ for reconnect.
 
 ---
  src/vs/workbench/contrib/remote/browser/remoteIndicator.ts | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/vs/workbench/contrib/remote/browser/remoteIndicator.ts b/src/vs/workbench/contrib/remote/browser/remoteIndicator.ts
-index 5425c173229..224b4e3a691 100644
+index 3bdd87eb663..49ff33dc2fd 100644
 --- a/src/vs/workbench/contrib/remote/browser/remoteIndicator.ts
 +++ b/src/vs/workbench/contrib/remote/browser/remoteIndicator.ts
-@@ -204,9 +204,9 @@ export class RemoteStatusIndicator extends Disposable implements IWorkbenchContr
+@@ -226,9 +226,9 @@ export class RemoteStatusIndicator extends Disposable implements IWorkbenchContr
  					switch (e.type) {
  						case PersistentConnectionEventType.ConnectionLost:
  						case PersistentConnectionEventType.ReconnectionRunning:
 -						case PersistentConnectionEventType.ReconnectionWait:
- 							this.setState('reconnecting');
+ 							this.setConnectionState('reconnecting');
  							break;
 +						case PersistentConnectionEventType.ReconnectionWait:
  						case PersistentConnectionEventType.ReconnectionPermanentFailure:
- 							this.setState('disconnected');
+ 							this.setConnectionState('disconnected');
  							break;
 --
 2.37.1 (Apple Git-137.1)

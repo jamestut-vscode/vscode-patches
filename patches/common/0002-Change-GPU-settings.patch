@@ -1,4 +1,4 @@
-From 38eaefbe383e63737ef7667a027390cc58673e6b Mon Sep 17 00:00:00 2001
+From f3df3047c1f5cf5a4a964444c6b2ecec2276bdd5 Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
 Date: Mon, 24 Apr 2023 11:25:32 +1000
 Subject: Change GPU settings
@@ -9,12 +9,12 @@ Use Metal backend and enable raw draw feature
  1 file changed, 4 insertions(+)
 
 diff --git a/src/main.js b/src/main.js
-index 8a83d12d94d..4844d24a0cb 100644
+index d986fee6f6d..659e1da6671 100644
 --- a/src/main.js
 +++ b/src/main.js
-@@ -26,6 +26,10 @@ const { stripComments } = require('./vs/base/common/stripComments');
- const product = require('../product.json');
- const { app, protocol, crashReporter, Menu } = require('electron');
+@@ -30,6 +30,10 @@ const { app, protocol, crashReporter, Menu } = require('electron');
+ // Enable sandbox globally
+ app.enableSandbox();
 
 +// change some GPU settings
 +app.commandLine.appendSwitch('enable-features', 'RawDraw');
