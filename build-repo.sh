@@ -34,6 +34,6 @@ fi
 
 cd ..
 echo "Applying patches ..."
-./spm.py -a patches vscode
+./spm.py patches vscode
 
 echo "Done! The custom VSCode is ready to be built!"

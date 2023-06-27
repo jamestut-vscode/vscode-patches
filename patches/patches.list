@@ -1,5 +1,5 @@
-base-commit: b380da4ef1ee00e224a15c1d4d9793e27c2b6302
-final-commit: b41f5704817989860ddefbc126af92ff402594cb
+base-commit: 695af097c7bd098fbf017ce3ac85e09bbc5dda06
+final-commit: 60e92c51c5ddb7ba8a0c84ca3faaf59af690db59
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Change-GPU-settings.patch
