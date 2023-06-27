@@ -1,8 +1,8 @@
 base-commit: 695af097c7bd098fbf017ce3ac85e09bbc5dda06
-final-commit: 60e92c51c5ddb7ba8a0c84ca3faaf59af690db59
+final-commit: c75e5cd7073991436c75f9be1ef10de13b16bbc8
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
-common/0002-Change-GPU-settings.patch
+common/0002-Optional-Metal-backend.patch
 common/0003-Decrease-event-listener-minimum-delay.patch
 common/0004-Enable-marketplace.patch
 

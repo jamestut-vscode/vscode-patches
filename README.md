@@ -14,8 +14,8 @@ This fork contains my personal modifications to Visual Studio Code that are not 
   When there are ungracefully-disconnected client on VSCode's REH server, do not reduce their grace reconnection period when a new client is reconnected.
 - **Increase input polling to max 250 Hz.**  
   Maximum input polling is increased to 250 Hz (vs 120 Hz previously). This only changes the maximum: if your device have 120 Hz display, it will still be capped at 120 Hz.
-- **Use Metal backend.**  
-  For lower typing latency and more consistent scrolling FPS on macOS.
+- **Optional Metal backend.**  
+  Pass `--metal` option to use ANGLE Metal backend. This could improve performance and compatibility with macOS virtual machines on Metal-only macs such as a virtualized macOS on Apple Silicon.
 - **Non intrusive autocomplete.**  
   Just type or copy-paste the file or folder path that you want to open, even on high latency connections to Remote Extension Host! The auto-complete will not interfere with what you've typed/pasted!
 
