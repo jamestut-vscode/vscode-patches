@@ -1,10 +1,11 @@
 base-commit: 695af097c7bd098fbf017ce3ac85e09bbc5dda06
-final-commit: c75e5cd7073991436c75f9be1ef10de13b16bbc8
+final-commit: 9ce8d2d6dc618470d6308b744d5eb620cd943fc8
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optional-Metal-backend.patch
 common/0003-Decrease-event-listener-minimum-delay.patch
 common/0004-Enable-marketplace.patch
+common/0005-Product-naming.patch
 
 xterm-patches/0001-Use-jamestut-custom-xterm.patch
 xterm-patches/0002-Add-option-to-disable-terminal-mouse-reporting.patch

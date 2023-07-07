@@ -1,0 +1,24 @@
+From a1430d07647a3be98a1101e6d70cfa6eabc75a17 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sat, 8 Jul 2023 01:25:51 +1000
+Subject: [PATCH] Product naming
+
+---
+ product.json | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/product.json b/product.json
+index aab5e776d3e..6564dc7a4e6 100644
+--- a/product.json
++++ b/product.json
+@@ -1,6 +1,6 @@
+ {
+-	"nameShort": "Code - OSS",
+-	"nameLong": "Code - OSS",
++	"nameShort": "Code",
++	"nameLong": "Visual Studio Code",
+ 	"applicationName": "code-oss",
+ 	"dataFolderName": ".vscode-oss",
+ 	"win32MutexName": "vscodeoss",
+-- 
+2.39.2 (Apple Git-144)
