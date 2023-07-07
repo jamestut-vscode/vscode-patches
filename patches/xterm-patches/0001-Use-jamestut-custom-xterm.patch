@@ -1,43 +1,24 @@
-From ecb244d51c3ddc02eaf9c4e11b97a1ea01ee8dbf Mon Sep 17 00:00:00 2001
+From 39c2ee513d6641160ce7e3f0737e3dd7152cf2e7 Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
-Date: Sun, 11 Jun 2023 11:24:10 +1000
+Date: Sat, 8 Jul 2023 01:54:50 +1000
 Subject: Use jamestut's custom xterm.js
 
 ---
  package.json | 2 +-
- yarn.lock    | 7 +++----
- 2 files changed, 4 insertions(+), 5 deletions(-)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/package.json b/package.json
-index 7395cac109b..00e29e3ab00 100644
+index e7c898fc1fe..5f9baccf873 100644
 --- a/package.json
 +++ b/package.json
-@@ -87,7 +87,7 @@
+@@ -94,7 +94,7 @@
      "vscode-oniguruma": "1.7.0",
      "vscode-regexpp": "^3.1.0",
      "vscode-textmate": "9.0.0",
--    "xterm": "5.2.0-beta.49",
-+    "xterm": "https://github.com/jamestut-vscode/xterm.js-patches/releases/download/5.2.0-beta.49-m1/xtermjs.tar.gz",
-     "xterm-addon-canvas": "0.4.0-beta.14",
-     "xterm-addon-image": "0.4.0",
-     "xterm-addon-search": "0.12.0-beta.5",
-diff --git a/yarn.lock b/yarn.lock
-index b4adddd0a59..8fdc43fca83 100644
---- a/yarn.lock
-+++ b/yarn.lock
-@@ -10488,10 +10488,9 @@ xterm-headless@5.2.0-beta.49:
-   resolved "https://registry.yarnpkg.com/xterm-headless/-/xterm-headless-5.2.0-beta.49.tgz#ac6e833fa025441503db27980f40ab4ae549a3f4"
-   integrity sha512-jaNvl5f8Qx5xG1i79/7pzlAzUMC0Or8sPW7v/R7bw5MenMZPE5sE0pYNYW3xWB91voBPbGuXvrMdtraY8gL/Og==
-
--xterm@5.2.0-beta.49:
--  version "5.2.0-beta.49"
--  resolved "https://registry.yarnpkg.com/xterm/-/xterm-5.2.0-beta.49.tgz#0c9c176862019800172fc016d136300d1b6531ce"
--  integrity sha512-kfdiYljgAmjM9VpkNuuDcUJJHB62UiSTVZRYJbQdOU7jCi9mnUTPWov+5PnZIgONGts3t3Dv5kdbNF4UH53uTA==
-+"xterm@https://github.com/jamestut-vscode/xterm.js-patches/releases/download/5.2.0-beta.49-m1/xtermjs.tar.gz":
-+  version "5.2.0-beta.49-m1"
-+  resolved "https://github.com/jamestut-vscode/xterm.js-patches/releases/download/5.2.0-beta.49-m1/xtermjs.tar.gz#2599db9c67147cdcc70c4bb2a9b2aff2380ed4db"
-
- y18n@^3.2.1:
-   version "3.2.2"
---
-2.37.1 (Apple Git-137.1)
+-    "xterm": "5.3.0-beta.3",
++    "xterm": "https://github.com/jamestut-vscode/xterm.js-patches/releases/download/5.3.0-beta.3-m1/xtermjs.tar.gz",
+     "xterm-addon-canvas": "0.5.0-beta.2",
+     "xterm-addon-image": "0.4.1",
+     "xterm-addon-search": "0.13.0-beta.2",
+-- 
+2.39.2 (Apple Git-144)
