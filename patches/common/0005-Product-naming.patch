@@ -1,7 +1,7 @@
 From a1430d07647a3be98a1101e6d70cfa6eabc75a17 Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
 Date: Sat, 8 Jul 2023 01:25:51 +1000
-Subject: [PATCH] Product naming
+Subject: Product naming
 
 ---
  product.json | 4 ++--
