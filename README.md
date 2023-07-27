@@ -18,6 +18,8 @@ This fork contains my personal modifications to Visual Studio Code that are not 
   Pass `--metal` option to use ANGLE Metal backend. This could improve performance and compatibility with macOS virtual machines on Metal-only macs such as a virtualized macOS on Apple Silicon.
 - **Non intrusive autocomplete.**  
   Just type or copy-paste the file or folder path that you want to open, even on high latency connections to Remote Extension Host! The auto-complete will not interfere with what you've typed/pasted!
+- **Server Daemon Support.**  
+  Simply add the `--daemonize` option to start the REH server as a daemon.
 
 ## Build Instructions
 

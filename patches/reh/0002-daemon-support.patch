@@ -1,0 +1,69 @@
+From aebe06a72bd54780a94d0a9c70513dd7d9184a4a Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Thu, 27 Jul 2023 20:14:12 +1000
+Subject: [PATCH] daemon support
+
+---
+ src/server-main.js                             | 14 +++++++++++++-
+ src/vs/server/node/serverEnvironmentService.ts |  3 +++
+ 2 files changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/src/server-main.js b/src/server-main.js
+index 5167527baed..fd9add0aea8 100644
+--- a/src/server-main.js
++++ b/src/server-main.js
+@@ -10,6 +10,7 @@ const performance = require('perf_hooks').performance;
+ const product = require('../product.json');
+ const readline = require('readline');
+ const http = require('http');
++const cp = require('child_process');
+ 
+ perf.mark('code/server/start');
+ // @ts-ignore
+@@ -20,10 +21,21 @@ async function start() {
+ 
+ 	// Do a quick parse to determine if a server or the cli needs to be started
+ 	const parsedArgs = minimist(process.argv.slice(2), {
+-		boolean: ['start-server', 'list-extensions', 'print-ip-address', 'help', 'version', 'accept-server-license-terms'],
++		boolean: ['start-server', 'list-extensions', 'print-ip-address', 'help', 'version', 'accept-server-license-terms', 'daemonize'],
+ 		string: ['install-extension', 'install-builtin-extension', 'uninstall-extension', 'locate-extension', 'socket-path', 'host', 'port', 'compatibility'],
+ 		alias: { help: 'h', version: 'v' }
+ 	});
++
++	if (parsedArgs.daemonize) {
++		const newArgv = process.argv.slice();
++		newArgv.splice(0, 1);
++		newArgv.splice(newArgv.indexOf('--daemonize'), 1);
++		const proc = cp.spawn(process.execPath, newArgv, { stdio: 'ignore', detached: true });
++		console.log(`PID of server daemon is ${proc.pid}`);
++		proc.unref();
++		process.exit(0);
++	}
++
+ 	['host', 'port', 'accept-server-license-terms'].forEach(e => {
+ 		if (!parsedArgs[e]) {
+ 			const envValue = process.env[`VSCODE_SERVER_${e.toUpperCase().replace('-', '_')}`];
+diff --git a/src/vs/server/node/serverEnvironmentService.ts b/src/vs/server/node/serverEnvironmentService.ts
+index ea6cb346184..af54a85d56b 100644
+--- a/src/vs/server/node/serverEnvironmentService.ts
++++ b/src/vs/server/node/serverEnvironmentService.ts
+@@ -23,6 +23,7 @@ export const serverOptions: OptionDescriptions<Required<ServerParsedArgs>> = {
+ 	'disable-websocket-compression': { type: 'boolean' },
+ 	'print-startup-performance': { type: 'boolean' },
+ 	'print-ip-address': { type: 'boolean' },
++	'daemonize': { type: 'boolean', cat: 'o', description: nls.localize('daemonize', 'Fork and run in the background as a daemon.') },
+ 	'accept-server-license-terms': { type: 'boolean', cat: 'o', description: nls.localize('acceptLicenseTerms', "If set, the user accepts the server license terms and the server will be started without a user prompt.") },
+ 	'server-data-dir': { type: 'string', cat: 'o', description: nls.localize('serverDataDir', "Specifies the directory that server data is kept in.") },
+ 	'telemetry-level': { type: 'string', cat: 'o', args: 'level', description: nls.localize('telemetry-level', "Sets the initial telemetry level. Valid levels are: 'off', 'crash', 'error' and 'all'. If not specified, the server will send telemetry until a client connects, it will then use the clients telemetry setting. Setting this to 'off' is equivalent to --disable-telemetry") },
+@@ -131,6 +132,8 @@ export interface ServerParsedArgs {
+ 	'print-startup-performance'?: boolean;
+ 	'print-ip-address'?: boolean;
+ 
++	'daemonize'?: boolean;
++
+ 	'accept-server-license-terms': boolean;
+ 
+ 	'server-data-dir'?: string;
+-- 
+2.39.2 (Apple Git-144)
+
