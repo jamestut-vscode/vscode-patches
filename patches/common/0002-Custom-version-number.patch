@@ -1,0 +1,23 @@
+From ce69c5a6a1e4db62325e03aa4b4a737ac63512fc Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sun, 13 Aug 2023 17:27:04 +1000
+Subject: Custom version number patch
+
+---
+ package.json | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/package.json b/package.json
+index 8132dc7c583..0cc65a304ab 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "code-oss-dev",
+-  "version": "1.81.1",
++  "version": "1.81.1-m1",
+   "distro": "4522c9eb8ccecb983f40d135de4b91df6f8e0312",
+   "author": {
+     "name": "Microsoft Corporation"
+-- 
+2.39.2 (Apple Git-144)
