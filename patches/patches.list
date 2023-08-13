@@ -1,5 +1,5 @@
-base-commit: 6445d93c81ebe42c4cbd7a60712e0b17d9463e97
-final-commit: 48227fca013147c9009e9765195619c9bc93320a
+base-commit: 6c3e3dba23e8fadc360aed75ce363ba185c49794
+final-commit: 7360a5d4aab50b1cb8a513423bb3fe664b94ba6f
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optional-Metal-backend.patch
