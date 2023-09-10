@@ -37,13 +37,11 @@ fi
 BASE_COMMIT=${${(s: :)PATCHLINE}[2]}
 echo "VSCode base commit is $BASE_COMMIT"
 
-# install deps
 cd vscode
-if ! [[ -d node_modules ]]
-then
-    echo "Running yarn to install dependencies ..."
-    yarn
-fi
+
+# install deps
+echo "Running yarn to update and install dependencies ..."
+yarn
 
 # begin gulping!
 if ! [[ -d ../VSCode-darwin-arm64 ]]

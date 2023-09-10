@@ -14,9 +14,9 @@ index 8132dc7c583..0cc65a304ab 100644
 @@ -1,6 +1,6 @@
  {
    "name": "code-oss-dev",
--  "version": "1.81.1",
-+  "version": "1.81.1-m1",
-   "distro": "4522c9eb8ccecb983f40d135de4b91df6f8e0312",
+-  "version": "1.82.0",
++  "version": "1.82.0-m1",
+   "distro": "65ebdd6e7140deacdb421b89990067eb4bef55ea",
    "author": {
      "name": "Microsoft Corporation"
 -- 
