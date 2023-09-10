@@ -1,0 +1,42 @@
+From a3fdd9dcdbb90b05e960c6f8cb4220bdce46aad3 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sun, 10 Sep 2023 22:47:45 +1000
+Subject: Tighten timeout
+
+---
+ src/vs/base/parts/ipc/common/ipc.net.ts | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/vs/base/parts/ipc/common/ipc.net.ts b/src/vs/base/parts/ipc/common/ipc.net.ts
+index 43363fba7ee..f54869e6c0c 100644
+--- a/src/vs/base/parts/ipc/common/ipc.net.ts
++++ b/src/vs/base/parts/ipc/common/ipc.net.ts
+@@ -287,11 +287,11 @@ export const enum ProtocolConstants {
+ 	 */
+ 	AcknowledgeTime = 2000, // 2 seconds
+ 	/**
+-	 * If there is a sent message that has been unacknowledged for 20 seconds,
+-	 * and we didn't see any incoming server data in the past 20 seconds,
++	 * If there is a sent message that has been unacknowledged for 6 seconds,
++	 * and we didn't see any incoming server data in the past 6 seconds,
+ 	 * then consider the connection has timed out.
+ 	 */
+-	TimeoutTime = 20000, // 20 seconds
++	TimeoutTime = 6000, // 6 seconds
+ 	/**
+ 	 * If there is no reconnection within this time-frame, consider the connection permanently closed...
+ 	 */
+@@ -301,9 +301,9 @@ export const enum ProtocolConstants {
+ 	 */
+ 	ReconnectionShortGraceTime = 5 * 60 * 1000, // 5min
+ 	/**
+-	 * Send a message every 5 seconds to avoid that the connection is closed by the OS.
++	 * Send a message every second to avoid that the connection is closed by the OS.
+ 	 */
+-	KeepAliveSendTime = 5000, // 5 seconds
++	KeepAliveSendTime = 1000, // 1 second
+ }
+ 
+ class ProtocolMessage {
+-- 
+2.39.2 (Apple Git-144)

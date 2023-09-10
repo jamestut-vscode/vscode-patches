@@ -1,5 +1,5 @@
 base-commit: 8b617bd08fd9e3fc94d14adb8d358b56e3f72314
-final-commit: 6cb9653e23446fff53e8c4100b4ee54a9becc298
+final-commit: 5200ad408068871e4ef77ace061aeb23159f7c53
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Custom-version-number.patch
@@ -20,6 +20,7 @@ remote/0002-Make-reconnection-attempts-less-frequent.patch
 remote/0003-Disable-client-side-assumption-of-reconnection-grace.patch
 remote/0004-Show-reconnection-progress-instantly.patch
 remote/0005-Reconnecting-timeout-logic-tweak.patch
+remote/0006-Tighten-timeout.patch
 
 reh/0001-Disable-shorten-reconnection-grace-time.patch
 reh/0002-daemon-support.patch
