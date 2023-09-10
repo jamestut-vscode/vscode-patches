@@ -14,8 +14,10 @@ This fork contains my personal modifications to Visual Studio Code that are not 
   When there are ungracefully-disconnected client on VSCode's REH server, do not reduce their grace reconnection period when a new client is reconnected.
 - **Increase input polling to max 250 Hz.**  
   Maximum input polling is increased to 250 Hz (vs 120 Hz previously). This only changes the maximum: if your device have 120 Hz display, it will still be capped at 120 Hz.
-- **Optional Metal backend.**  
-  Pass `--metal` option to use ANGLE Metal backend. This could improve performance and compatibility with macOS virtual machines on Metal-only macs such as a virtualized macOS on Apple Silicon.
+- **ANGLE Metal backend.**  
+  Uses Apple's Metal as ANGLE's backend. This could improve performance and compatibility with macOS virtual machines on Metal-only macs such as a virtualized macOS on Apple Silicon.
+- **Updated to Chromium 116.**  
+  Chromium 116 has a considerable amount of improvements related to ANGLE Metal, including compatibility with macOS Sonoma.
 - **Non intrusive autocomplete.**  
   Just type or copy-paste the file or folder path that you want to open, even on high latency connections to Remote Extension Host! The auto-complete will not interfere with what you've typed/pasted!
 - **Server Daemon Support.**  
