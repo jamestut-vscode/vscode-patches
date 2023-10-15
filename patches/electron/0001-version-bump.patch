@@ -15,9 +15,9 @@ index fff0be195f2..1eafd3060d9 100644
 +++ b/.yarnrc
 @@ -1,5 +1,5 @@
  disturl "https://electronjs.org/headers"
--target "25.8.0"
-+target "26.2.0"
- ms_build_id "23503258"
+-target "25.8.4"
++target "27.0.0"
+ ms_build_id "24154031"
  runtime "electron"
  build_from_source "true"
 diff --git a/build/checksums/electron.txt b/build/checksums/electron.txt
@@ -25,11 +25,11 @@ index 9c46b2ad8ef..86aec7960c7 100644
 --- a/build/checksums/electron.txt
 +++ b/build/checksums/electron.txt
 @@ -1,3 +1,5 @@
-+d10e7b3db8b0999f731ecf9e76008789d8a768ea1e99a38027f2682b8b69923a *electron-v26.2.0-darwin-arm64-symbols.zip
-+1bb9f1f9d26b045ffa695ed0e73d5e92b0bbbe7adb9c0565585a5c4cd3bc6720 *electron-v26.2.0-darwin-arm64.zip
- 88cafda8394985e59d3d84cb4a6692ad04d8e32db9ecd6429e748e41526ddad7 *electron-v25.8.0-darwin-arm64-symbols.zip
- 6e33d3b8041561722ed41777e055a8c15d3f4e61b67367b2618918bcf0cfea76 *electron-v25.8.0-darwin-arm64.zip
- 438ac9915e062a239fb6d2595323c4783d2c820efc9cbcf3d2c1253d0e057e83 *electron-v25.8.0-darwin-x64-symbols.zip
++c25ff9edbb078febc382d3ebb25a4ff0dfe2a763319f1acd82eb588231b44c47 *electron-v27.0.0-darwin-arm64-symbols.zip
++2fc319c53f6dc61e2e424d46712caead7022b5124c9674f3b15b45c556dd0623 *electron-v27.0.0-darwin-arm64.zip
+ db3e9eb9f47f465bb63d15de486ea1d9274233b24bbe451038bfbaf48f9b0e39 *electron-v25.8.4-darwin-arm64-symbols.zip
+ 5d83e2094a26bfe22e4c80e660ab088ec94ae3cc2d518c6efcac338f48cc0266 *electron-v25.8.4-darwin-arm64.zip
+ 6fdd506328c65a9d8205425a463098210743c9ef79a546738b91a91d56100447 *electron-v25.8.4-darwin-x64-symbols.zip
 diff --git a/package.json b/package.json
 index 1232bdbc9a3..7e9b441df55 100644
 --- a/package.json
@@ -38,10 +38,10 @@ index 1232bdbc9a3..7e9b441df55 100644
      "cssnano": "^4.1.11",
      "debounce": "^1.0.0",
      "deemon": "^1.8.0",
--    "electron": "25.8.0",
-+    "electron": "26.2.0",
+-    "electron": "25.8.4",
++    "electron": "27.0.0",
      "eslint": "8.36.0",
      "eslint-plugin-header": "3.1.1",
-     "eslint-plugin-jsdoc": "^39.3.2",
+     "eslint-plugin-jsdoc": "^46.5.0",
 -- 
 2.39.2 (Apple Git-144)
