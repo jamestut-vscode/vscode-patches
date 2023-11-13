@@ -39,11 +39,6 @@ then
         echo "Please specify Developer ID Application certificate name in 'VSCSIGN_CERTNAME' env. variable, or pass '--no-sign' to disable signing."
         exit 1
     fi
-    # if [[ -z "$VSCSIGN_NOTARY_PROFILE" ]]
-    # then
-    #     echo "Please specify notarytool's keychain profile name in 'VSCSIGN_NOTARY_PROFILE' env. variable, or pass '--no-sign' to disable signing."
-    #     exit 1
-    # fi
 fi
 
 # get the base commit: we will need this to download the appropriate 'node' and 'node_modules'
