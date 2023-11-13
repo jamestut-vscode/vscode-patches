@@ -19,10 +19,31 @@ then
     exit 1
 fi
 
-if ! where 7z
+if ! $(where 7z &> /dev/null)
 then
     echo "7z is not available. Cannot proceed." >&2
     exit 1
+fi
+
+if [[ "${1}" == '--no-sign' ]]
+then
+    VSCSIGN_DISABLE=1
+    echo "macOS client code signing disabled"
+fi
+
+# check if codesigning env. var. is set
+if ! [[ "$VSCSIGN_DISABLE" ]]
+then
+    if [[ -z "$VSCSIGN_CERTNAME" ]]
+    then
+        echo "Please specify Developer ID Application certificate name in 'VSCSIGN_CERTNAME' env. variable, or pass '--no-sign' to disable signing."
+        exit 1
+    fi
+    # if [[ -z "$VSCSIGN_NOTARY_PROFILE" ]]
+    # then
+    #     echo "Please specify notarytool's keychain profile name in 'VSCSIGN_NOTARY_PROFILE' env. variable, or pass '--no-sign' to disable signing."
+    #     exit 1
+    # fi
 fi
 
 # get the base commit: we will need this to download the appropriate 'node' and 'node_modules'
@@ -46,13 +67,21 @@ yarn
 # begin gulping!
 if ! [[ -d ../VSCode-darwin-arm64 ]]
 then
-    echo "Building VSCode client for macOS arm"
+    echo "Building VSCode client for macOS arm ..."
     yarn gulp vscode-darwin-arm64-min
+fi
+
+if ! [[ "$VSCSIGN_DISABLE" ]]
+then
+    cd ../packaging
+    echo "Signing macOS VSCode client ..."
+    ./macho-sign.py ../VSCode-darwin-arm64 "$VSCSIGN_CERTNAME"
+    cd ../vscode
 fi
 
 if ! [[ -d ../vscode-reh-darwin-arm64 ]]
 then
-    echo "Building VSCode REH for macOS arm"
+    echo "Building VSCode REH for macOS arm ..."
     yarn gulp vscode-reh-darwin-arm64-min
 fi
 
