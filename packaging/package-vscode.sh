@@ -113,6 +113,8 @@ do
     cp $SRC_DIR/node $TARGET_DIR/node
     cp -r $SRC_DIR/node_modules $TARGET_DIR/node_modules
 
+    cp ../../vscode/resources/server/bin/code-server-linux.sh $TARGET_DIR/bin/code-server
+
     # need to remove vsda as our REH is not signed
     rm -rf $TARGET_DIR/node_modules/vsda
 

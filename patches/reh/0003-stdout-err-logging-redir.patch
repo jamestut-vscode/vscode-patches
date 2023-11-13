@@ -1,0 +1,116 @@
+From 8c2248403c6d735992fa249599a0f4e1ceb645e3 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Mon, 13 Nov 2023 20:02:02 +1100
+Subject: Add stdout and stderr redirection support for logging
+
+---
+ resources/server/bin/code-server-darwin.sh | 29 +++++++++++++++++++---
+ resources/server/bin/code-server-linux.sh  | 28 ++++++++++++++++++---
+ src/server-main.js                         |  4 ++-
+ 3 files changed, 53 insertions(+), 8 deletions(-)
+
+diff --git a/resources/server/bin/code-server-darwin.sh b/resources/server/bin/code-server-darwin.sh
+index 0d4459a8035..8c9824778be 100644
+--- a/resources/server/bin/code-server-darwin.sh
++++ b/resources/server/bin/code-server-darwin.sh
+@@ -3,9 +3,23 @@
+ # Copyright (c) Microsoft Corporation. All rights reserved.
+ #
+ 
+-case "$1" in
+-	--inspect*) INSPECT="$1"; shift;;
+-esac
++while true
++do
++	case "$1" in
++		--inspect*)
++			INSPECT="$1"
++			shift
++			;;
++		--logfile)
++			shift
++			LOGFILE="$1"
++			shift
++			;;
++		*)
++			break
++			;;
++	esac
++done
+ 
+ realdir() {
+ 	SOURCE=$1
+@@ -19,5 +33,12 @@ realdir() {
+ 
+ ROOT="$(dirname "$(realdir "$0")")"
+ 
+-"$ROOT/node" ${INSPECT:-} "$ROOT/out/server-main.js" "$@"
++if [[ "$LOGFILE" ]]
++then
++	exec {fd}>"$LOGFILE"
++	exec 1<&$fd
++	exec 2<&$fd
++	export STDERROUT_REDIRECT=1
++fi
+ 
++"$ROOT/node" ${INSPECT:-} "$ROOT/out/server-main.js" "$@"
+diff --git a/resources/server/bin/code-server-linux.sh b/resources/server/bin/code-server-linux.sh
+index 3df32dfd43c..a5ee59c447f 100644
+--- a/resources/server/bin/code-server-linux.sh
++++ b/resources/server/bin/code-server-linux.sh
+@@ -3,10 +3,32 @@
+ # Copyright (c) Microsoft Corporation. All rights reserved.
+ #
+ 
+-case "$1" in
+-	--inspect*) INSPECT="$1"; shift;;
+-esac
++while true
++do
++	case "$1" in
++		--inspect*)
++			INSPECT="$1"
++			shift
++			;;
++		--logfile)
++			shift
++			LOGFILE="$1"
++			shift
++			;;
++		*)
++			break
++			;;
++	esac
++done
+ 
+ ROOT="$(dirname "$(dirname "$(readlink -f "$0")")")"
+ 
++if [[ "$LOGFILE" ]]
++then
++	exec {fd}>"$LOGFILE"
++	exec 1<&$fd
++	exec 2<&$fd
++	export STDERROUT_REDIRECT=1
++fi
++
+ "$ROOT/node" ${INSPECT:-} "$ROOT/out/server-main.js" "$@"
+diff --git a/src/server-main.js b/src/server-main.js
+index fd9add0aea8..be2bf0da312 100644
+--- a/src/server-main.js
++++ b/src/server-main.js
+@@ -27,10 +27,12 @@ async function start() {
+ 	});
+ 
+ 	if (parsedArgs.daemonize) {
++		const stdioMode = process.env['STDERROUT_REDIRECT'] ? 'inherit' : 'ignore';
++		const stdioModes = ['ignore', stdioMode, stdioMode];
+ 		const newArgv = process.argv.slice();
+ 		newArgv.splice(0, 1);
+ 		newArgv.splice(newArgv.indexOf('--daemonize'), 1);
+-		const proc = cp.spawn(process.execPath, newArgv, { stdio: 'ignore', detached: true });
++		const proc = cp.spawn(process.execPath, newArgv, { stdio: stdioModes, detached: true });
+ 		console.log(`PID of server daemon is ${proc.pid}`);
+ 		proc.unref();
+ 		process.exit(0);
+-- 
+2.39.3 (Apple Git-145)
