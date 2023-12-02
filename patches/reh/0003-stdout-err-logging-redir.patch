@@ -1,16 +1,16 @@
-From 8c2248403c6d735992fa249599a0f4e1ceb645e3 Mon Sep 17 00:00:00 2001
+From 1344f1dc037a68c69adc215aa0c7b5857674ddd6 Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
 Date: Mon, 13 Nov 2023 20:02:02 +1100
 Subject: Add stdout and stderr redirection support for logging
 
 ---
- resources/server/bin/code-server-darwin.sh | 29 +++++++++++++++++++---
- resources/server/bin/code-server-linux.sh  | 28 ++++++++++++++++++---
+ resources/server/bin/code-server-darwin.sh | 29 ++++++++++++++++++---
+ resources/server/bin/code-server-linux.sh  | 30 +++++++++++++++++++---
  src/server-main.js                         |  4 ++-
- 3 files changed, 53 insertions(+), 8 deletions(-)
+ 3 files changed, 54 insertions(+), 9 deletions(-)
 
 diff --git a/resources/server/bin/code-server-darwin.sh b/resources/server/bin/code-server-darwin.sh
-index 0d4459a8035..8c9824778be 100644
+index 0d4459a8035..ae0b4364ad9 100644
 --- a/resources/server/bin/code-server-darwin.sh
 +++ b/resources/server/bin/code-server-darwin.sh
 @@ -3,9 +3,23 @@
@@ -45,7 +45,7 @@ index 0d4459a8035..8c9824778be 100644
  ROOT="$(dirname "$(realdir "$0")")"
  
 -"$ROOT/node" ${INSPECT:-} "$ROOT/out/server-main.js" "$@"
-+if [[ "$LOGFILE" ]]
++if ! [[ -z "$LOGFILE" ]]
 +then
 +	exec {fd}>"$LOGFILE"
 +	exec 1<&$fd
@@ -55,10 +55,13 @@ index 0d4459a8035..8c9824778be 100644
  
 +"$ROOT/node" ${INSPECT:-} "$ROOT/out/server-main.js" "$@"
 diff --git a/resources/server/bin/code-server-linux.sh b/resources/server/bin/code-server-linux.sh
-index 3df32dfd43c..a5ee59c447f 100644
+index 3df32dfd43c..208a681df1c 100644
 --- a/resources/server/bin/code-server-linux.sh
 +++ b/resources/server/bin/code-server-linux.sh
-@@ -3,10 +3,32 @@
+@@ -1,12 +1,34 @@
+-#!/usr/bin/env sh
++#!/usr/bin/env bash
+ #
  # Copyright (c) Microsoft Corporation. All rights reserved.
  #
  
@@ -85,7 +88,7 @@ index 3df32dfd43c..a5ee59c447f 100644
  
  ROOT="$(dirname "$(dirname "$(readlink -f "$0")")")"
  
-+if [[ "$LOGFILE" ]]
++if ! [[ -z "$LOGFILE" ]]
 +then
 +	exec {fd}>"$LOGFILE"
 +	exec 1<&$fd
