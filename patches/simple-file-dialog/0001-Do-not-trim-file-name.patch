@@ -14,7 +14,7 @@ index 9cfbfab9cfb..0da670e56fb 100644
 @@ -64,8 +64,6 @@ export abstract class AbstractFileDialogService implements IFileDialogService {
  		// ...then for last active file root
  		if (!candidate) {
- 			candidate = this.historyService.getLastActiveWorkspaceRoot(schemeFilter);
+ 			candidate = this.historyService.getLastActiveWorkspaceRoot(schemeFilter, authorityFilter);
 -		} else {
 -			candidate = resources.dirname(candidate);
  		}

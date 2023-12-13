@@ -1,7 +1,7 @@
 From ce9fef736e89f05d7208655175bb47f69acbe954 Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
 Date: Sat, 11 Nov 2023 22:59:21 +1100
-Subject: [PATCH] Update Electron version
+Subject: Update Electron version
 
 ---
  .yarnrc                      | 2 +-
@@ -15,26 +15,26 @@ index bb7778b5a27..b77f5828d25 100644
 +++ b/.yarnrc
 @@ -1,5 +1,5 @@
  disturl "https://electronjs.org/headers"
--target "25.9.2"
-+target "27.0.4"
- ms_build_id "24603566"
+-target "25.9.7"
++target "27.1.3"
+ ms_build_id "25551756"
  runtime "electron"
  build_from_source "true"
 diff --git a/build/checksums/electron.txt b/build/checksums/electron.txt
 index 07aca726e4e..fa83c16ef24 100644
 --- a/build/checksums/electron.txt
 +++ b/build/checksums/electron.txt
-@@ -9,6 +9,10 @@ f0a354e01e277b14422e34f8af9c8c43ae975c6fb69a2e61ef275b6ec919f2ab *chromedriver-v
- 570a6b5bc485bfea9681c97b79832d5d5bcafdd993c13dc4ab11558e3a27c554 *chromedriver-v25.9.2-win32-ia32.zip
- 4134f539ac304c65dfca9812b0d3943ea64d886989eba8f62828718b106c4eee *chromedriver-v25.9.2-win32-x64.zip
- 835418b9274c76503542c986d63bb9d98f071c702170536bdd62c1760589e01e *electron-api.json
-+1ca5c240ab30ae5a252d691f082b06e4e7166889886cbc6f59ea1418b11c8525 *electron-v27.0.4-darwin-arm64-dsym-snapshot.zip
-+48e92a349c9cb5cad7ceea93efb0a3625da079be6e09e34b63a321cdb1730566 *electron-v27.0.4-darwin-arm64-dsym.zip
-+a4a9255a552f061a50e52b74947b909ad300d8d5956e38a27422d532e5950465 *electron-v27.0.4-darwin-arm64-symbols.zip
-+d43d26a36bbbe55fd9d2cbb66108bd6ebf341957c54443579073836473c6a1ba *electron-v27.0.4-darwin-arm64.zip
- fd9f5b1439445acc69441ef66cc47f56c5c0848dec5f6daf91a476073e72a756 *electron-v25.9.2-darwin-arm64-dsym-snapshot.zip
- de29ef2a4c7b76281b1cf3ac9e6047a9275cc60167c6cd60509f2eb2a3258842 *electron-v25.9.2-darwin-arm64-dsym.zip
- 732f51802f2902ca08c3a06a45fe23820b1effbeb3ebd39fcae9fce5a1e0b25d *electron-v25.9.2-darwin-arm64-symbols.zip
+@@ -9,6 +9,10 @@
+ 4c5b8d1df6efe5c9ec5db033a3fc2ec7f93f429d0c43d6025fe0f7b96f2cf449 *chromedriver-v25.9.7-win32-ia32.zip
+ 388cc0cce6ce11a60d0b81c5b37b8cb04bcbade533616973a4ef7161487aa59f *chromedriver-v25.9.7-win32-x64.zip
+ 0bfdc68d235fb824b809f59394a0e39c735235a07c1a715df26cc65cd55141b0 *electron-api.json
++dee2d7db6aeaf9a0a4c67c6ad4242d162f5573f96198c8af7d3c4888090e7c3e *electron-v27.1.3-darwin-arm64-dsym-snapshot.zip
++cf8bf2d3d907e0860b28fbe13d41889161fab11578d991251344820e2d9a0370 *electron-v27.1.3-darwin-arm64-dsym.zip
++a98e58cc6b840dd079b42224ebb612e4286ee2dabc0fb0b3338d71da65b388c9 *electron-v27.1.3-darwin-arm64-symbols.zip
++ae44b0d094c53e233f5f69db13fe83b1db5e6434a7688fe72550f30f00bde40c *electron-v27.1.3-darwin-arm64.zip
+ bba809f7e84b67efabe8b9c92d2cf976d4d90c56c0d20d88fa893d0e47674e50 *electron-v25.9.7-darwin-arm64-dsym-snapshot.zip
+ 9058c533f955a792ad491094b4b2c31def667916301eb42f8d36d3b60b7bcf69 *electron-v25.9.7-darwin-arm64-dsym.zip
+ 59c72fb1bd0c58b4ad05a2478bb3fba69c05e195b4d5972b3723c13b70d04fa6 *electron-v25.9.7-darwin-arm64-symbols.zip
 diff --git a/package.json b/package.json
 index 86a82309991..ba9f6c66817 100644
 --- a/package.json
@@ -43,8 +43,8 @@ index 86a82309991..ba9f6c66817 100644
      "cssnano": "^4.1.11",
      "debounce": "^1.0.0",
      "deemon": "^1.8.0",
--    "electron": "25.9.2",
-+    "electron": "27.0.4",
+-    "electron": "25.9.7",
++    "electron": "27.1.3",
      "eslint": "8.36.0",
      "eslint-plugin-header": "3.1.1",
      "eslint-plugin-jsdoc": "^46.5.0",

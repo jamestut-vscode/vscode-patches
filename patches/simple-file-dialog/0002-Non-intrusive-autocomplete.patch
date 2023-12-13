@@ -77,7 +77,7 @@ index 09a171641cb..d7e3b4254f6 100644
 
  	private insertText(wholeValue: string, insertText: string) {
  		if (this.filePickBox.inputHasFocus()) {
--			document.execCommand('insertText', false, insertText);
+-			getActiveDocument().execCommand('insertText', false, insertText);
  			if (this.filePickBox.value !== wholeValue) {
  				this.filePickBox.value = wholeValue;
 -				this.handleValueChange(wholeValue);

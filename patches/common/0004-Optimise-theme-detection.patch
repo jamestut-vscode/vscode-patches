@@ -24,7 +24,7 @@ index 102ed180103..b8cdbe3775e 100644
 @@ -118,7 +116,7 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
  		@ILanguageService languageService: ILanguageService
  	) {
- 		this.container = layoutService.container;
+ 		this.container = layoutService.mainContainer;
 -		this.settings = new ThemeConfiguration(configurationService);
 +		this.settings = new ThemeConfiguration(configurationService, hostColorService);
  
