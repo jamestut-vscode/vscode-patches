@@ -1,0 +1,87 @@
+From 17531bc6dcdc446b71a956cbbb92fb1181355ce0 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sun, 7 Jan 2024 17:21:18 +1100
+Subject: Add toggle to mangle build phase
+
+---
+ build/gulpfile.compile.js   | 5 +++++
+ build/gulpfile.reh.js       | 4 ++--
+ build/gulpfile.vscode.js    | 4 ++--
+ extensions/mangle-loader.js | 2 +-
+ 4 files changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/build/gulpfile.compile.js b/build/gulpfile.compile.js
+index c4947e76cbf..8eb27953ece 100644
+--- a/build/gulpfile.compile.js
++++ b/build/gulpfile.compile.js
+@@ -26,6 +26,11 @@ const compileBuildTask = task.define('compile-build', makeCompileBuildTask(false
+ gulp.task(compileBuildTask);
+ exports.compileBuildTask = compileBuildTask;
+ 
++// like above, but without mangling
++const compileBuildTaskNoMangle = task.define('compile-build-no-mangle', makeCompileBuildTask(true));
++gulp.task(compileBuildTaskNoMangle);
++exports.compileBuildTaskNoMangle = compileBuildTaskNoMangle;
++
+ // Full compile for PR ci, e.g no mangling
+ const compileBuildTaskPullRequest = task.define('compile-build-pr', makeCompileBuildTask(true));
+ gulp.task(compileBuildTaskPullRequest);
+diff --git a/build/gulpfile.reh.js b/build/gulpfile.reh.js
+index 7f485a072c0..d951b52b0a4 100644
+--- a/build/gulpfile.reh.js
++++ b/build/gulpfile.reh.js
+@@ -24,7 +24,7 @@ const gunzip = require('gulp-gunzip');
+ const File = require('vinyl');
+ const fs = require('fs');
+ const glob = require('glob');
+-const { compileBuildTask } = require('./gulpfile.compile');
++const { compileBuildTask, compileBuildTaskNoMangle } = require('./gulpfile.compile');
+ const { compileExtensionsBuildTask, compileExtensionMediaBuildTask } = require('./gulpfile.extensions');
+ const { vscodeWebEntryPoints, vscodeWebResourceIncludes, createVSCodeWebFileContentMapper } = require('./gulpfile.vscode.web');
+ const cp = require('child_process');
+@@ -445,7 +445,7 @@ function tweakProductForServerWeb(product) {
+ 			gulp.task(serverTaskCI);
+ 
+ 			const serverTask = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
+-				compileBuildTask,
++				minified ? compileBuildTask : compileBuildTaskNoMangle,
+ 				compileExtensionsBuildTask,
+ 				compileExtensionMediaBuildTask,
+ 				minified ? minifyTask : optimizeTask,
+diff --git a/build/gulpfile.vscode.js b/build/gulpfile.vscode.js
+index 857114fea15..4b0fbcf88ea 100644
+--- a/build/gulpfile.vscode.js
++++ b/build/gulpfile.vscode.js
+@@ -31,7 +31,7 @@ const { getProductionDependencies } = require('./lib/dependencies');
+ const { config } = require('./lib/electron');
+ const createAsar = require('./lib/asar').createAsar;
+ const minimist = require('minimist');
+-const { compileBuildTask } = require('./gulpfile.compile');
++const { compileBuildTask, compileBuildTaskNoMangle } = require('./gulpfile.compile');
+ const { compileExtensionsBuildTask, compileExtensionMediaBuildTask } = require('./gulpfile.extensions');
+ const { promisify } = require('util');
+ const glob = promisify(require('glob'));
+@@ -453,7 +453,7 @@ BUILD_TARGETS.forEach(buildTarget => {
+ 		gulp.task(vscodeTaskCI);
+ 
+ 		const vscodeTask = task.define(`vscode${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
+-			compileBuildTask,
++			minified ? compileBuildTask : compileBuildTaskNoMangle,
+ 			compileExtensionsBuildTask,
+ 			compileExtensionMediaBuildTask,
+ 			minified ? minifyVSCodeTask : optimizeVSCodeTask,
+diff --git a/extensions/mangle-loader.js b/extensions/mangle-loader.js
+index b6b22ce3f1a..3de6721988e 100644
+--- a/extensions/mangle-loader.js
++++ b/extensions/mangle-loader.js
+@@ -37,7 +37,7 @@ function getMangledFileContents(projectPath) {
+  * @type {webpack.LoaderDefinitionFunction}
+  */
+ module.exports = async function (source, sourceMap, meta) {
+-	if (this.mode !== 'production') {
++	if (this.mode !== 'production' || !process.env['VSCODE_MINIFY']) {
+ 		// Only enable mangling in production builds
+ 		return source;
+ 	}
+-- 
+2.39.3 (Apple Git-145)

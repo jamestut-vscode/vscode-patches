@@ -2,6 +2,8 @@
 
 This fork contains my personal modifications to Visual Studio Code that are not approved by upstream maintainers.
 
+Starting from `1.85.0-m2`, the released packages have additional private patches that are not in this public repository. Prerelease packages will have less optimisation on its Javascript code compared to the released version.
+
 ## Changes Made
 
 - **Updated built-in terminal.**  
@@ -34,7 +36,7 @@ This fork contains my personal modifications to Visual Studio Code that are not 
 
 ## Packaging Instructions
 
-The script to create the release package is located in `packaging/package-vscode.sh`. **This script only runs on arm64 version of macOS** and will generate these packages:
+The script to create the release package is located in the `packaging` folder. Check the [README](packaging/README.md) there for more instructions. **The packaging scripts only runs on arm64 version of macOS** and will generate these packages:
 
 - Visual Studio Code app for macOS arm64.
 - Visual Studio Code REH (Remote Extension Host) for the following platforms:

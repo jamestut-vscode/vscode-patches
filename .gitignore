@@ -1,4 +1,5 @@
 .DS_Store
-vscode*/
+vscode/
+VSCode-darwin-arm64/
+vscode-reh-darwin-arm64/
 spm.py
-packaging/.env

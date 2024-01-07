@@ -1,10 +1,12 @@
 base-commit: af28b32d7e553898b2a91af498b1fb666fdebe0c
-final-commit: e96fbf0ac92bbdd44fe694bc01fe497b1fe72c90
+final-commit: f4fab4c957453e9ea2f66834daef6cdffcc06473
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Custom-version-number.patch
 common/0003-macos-bundle-identifier.patch
 common/0004-Optimise-theme-detection.patch
+
+build/0001-Toggle-mangle-build-phase.patch
 
 electron/0001-version-bump.patch
 
