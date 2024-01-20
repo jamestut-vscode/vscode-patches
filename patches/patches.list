@@ -1,5 +1,5 @@
-base-commit: af28b32d7e553898b2a91af498b1fb666fdebe0c
-final-commit: a7dcdc318e1b2621721d0ede88216af488516e67
+base-commit: 8b3775030ed1a69b13e4f4c628c612102e30a681
+final-commit: 01f86da888b6383b6b7d530c6237c764e5e85075
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Custom-version-number.patch
