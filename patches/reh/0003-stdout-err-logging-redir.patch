@@ -1,4 +1,4 @@
-From 1344f1dc037a68c69adc215aa0c7b5857674ddd6 Mon Sep 17 00:00:00 2001
+From 2b6ab474b6198bac2828b4e30250344c4ae2cbd1 Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
 Date: Mon, 13 Nov 2023 20:02:02 +1100
 Subject: Add stdout and stderr redirection support for logging
@@ -55,10 +55,10 @@ index 0d4459a8035..ae0b4364ad9 100644
  
 +"$ROOT/node" ${INSPECT:-} "$ROOT/out/server-main.js" "$@"
 diff --git a/resources/server/bin/code-server-linux.sh b/resources/server/bin/code-server-linux.sh
-index 3df32dfd43c..208a681df1c 100644
+index e3d96bdadf2..f4a51bf624c 100644
 --- a/resources/server/bin/code-server-linux.sh
 +++ b/resources/server/bin/code-server-linux.sh
-@@ -1,12 +1,34 @@
+@@ -1,11 +1,25 @@
 -#!/usr/bin/env sh
 +#!/usr/bin/env bash
  #
@@ -88,6 +88,10 @@ index 3df32dfd43c..208a681df1c 100644
  
  ROOT="$(dirname "$(dirname "$(readlink -f "$0")")")"
  
+@@ -29,4 +43,12 @@ if [ "$(echo "$@" | grep -c -- "--skip-requirements-check")" -eq 0 ] && [ $skip_
+ 	fi
+ fi
+ 
 +if ! [[ -z "$LOGFILE" ]]
 +then
 +	exec {fd}>"$LOGFILE"
@@ -98,7 +102,7 @@ index 3df32dfd43c..208a681df1c 100644
 +
  "$ROOT/node" ${INSPECT:-} "$ROOT/out/server-main.js" "$@"
 diff --git a/src/server-main.js b/src/server-main.js
-index fd9add0aea8..be2bf0da312 100644
+index d3510fa5f93..8df27f2bd73 100644
 --- a/src/server-main.js
 +++ b/src/server-main.js
 @@ -27,10 +27,12 @@ async function start() {

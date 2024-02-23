@@ -12,11 +12,11 @@ index e7c898fc1fe..5f9baccf873 100644
 --- a/package.json
 +++ b/package.json
 @@ -94,7 +94,7 @@
-     "@xterm/addon-unicode11": "0.7.0-beta.14",
-     "@xterm/addon-webgl": "0.17.0-beta.14",
-     "@xterm/headless": "5.4.0-beta.14",
--    "@xterm/xterm": "5.4.0-beta.14",
-+    "@xterm/xterm": "https://github.com/jamestut-vscode/xterm.js-patches/releases/download/5.4.0-beta.14-m1s/xtermjs.tar.gz",
+     "@xterm/addon-unicode11": "0.7.0-beta.20",
+     "@xterm/addon-webgl": "0.17.0-beta.20",
+     "@xterm/headless": "5.4.0-beta.20",
+-    "@xterm/xterm": "5.4.0-beta.20",
++    "@xterm/xterm": "https://github.com/jamestut-vscode/xterm.js-patches/releases/download/5.4.0-beta.20-m1s/xtermjs.tar.gz",
      "graceful-fs": "4.2.11",
      "http-proxy-agent": "^7.0.0",
      "https-proxy-agent": "^7.0.2",
