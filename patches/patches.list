@@ -1,5 +1,5 @@
 base-commit: 903b1e9d8990623e3d7da1df3d33db3e42d80eda
-final-commit: 0814b8588a8b7f792014b33d076c8f38ce063627
+final-commit: 8b992b2ff76466cf24a31793a92f1fce8856db53
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Custom-version-number.patch
@@ -26,6 +26,7 @@ remote/0006-Tighten-timeout.patch
 reh/0001-Disable-shorten-reconnection-grace-time.patch
 reh/0002-daemon-support.patch
 reh/0003-stdout-err-logging-redir.patch
+reh/0004-disable-linux-requirements-check.patch
 
 simple-file-dialog/0001-Do-not-trim-file-name.patch
 simple-file-dialog/0002-Non-intrusive-autocomplete.patch
