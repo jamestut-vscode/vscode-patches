@@ -5,6 +5,7 @@ LINUX_PLATFORMS := linux-arm64 linux-x64
 REH_PLATFORMS := darwin-arm64 $(LINUX_PLATFORMS)
 
 BASE_COMMIT := $(shell scripts/get-base-commit.sh)
+MACOS_DOTAPP_NAME := $(shell scripts/get-app-name.py)
 
 alltargets: $$(LINUX_REH_TARGETS) $$(MACOS_ARCHIVE_TARGETS)
 
@@ -52,7 +53,7 @@ $(MACOS_REH_TARGET_ARCHIVE): $(MACOS_REH_TARGET_IND)
 	scripts/create-archive.sh $(MACOS_REH_TARGET_UNPACKED) $@
 
 $(MACOS_APP_TARGET_ARCHIVE): $(MACOS_APP_TARGET_IND)
-	scripts/create-archive.sh "$(dir $<)/Visual Studio Code.app" $@
+	scripts/create-archive.sh "$(dir $<)/$(MACOS_DOTAPP_NAME)" $@
 
 # begin phony rules
 .PHONY: clean alltargets prep
