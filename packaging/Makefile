@@ -9,6 +9,10 @@ MACOS_DOTAPP_NAME := $(shell scripts/get-app-name.py)
 
 alltargets: $$(LINUX_REH_TARGETS) $$(MACOS_ARCHIVE_TARGETS)
 
+# basic folders
+work out:
+	mkdir work out
+
 # base macOS targets
 MACOS_APP_TARGET_NAME := VSCode-darwin-arm64
 MACOS_APP_TARGET_UNPACKED := $(addprefix ../, $(MACOS_APP_TARGET_NAME))
@@ -43,7 +47,7 @@ $(MACOS_REH_TARGET_IND): $(MACOS_APP_TARGET_IND)
 
 $(MACOS_REH_TARGET_UNPACKED): $(MACOS_REH_TARGET_IND)
 
-$(MACOS_APP_TARGET_IND): .signenv
+$(MACOS_APP_TARGET_IND): .signenv work out
 	scripts/build-vscode.sh ../vscode app
 	scripts/sign-vscode.sh $(dir $@)
 
@@ -57,10 +61,7 @@ $(MACOS_APP_TARGET_ARCHIVE): $(MACOS_APP_TARGET_IND)
 	scripts/create-archive.sh "$(dir $<)/$(MACOS_DOTAPP_NAME)" $@
 
 # begin phony rules
-.PHONY: clean alltargets prep
-
-prep:
-	mkdir -p work $(REL_REH_WORKDIR) out
+.PHONY: clean alltargets
 
 clean:
 	@echo "Cleaning build artefacts and working files"
