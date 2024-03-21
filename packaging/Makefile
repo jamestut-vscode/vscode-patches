@@ -22,11 +22,12 @@ MACOS_UNPACKED_TARGETS := $(MACOS_REH_TARGET_UNPACKED) $(MACOS_APP_TARGET_UNPACK
 MACOS_ARCHIVE_TARGETS := $(MACOS_REH_TARGET_ARCHIVE) $(MACOS_APP_TARGET_ARCHIVE)
 
 # official release REH download
-REL_REH_WORKDIR := work/rel-reh
+REL_REH_WORKDIR := rel-reh/$(BASE_COMMIT)
 REL_REH_CHANNEL := stable
 REL_REH_TARGETS := $(addsuffix .tgz, $(addprefix $(REL_REH_WORKDIR)/vscode-server-, $(REH_PLATFORMS)))
 
 $(REL_REH_WORKDIR)/vscode-server-%.tgz:
+	mkdir -p $(REL_REH_WORKDIR)
 	curl -L https://update.code.visualstudio.com/commit:$(BASE_COMMIT)/server-$*/$(REL_REH_CHANNEL) > $@
 
 # Linux REH
