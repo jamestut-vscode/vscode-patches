@@ -2,6 +2,8 @@
 
 set -e
 
+SCRIPT_DIR="${0:a:h}"
+
 function show_help() {
     echo "Build VSCode for macOS ARM (server (REH) and client (app bundle) version)"
     echo "Usage: ${0:t} (VSCode Git repo) (app|reh)"
@@ -44,6 +46,17 @@ yarn
 
 echo "Building VSCode $2 for macOS Arm64 ..."
 yarn gulp $TARGET
+
+# doctor the product.json's commit
+echo "Updating product.json ..."
+case "$2" in
+    app)
+        ${SCRIPT_DIR}/update-commit-hash.py "../VSCode-darwin-arm64/$(${SCRIPT_DIR}/get-app-name.py)"
+        ;;
+    reh)
+        ${SCRIPT_DIR}/update-commit-hash.py ../vscode-reh-darwin-arm64
+        ;;
+esac
 
 # update timestamp for use as a marker for the Makefile
 echo "Updating timestamp ..."
