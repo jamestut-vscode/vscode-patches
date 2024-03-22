@@ -1,9 +1,8 @@
 base-commit: 1.86.2
-final-commit: f9845a7138b14a7ebe8dd2d34356ba74844b57d7
+final-commit: c6a199a234619bed71353eb41ee6aa2b1a4d99c3
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
-common/0002-macos-bundle-identifier.patch
-common/0003-Optimise-theme-detection.patch
+common/0002-Optimise-theme-detection.patch
 
 build/0001-Toggle-mangle-build-phase.patch
 
