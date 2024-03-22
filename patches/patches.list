@@ -1,8 +1,7 @@
 base-commit: 1.86.2
-final-commit: 8b992b2ff76466cf24a31793a92f1fce8856db53
+final-commit: f9845a7138b14a7ebe8dd2d34356ba74844b57d7
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
-common/0002-Custom-version-number.patch
 common/0003-macos-bundle-identifier.patch
 common/0004-Optimise-theme-detection.patch
 
