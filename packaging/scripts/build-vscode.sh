@@ -51,10 +51,10 @@ yarn gulp $TARGET
 echo "Updating product.json ..."
 case "$2" in
     app)
-        ${SCRIPT_DIR}/update-commit-hash.py "../VSCode-darwin-arm64/$(${SCRIPT_DIR}/get-app-name.py)"
+        ${SCRIPT_DIR}/doctor-product-info.py "../VSCode-darwin-arm64/$(${SCRIPT_DIR}/get-app-name.py)"
         ;;
     reh)
-        ${SCRIPT_DIR}/update-commit-hash.py ../vscode-reh-darwin-arm64
+        ${SCRIPT_DIR}/doctor-product-info.py ../vscode-reh-darwin-arm64
         ;;
 esac
 
