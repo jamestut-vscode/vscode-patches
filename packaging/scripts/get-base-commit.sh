@@ -13,4 +13,6 @@ then
     exit 1
 fi
 BASE_COMMIT=${${(s: :)PATCHLINE}[2]}
+cd vscode
+BASE_COMMIT=$(git rev-list -n 1 ${BASE_COMMIT})
 echo $BASE_COMMIT
