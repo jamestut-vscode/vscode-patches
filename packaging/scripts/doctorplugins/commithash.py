@@ -1,4 +1,4 @@
-def run(doctorfn):
+def post_run(doctorfn):
     print("Doctoring commit hash ...")
     target_hash = get_target_commit_hash()
     with doctorfn('product.json') as data:

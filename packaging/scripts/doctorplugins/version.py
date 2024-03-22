@@ -1,5 +1,5 @@
-def run(doctorfn):
-    print("Doctoring version string ...")
+def pre_run(doctorfn):
+    print("Updating version string ...")
     target_version = get_target_version()
     with doctorfn('package.json') as data:
         if data[0]['version'] == target_version:

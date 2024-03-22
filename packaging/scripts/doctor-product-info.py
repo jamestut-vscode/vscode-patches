@@ -23,28 +23,50 @@ def scan_modules(script_path):
     return ret
 
 def main():
-    ap = argparse.ArgumentParser(description="Replace VSCode's package.json's version number and product.json's commit hash with that of patches.list.")
-    ap.add_argument('target', help='Base directory of built VSCode (macOS app or REH).')
+    # base directory of this script
+    script_path = path.realpath(path.dirname(sys.argv[0]))
+    # target VSCode to be doctored
+    target_base_dir = None
+    # the actual path of the javascript root (the path that contains product.json and package.json)
+    target_dir = None
+    # base directory of this repo
+    repo_path = path.realpath(path.join(script_path, '../..'))
+
+    # function name of the module to run
+    fn_name = None
+
+    ap = argparse.ArgumentParser(description="Doctor various properties in package.json and product.json.")
+    ap.add_argument('--pre', help='Specify to run prebuild doctoring.', action='store_true')
+    ap.add_argument('--post', help='Specify to run postbuild doctoring.', action='store_true')
+    ap.add_argument('target', help='Base directory (optional source code path for pre or built macOS app or REH for post).', nargs='?')
     args = ap.parse_args()
 
-    target_dir = path.realpath(args.target.rstrip('/'))
-
-    script_path = path.realpath(path.dirname(sys.argv[0]))
-    repo_path = path.join(script_path, '../..')
-    os.chdir(repo_path)
-
-    doctorplugins = scan_modules(script_path)
-
-    if target_dir.endswith('.app'):
-        # macOS app
-        target_base_dir = 'Contents/Resources/app'
+    if args.pre:
+        fn_name = 'pre_run'
+        target_base_dir = args.target or path.join(script_path, '../../vscode')
+        target_dir = ''
+    elif args.post:
+        fn_name = 'post_run'
+        target_base_dir = args.target
+        if target_base_dir.endswith('.app'):
+            # macOS app
+            target_dir = 'Contents/Resources/app'
+        else:
+            # must be REH
+            target_dir = ''
     else:
-        # must be REH
-        target_base_dir = ''
+        print("Please specify --pre or --post.")
+        return 1
+    # must be done before we change directory to repo path
+    target_base_dir = path.realpath(target_base_dir)
+
+    # the plugins expect the path to be set to the base 'vscode-patches' repo
+    os.chdir(repo_path)
+    doctorplugins = scan_modules(script_path)
 
     @contextlib.contextmanager
     def doctor(json_name):
-        pth = path.join(target_dir, target_base_dir, json_name)
+        pth = path.join(target_base_dir, target_dir, json_name)
         with open(pth, 'r') as f:
             d = json.load(f)
         # context manager user should set the 2nd element to True if the given
@@ -56,7 +78,9 @@ def main():
                 json.dump(d, f, indent='\t')
 
     for module in doctorplugins:
-        module.run(doctor)
+        if hasattr(module, fn_name):
+            getattr(module, fn_name)(doctor)
+            os.chdir(repo_path)
 
 if __name__ == "__main__":
     try:
