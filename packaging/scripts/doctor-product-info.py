@@ -16,7 +16,7 @@ def scan_modules(script_path):
     ret = []
     for dir_to_scan in ('', 'external'):
         dir_to_scan = path.join(script_path, 'doctorplugins', dir_to_scan)
-        for de in dir_to_scan:
+        for de in os.scandir(dir_to_scan):
             if de.name.endswith('.py') and de.is_file():
                 spec = importlib.util.spec_from_file_location('doctorplugin', de.path)
                 module = importlib.util.module_from_spec(spec)
@@ -85,8 +85,4 @@ def main():
             os.chdir(repo_path)
 
 if __name__ == "__main__":
-    try:
-        sys.exit(main())
-    except Exception as e:
-        print(e)
-        sys.exit(1)
+    sys.exit(main())
