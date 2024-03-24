@@ -14,12 +14,14 @@ import importlib.util
 def scan_modules(script_path):
     os.chdir(path.dirname(sys.argv[0]))
     ret = []
-    for de in os.scandir(path.join(script_path, 'doctorplugins')):
-        if de.name.endswith('.py') and de.is_file():
-            spec = importlib.util.spec_from_file_location('doctorplugin', de.path)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-            ret.append(module)
+    for dir_to_scan in ('', 'external'):
+        dir_to_scan = path.join(script_path, 'doctorplugins', dir_to_scan)
+        for de in dir_to_scan:
+            if de.name.endswith('.py') and de.is_file():
+                spec = importlib.util.spec_from_file_location('doctorplugin', de.path)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                ret.append(module)
     return ret
 
 def main():
