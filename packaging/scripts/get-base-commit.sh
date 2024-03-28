@@ -13,6 +13,12 @@ then
     exit 1
 fi
 BASE_COMMIT=${${(s: :)PATCHLINE}[2]}
-cd vscode
-BASE_COMMIT=$(git rev-list -n 1 ${BASE_COMMIT})
+
+# resolve tag -> hash unless we're told to not do so
+if [[ "${1}" != "--no-resolve-hash" ]]
+then
+    cd vscode
+    BASE_COMMIT=$(git rev-list -n 1 ${BASE_COMMIT})
+fi
+
 echo $BASE_COMMIT
