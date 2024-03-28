@@ -15,9 +15,9 @@ index bb7778b5a27..b77f5828d25 100644
 +++ b/.yarnrc
 @@ -1,5 +1,5 @@
  disturl "https://electronjs.org/headers"
--target "27.2.3"
+-target "27.3.2"
 +target "27.3.3"
- ms_build_id "26908389"
+ ms_build_id "26836302"
  runtime "electron"
  build_from_source "true"
 diff --git a/build/checksums/electron.txt b/build/checksums/electron.txt
@@ -25,25 +25,25 @@ index 07aca726e4e..fa83c16ef24 100644
 --- a/build/checksums/electron.txt
 +++ b/build/checksums/electron.txt
 @@ -9,6 +9,10 @@
- aceae2b417ae6a83bc6ddd3a762bd99e48455765b9db4d65fcfbc1fe17182bae *chromedriver-v27.2.3-win32-ia32.zip
- a3797c5d58fb73b22b8d06b58250c57be94673f2c7e6862095a0bd768feee278 *chromedriver-v27.2.3-win32-x64.zip
- 39ec5429329af2990470a0c46ba865851863610ff46b47c4a25f7055670f1604 *electron-api.json
+ df4e9f20681b3e7b65c41dd1df3aa8cb9bc0a061a24ddcffbe44a9191aa01e0c *chromedriver-v27.3.2-win32-ia32.zip
+ 1ef67b7c06061e691176df5e3463f4d5f5f258946dac24ae62e3cc250b8b95d1 *chromedriver-v27.3.2-win32-x64.zip
+ f3c52d205572da71a23f436b4708dc89c721a74f0e0c5c51093e3e331b1dff67 *electron-api.json
 +a4e3091125a6896442bd682036b2e3b2e636c0393e8e79d6b2ad90724a61f700 *electron-v27.3.3-darwin-arm64-dsym-snapshot.zip
 +f3a3d0fab73c8798a99efcade0c79e1a4c9185599ae8aa96d370bdc12915e1b1 *electron-v27.3.3-darwin-arm64-dsym.zip
 +e98510d31a1f4ddbd6528b74c2f989812b30de50e56d2c24e2a7bcb621a68338 *electron-v27.3.3-darwin-arm64-symbols.zip
 +3b58d0f0527b8b7f39819a27809fac9b66ff27aea20b93dc9a4be0c8f7544dbc *electron-v27.3.3-darwin-arm64.zip
- 6cd6e53a0fdccbf3e89da8634d6fda7f04e0e521ffd3f494dfb4e9f7087c5ff2 *electron-v27.2.3-darwin-arm64-dsym-snapshot.zip
- cc13dbdb4f319cbc31c8ef76560a92b695d19e1f88709dda5f2f26d87fc04469 *electron-v27.2.3-darwin-arm64-dsym.zip
- 949cfa456931a3f9190504a7b135a726eb75d223fd769d38c5c0258ab2328db0 *electron-v27.2.3-darwin-arm64-symbols.zip
+ 1489dca88c89f6fef05bdc2c08b9623bb46eb8d0f43020985776daef08642061 *electron-v27.3.2-darwin-arm64-dsym-snapshot.zip
+ 7ee895e81d695c1ed65378ff4514d4fc9c4015a1c3c67691765f92c08c8e0855 *electron-v27.3.2-darwin-arm64-dsym.zip
+ cbc1c9973b2a895aa2ebecdbd92b3fe8964590b12141a658a6d03ed97339fae6 *electron-v27.3.2-darwin-arm64-symbols.zip
 diff --git a/package.json b/package.json
 index 86a82309991..ba9f6c66817 100644
 --- a/package.json
 +++ b/package.json
 @@ -150,7 +150,7 @@
-     "cssnano": "^4.1.11",
+     "cssnano": "^6.0.3",
      "debounce": "^1.0.0",
      "deemon": "^1.8.0",
--    "electron": "27.2.3",
+-    "electron": "27.3.2",
 +    "electron": "27.3.3",
      "eslint": "8.36.0",
      "eslint-plugin-header": "3.1.1",
