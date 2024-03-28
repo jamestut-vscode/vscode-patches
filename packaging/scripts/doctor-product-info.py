@@ -81,8 +81,8 @@ def main():
 
     for module in doctorplugins:
         if hasattr(module, fn_name):
-            getattr(module, fn_name)(doctor)
             os.chdir(repo_path)
+            getattr(module, fn_name)(doctor)
 
 if __name__ == "__main__":
     sys.exit(main())
