@@ -50,6 +50,6 @@ echo "Applying doctor ..."
 packaging/scripts/doctor-product-info.py --pre
 cd vscode
 git add '*.json'
-git commit -m 'Doctor product.json and package.json'
+git commit --no-verify -m 'Doctor product.json and package.json'
 
 echo "Done! The custom VSCode is ready to be built!"
