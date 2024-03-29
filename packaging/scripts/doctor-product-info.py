@@ -14,8 +14,12 @@ import importlib.util
 def scan_modules(script_path):
     os.chdir(path.dirname(sys.argv[0]))
     ret = []
-    for dir_to_scan in ('', 'external'):
-        dir_to_scan = path.join(script_path, 'doctorplugins', dir_to_scan)
+    for dir_to_scan_name in ('', 'external'):
+        if not path.exists(dir_to_scan_name):
+            if dir_to_scan_name:
+                print(f"Directory '{dir_to_scan_name}' does not exist. Skipping.")
+                continue
+        dir_to_scan = path.join(script_path, 'doctorplugins', dir_to_scan_name)
         for de in os.scandir(dir_to_scan):
             if de.name.endswith('.py') and de.is_file():
                 spec = importlib.util.spec_from_file_location('doctorplugin', de.path)
