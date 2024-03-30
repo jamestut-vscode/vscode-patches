@@ -1,0 +1,31 @@
+From 8f701b70c07f6cc8ad4589553b5e506b2472c09d Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sat, 30 Mar 2024 19:42:38 +1100
+Subject: Disable glibc version check
+
+---
+ src/vs/server/node/remoteAgentEnvironmentImpl.ts | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/src/vs/server/node/remoteAgentEnvironmentImpl.ts b/src/vs/server/node/remoteAgentEnvironmentImpl.ts
+index b9861444caf..ecf2f316914 100644
+--- a/src/vs/server/node/remoteAgentEnvironmentImpl.ts
++++ b/src/vs/server/node/remoteAgentEnvironmentImpl.ts
+@@ -96,15 +96,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
+ 		if (profile && !this._userDataProfilesService.profiles.some(p => p.id === profile)) {
+ 			await this._userDataProfilesService.createProfile(profile, profile);
+ 		}
+-		type ProcessWithGlibc = NodeJS.Process & {
+-			glibcVersion?: string;
+-		};
+ 		let isUnsupportedGlibc = false;
+-		if (process.platform === 'linux') {
+-			const glibcVersion = (process as ProcessWithGlibc).glibcVersion;
+-			const minorVersion = glibcVersion ? parseInt(glibcVersion.split('.')[1]) : 28;
+-			isUnsupportedGlibc = (minorVersion <= 27);
+-		}
+ 		return {
+ 			pid: process.pid,
+ 			connectionToken: (this._connectionToken.type !== ServerConnectionTokenType.None ? this._connectionToken.value : ''),
+-- 
+2.39.3 (Apple Git-145)

@@ -1,8 +1,9 @@
 base-commit: 1.87.2
-final-commit: 3a41180e9a9ccd53a3fdaae37fe21ad72db6c316
+final-commit: bd6a3fb8093e44990be118fe0811e18f80efc683
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
+common/0010-Disable-REH-glibc-check.patch
 
 build/0001-Toggle-mangle-build-phase.patch
 
