@@ -17,6 +17,7 @@ work out:
 MACOS_APP_TARGET_NAME := VSCode-darwin-arm64
 MACOS_APP_TARGET_UNPACKED := $(addprefix ../, $(MACOS_APP_TARGET_NAME))
 MACOS_APP_TARGET_IND := $(MACOS_APP_TARGET_UNPACKED)/built
+MACOS_APP_TARGET_SIGN_IND := $(MACOS_APP_TARGET_UNPACKED)/signed
 MACOS_APP_TARGET_ARCHIVE := $(addprefix out/, $(addsuffix .zip, $(MACOS_APP_TARGET_NAME)))
 MACOS_REH_TARGET_NAME := vscode-reh-darwin-arm64
 MACOS_REH_TARGET_UNPACKED := $(addprefix ../, $(MACOS_REH_TARGET_NAME))
@@ -40,15 +41,16 @@ out/vscode-reh-%.zip: $(REL_REH_WORKDIR)/vscode-server-%.tgz $(MACOS_REH_TARGET_
 	scripts/package-linux-reh.sh $(MACOS_REH_TARGET_UNPACKED) $< $@
 
 # build VSCode
-# add app bundle as dependency of REH so that the build is serialised
-# we can't guarantee correctness if the builds are running in parallel
-$(MACOS_REH_TARGET_IND): | $(MACOS_APP_TARGET_IND)
+$(MACOS_REH_TARGET_IND):
 	scripts/build-vscode.sh ../vscode reh
 
 $(MACOS_REH_TARGET_UNPACKED): $(MACOS_REH_TARGET_IND)
 
-$(MACOS_APP_TARGET_IND): | .signenv work out
+$(MACOS_APP_TARGET_IND): | work out
 	scripts/build-vscode.sh ../vscode app
+	touch $@
+
+$(MACOS_APP_TARGET_SIGN_IND): .signenv | $(MACOS_APP_TARGET_IND)
 	scripts/sign-vscode.sh $(dir $@)
 	touch $@
 
@@ -60,6 +62,9 @@ $(MACOS_REH_TARGET_ARCHIVE): $(MACOS_REH_TARGET_IND)
 
 $(MACOS_APP_TARGET_ARCHIVE): $(MACOS_APP_TARGET_IND)
 	scripts/create-archive.sh "$(dir $<)/$(MACOS_DOTAPP_NAME)" $@
+
+# avoid parallelism on these targets, otherwise results will be incorrect
+.NOTPARALLEL:
 
 # begin phony rules
 .PHONY: clean alltargets
