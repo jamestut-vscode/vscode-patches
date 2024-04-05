@@ -6,7 +6,7 @@ set -e
 
 if [[ $# -ne 3 ]]
 then
-    echo "Usage: ${0:t} (macOS REH folder) (official Linux REH archive) (output)"
+    echo "Usage: ${0:t} (Linux REH folder) (official Linux REH archive) (output)"
     exit 1
 fi
 
@@ -41,7 +41,6 @@ do
     rm -rf "$OUTDIR/$TGT"
     mv "$LINUX_WORKDIR/$TGT" "$OUTDIR/$TGT"
 done
-cp ../vscode/resources/server/bin/code-server-linux.sh "$OUTDIR/bin/code-server-oss"
 
 echo "Removing official Linux REH files ..."
 rm -rf "$LINUX_WORKDIR_BASE"

@@ -6,7 +6,7 @@ SCRIPT_DIR="${0:a:h}"
 
 function show_help() {
     echo "Build VSCode for macOS ARM (server (REH) and client (app bundle) version)"
-    echo "Usage: ${0:t} (VSCode Git repo) (app|reh)"
+    echo "Usage: ${0:t} (VSCode Git repo) (app|reh|linux-reh)"
     exit 1
 }
 
@@ -34,6 +34,9 @@ case "$2" in
     reh)
         TARGET=vscode-reh-darwin-arm64$DASHED_MINIFY
         ;;
+    linux-reh)
+        TARGET=vscode-reh-linux-arm64$DASHED_MINIFY
+        ;;
 esac
 
 if [[ -z $TARGET ]]
@@ -41,7 +44,7 @@ then
     show_help
 fi
 
-echo "Building VSCode $2 for macOS Arm64 ..."
+echo "Building VSCode with target '$TARGET' ..."
 yarn gulp $TARGET
 
 # doctor the product.json's commit
@@ -53,6 +56,9 @@ case "$2" in
     reh)
         ${SCRIPT_DIR}/doctor-product-info.py --post ../vscode-reh-darwin-arm64
         ;;
+    linux-reh)
+        ${SCRIPT_DIR}/doctor-product-info.py --post ../vscode-reh-linux-arm64
+        ;;
 esac
 
 # update timestamp for use as a marker for the Makefile
@@ -63,5 +69,8 @@ case "$2" in
         ;;
     reh)
         touch ../vscode-reh-darwin-arm64/bin/code-server-oss
+        ;;
+    linux-reh)
+        touch ../vscode-reh-linux-arm64/bin/code-server-oss
         ;;
 esac
