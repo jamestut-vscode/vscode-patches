@@ -6,7 +6,7 @@ set -e
 cd ${0:a:h}
 cd ../..
 
-PATCHLINE=$(head -1 patches/patches.list)
+PATCHLINE=$(grep -F 'base-commit:' patches/patches.list | head -1)
 if [[ ${${(s: :)PATCHLINE}[1]} != "base-commit:" ]]
 then
     echo "Error retreiving VSCode base commit" >&2

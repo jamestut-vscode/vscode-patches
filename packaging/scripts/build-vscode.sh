@@ -15,6 +15,8 @@ then
     show_help
 fi
 
+export BUILD_SOURCEVERSION=$(scripts/get-target-commit.sh)
+
 cd "$1"
 
 # check if we want a regular build, or highly optimised minified build
@@ -44,7 +46,7 @@ then
     show_help
 fi
 
-echo "Building VSCode with target '$TARGET' ..."
+echo "Building VSCode with target '$TARGET' and commit ID '$BUILD_SOURCEVERSION' ..."
 yarn gulp $TARGET
 
 # doctor the product.json's commit
