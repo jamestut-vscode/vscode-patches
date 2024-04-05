@@ -1,11 +1,14 @@
 base-commit: 1.87.2
-final-commit: e1ffb0f909a5140c080a9af4ea5342490c33f5d2
+final-commit: 2ca6fe166e10f67390bdfa9e8d5465c1abddd33e
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
 common/0010-Disable-REH-glibc-check.patch
 
 ui/0001-Unify-about-message.patch
+
+ipc-version/0001-IPC-version.patch
+ipc-version/0002-Show-IPC-version.patch
 
 build/0001-Toggle-mangle-build-phase.patch
 

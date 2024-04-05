@@ -1,0 +1,185 @@
+From 494c5b2dde9f14db36c1344df481567eee07297e Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sat, 6 Apr 2024 10:43:39 +1100
+Subject: Show IPC version on help and about
+
+---
+ build/gulpfile.reh.js                             | 2 ++
+ resources/server/bin/helpers/browser-darwin.sh    | 3 ++-
+ resources/server/bin/helpers/browser-linux.sh     | 3 ++-
+ resources/server/bin/remote-cli/code-darwin.sh    | 3 ++-
+ resources/server/bin/remote-cli/code-linux.sh     | 3 ++-
+ src/vs/code/node/cli.ts                           | 2 +-
+ src/vs/platform/environment/node/argv.ts          | 3 ++-
+ src/vs/server/node/remoteExtensionHostAgentCli.ts | 2 +-
+ src/vs/server/node/server.cli.ts                  | 7 ++++---
+ src/vs/workbench/constants.ts                     | 3 ++-
+ 10 files changed, 20 insertions(+), 11 deletions(-)
+
+diff --git a/build/gulpfile.reh.js b/build/gulpfile.reh.js
+index 1be3305..c3f31e4 100644
+--- a/build/gulpfile.reh.js
++++ b/build/gulpfile.reh.js
+@@ -357,12 +357,14 @@ function packageTask(type, platform, arch, sourceFolderName, destinationFolderNa
+ 			result = es.merge(result,
+ 				gulp.src(`resources/server/bin/remote-cli/${platform === 'darwin' ? 'code-darwin.sh' : 'code-linux.sh'}`, { base: '.' })
+ 					.pipe(replace('@@VERSION@@', version))
++					.pipe(replace('@@IPCVERSION@@', product.ipcVersion))
+ 					.pipe(replace('@@COMMIT@@', commit))
+ 					.pipe(replace('@@APPNAME@@', product.applicationName))
+ 					.pipe(rename(`bin/remote-cli/${product.applicationName}`))
+ 					.pipe(util.setExecutableBit()),
+ 				gulp.src(`resources/server/bin/helpers/${platform === 'darwin' ? 'browser-darwin.sh' : 'browser-linux.sh'}`, { base: '.' })
+ 					.pipe(replace('@@VERSION@@', version))
++					.pipe(replace('@@IPCVERSION@@', product.ipcVersion))
+ 					.pipe(replace('@@COMMIT@@', commit))
+ 					.pipe(replace('@@APPNAME@@', product.applicationName))
+ 					.pipe(rename(`bin/helpers/browser.sh`))
+diff --git a/resources/server/bin/helpers/browser-darwin.sh b/resources/server/bin/helpers/browser-darwin.sh
+index 1f039b4..a09818c 100644
+--- a/resources/server/bin/helpers/browser-darwin.sh
++++ b/resources/server/bin/helpers/browser-darwin.sh
+@@ -16,7 +16,8 @@ ROOT="$(dirname "$(dirname "$(realdir "$0")")")"
+ 
+ APP_NAME="@@APPNAME@@"
+ VERSION="@@VERSION@@"
++IPCVERSION="@@IPCVERSION@@"
+ COMMIT="@@COMMIT@@"
+ EXEC_NAME="@@APPNAME@@"
+ CLI_SCRIPT="$ROOT/out/server-cli.js"
+-"$ROOT/node" "$CLI_SCRIPT" "$APP_NAME" "$VERSION" "$COMMIT" "$EXEC_NAME" "--openExternal" "$@"
++"$ROOT/node" "$CLI_SCRIPT" "$APP_NAME" "$VERSION" "$IPCVERSION" "$COMMIT" "$EXEC_NAME" "--openExternal" "$@"
+diff --git a/resources/server/bin/helpers/browser-linux.sh b/resources/server/bin/helpers/browser-linux.sh
+index 527819d..9546704 100644
+--- a/resources/server/bin/helpers/browser-linux.sh
++++ b/resources/server/bin/helpers/browser-linux.sh
+@@ -6,7 +6,8 @@ ROOT="$(dirname "$(dirname "$(dirname "$(readlink -f "$0")")")")"
+ 
+ APP_NAME="@@APPNAME@@"
+ VERSION="@@VERSION@@"
++IPCVERSION="@@IPCVERSION@@"
+ COMMIT="@@COMMIT@@"
+ EXEC_NAME="@@APPNAME@@"
+ CLI_SCRIPT="$ROOT/out/server-cli.js"
+-"$ROOT/node" "$CLI_SCRIPT" "$APP_NAME" "$VERSION" "$COMMIT" "$EXEC_NAME" "--openExternal" "$@"
++"$ROOT/node" "$CLI_SCRIPT" "$APP_NAME" "$VERSION" "$IPCVERSION" "$COMMIT" "$EXEC_NAME" "--openExternal" "$@"
+diff --git a/resources/server/bin/remote-cli/code-darwin.sh b/resources/server/bin/remote-cli/code-darwin.sh
+index 2fc27c1..5bc2af9 100644
+--- a/resources/server/bin/remote-cli/code-darwin.sh
++++ b/resources/server/bin/remote-cli/code-darwin.sh
+@@ -16,7 +16,8 @@ ROOT="$(dirname "$(dirname "$(realdir "$0")")")"
+ 
+ APP_NAME="@@APPNAME@@"
+ VERSION="@@VERSION@@"
++IPCVERSION="@@IPCVERSION@@"
+ COMMIT="@@COMMIT@@"
+ EXEC_NAME="@@APPNAME@@"
+ CLI_SCRIPT="$ROOT/out/server-cli.js"
+-"$ROOT/node" "$CLI_SCRIPT" "$APP_NAME" "$VERSION" "$COMMIT" "$EXEC_NAME" "$@"
++"$ROOT/node" "$CLI_SCRIPT" "$APP_NAME" "$VERSION" "$IPCVERSION" "$COMMIT" "$EXEC_NAME" "$@"
+diff --git a/resources/server/bin/remote-cli/code-linux.sh b/resources/server/bin/remote-cli/code-linux.sh
+index dd3e6f1..1796e19 100644
+--- a/resources/server/bin/remote-cli/code-linux.sh
++++ b/resources/server/bin/remote-cli/code-linux.sh
+@@ -6,7 +6,8 @@ ROOT="$(dirname "$(dirname "$(dirname "$(readlink -f "$0")")")")"
+ 
+ APP_NAME="@@APPNAME@@"
+ VERSION="@@VERSION@@"
++IPCVERSION="@@IPCVERSION@@"
+ COMMIT="@@COMMIT@@"
+ EXEC_NAME="@@APPNAME@@"
+ CLI_SCRIPT="$ROOT/out/server-cli.js"
+-"$ROOT/node" "$CLI_SCRIPT" "$APP_NAME" "$VERSION" "$COMMIT" "$EXEC_NAME" "$@"
++"$ROOT/node" "$CLI_SCRIPT" "$APP_NAME" "$VERSION" "$IPCVERSION" "$COMMIT" "$EXEC_NAME" "$@"
+diff --git a/src/vs/code/node/cli.ts b/src/vs/code/node/cli.ts
+index 578bf1a..3a8873f 100644
+--- a/src/vs/code/node/cli.ts
++++ b/src/vs/code/node/cli.ts
+@@ -85,7 +85,7 @@ export async function main(argv: string[]): Promise<any> {
+ 	// Help
+ 	if (args.help) {
+ 		const executable = `${product.applicationName}${isWindows ? '.exe' : ''}`;
+-		console.log(buildHelpMessage(product.nameLong, executable, product.version, OPTIONS));
++		console.log(buildHelpMessage(product.nameLong, executable, product.version, product.ipcVersion, OPTIONS));
+ 	}
+ 
+ 	// Version Info
+diff --git a/src/vs/platform/environment/node/argv.ts b/src/vs/platform/environment/node/argv.ts
+index 0d3a979..9b379d3 100644
+--- a/src/vs/platform/environment/node/argv.ts
++++ b/src/vs/platform/environment/node/argv.ts
+@@ -408,11 +408,12 @@ function wrapText(text: string, columns: number): string[] {
+ 	return lines;
+ }
+ 
+-export function buildHelpMessage(productName: string, executableName: string, version: string, options: OptionDescriptions<any>, capabilities?: { noPipe?: boolean; noInputFiles: boolean }): string {
++export function buildHelpMessage(productName: string, executableName: string, version: string, ipcVersion: string, options: OptionDescriptions<any>, capabilities?: { noPipe?: boolean; noInputFiles: boolean }): string {
+ 	const columns = (process.stdout).isTTY && (process.stdout).columns || 80;
+ 	const inputFiles = capabilities?.noInputFiles !== true ? `[${localize('paths', 'paths')}...]` : '';
+ 
+ 	const help = [`${productName} ${version}`];
++	help.push(`IPC version ${ipcVersion}`);
+ 	help.push('');
+ 	help.push(`${localize('usage', "Usage")}: ${executableName} [${localize('options', "options")}]${inputFiles}`);
+ 	help.push('');
+diff --git a/src/vs/server/node/remoteExtensionHostAgentCli.ts b/src/vs/server/node/remoteExtensionHostAgentCli.ts
+index b489ca7..82ce1b1 100644
+--- a/src/vs/server/node/remoteExtensionHostAgentCli.ts
++++ b/src/vs/server/node/remoteExtensionHostAgentCli.ts
+@@ -182,7 +182,7 @@ function eventuallyExit(code: number): void {
+ export async function run(args: ServerParsedArgs, REMOTE_DATA_FOLDER: string, optionDescriptions: OptionDescriptions<ServerParsedArgs>): Promise<void> {
+ 	if (args.help) {
+ 		const executable = product.serverApplicationName + (isWindows ? '.cmd' : '');
+-		console.log(buildHelpMessage(product.nameLong, executable, product.version, optionDescriptions, { noInputFiles: true, noPipe: true }));
++		console.log(buildHelpMessage(product.nameLong, executable, product.version, product.ipcVersion, optionDescriptions, { noInputFiles: true, noPipe: true }));
+ 		return;
+ 	}
+ 	// Version Info
+diff --git a/src/vs/server/node/server.cli.ts b/src/vs/server/node/server.cli.ts
+index 6695c4b..96a055e 100644
+--- a/src/vs/server/node/server.cli.ts
++++ b/src/vs/server/node/server.cli.ts
+@@ -28,6 +28,7 @@ import { hasStdinWithoutTty, getStdinFilePath, readFromStdin } from 'vs/platform
+ interface ProductDescription {
+ 	productName: string;
+ 	version: string;
++	ipcVersion: string;
+ 	commit: string;
+ 	executableName: string;
+ }
+@@ -128,7 +129,7 @@ export async function main(desc: ProductDescription, args: string[]): Promise<vo
+ 	const verbose = !!parsedArgs['verbose'];
+ 
+ 	if (parsedArgs.help) {
+-		console.log(buildHelpMessage(desc.productName, desc.executableName, desc.version, options));
++		console.log(buildHelpMessage(desc.productName, desc.executableName, desc.version, desc.ipcVersion, options));
+ 		return;
+ 	}
+ 	if (parsedArgs.version) {
+@@ -483,7 +484,7 @@ function mapFileToRemoteUri(uri: string): string {
+ 	return uri.replace(/^file:\/\//, 'vscode-remote://' + cliRemoteAuthority);
+ }
+ 
+-const [, , productName, version, commit, executableName, ...remainingArgs] = process.argv;
+-main({ productName, version, commit, executableName }, remainingArgs).then(null, err => {
++const [, , productName, version, ipcVersion, commit, executableName, ...remainingArgs] = process.argv;
++main({ productName, version, ipcVersion, commit, executableName }, remainingArgs).then(null, err => {
+ 	console.error(err.message || err.stack || err);
+ });
+diff --git a/src/vs/workbench/constants.ts b/src/vs/workbench/constants.ts
+index 44b543a..8968608 100644
+--- a/src/vs/workbench/constants.ts
++++ b/src/vs/workbench/constants.ts
+@@ -7,8 +7,9 @@ import { process } from 'vs/base/parts/sandbox/electron-sandbox/globals';
+ 
+ export const aboutString = (osProps: IOSProperties, productService: IProductService, useAgo: boolean): string => {
+ 	return localize({ key: 'aboutDetail', comment: ['Electron, Chromium, Node.js and V8 are product names that need no translation'] },
+-		"Version: {0}\nCommit: {1}\nDate: {2}\nElectron: {3}\nElectronBuildId: {4}\nChromium: {5}\nNode.js: {6}\nV8: {7}\nOS: {8}",
++		"Version: {0}\nIPC Version: {1}\nCommit: {2}\nDate: {3}\nElectron: {4}\nElectronBuildId: {5}\nChromium: {6}\nNode.js: {7}\nV8: {8}\nOS: {9}",
+ 		productService.version,
++		productService.ipcVersion,
+ 		productService.commit || '(development)',
+ 		productService.date ? `${productService.date}${useAgo ? ' (' + fromNow(new Date(productService.date), true) + ')' : ''}` : 'Unknown',
+ 		process.versions['electron'],
+-- 
+2.39.3 (Apple Git-145)

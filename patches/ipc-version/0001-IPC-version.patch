@@ -1,0 +1,221 @@
+From 3efd9a86ae3154eb9d2221d18c1bcbb3d4c56f7f Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sat, 6 Apr 2024 10:31:49 +1100
+Subject: Use new custom ipcVersion field instead of commit hash for REH connections
+
+---
+ src/vs/base/common/product.ts                         |  2 ++
+ .../platform/remote/common/remoteAgentConnection.ts   | 10 +++++-----
+ src/vs/platform/tunnel/node/tunnelService.ts          |  2 +-
+ src/vs/server/node/remoteExtensionHostAgentServer.ts  | 11 ++++-------
+ src/vs/workbench/api/node/extHostTunnelService.ts     |  2 +-
+ .../extensions/browser/webWorkerExtensionHost.ts      |  2 +-
+ .../extensions/common/extensionHostProtocol.ts        |  1 +
+ .../services/extensions/common/remoteExtensionHost.ts |  4 ++--
+ .../electron-sandbox/localProcessExtensionHost.ts     |  2 +-
+ .../remote/common/abstractRemoteAgentService.ts       |  6 +++---
+ 10 files changed, 21 insertions(+), 21 deletions(-)
+
+diff --git a/src/vs/base/common/product.ts b/src/vs/base/common/product.ts
+index 3a57612..9e86ef6 100644
+--- a/src/vs/base/common/product.ts
++++ b/src/vs/base/common/product.ts
+@@ -60,6 +60,8 @@ export interface IProductConfiguration {
+ 	readonly quality?: string;
+ 	readonly commit?: string;
+ 
++	readonly ipcVersion: string;
++
+ 	readonly nameShort: string;
+ 	readonly nameLong: string;
+ 
+diff --git a/src/vs/platform/remote/common/remoteAgentConnection.ts b/src/vs/platform/remote/common/remoteAgentConnection.ts
+index d14d970..46cd5e0 100644
+--- a/src/vs/platform/remote/common/remoteAgentConnection.ts
++++ b/src/vs/platform/remote/common/remoteAgentConnection.ts
+@@ -54,7 +54,7 @@ export interface SignRequest {
+ 
+ export interface ConnectionTypeRequest {
+ 	type: 'connectionType';
+-	commit?: string;
++	ipcVersion: string;
+ 	signedData: string;
+ 	desiredConnectionType?: ConnectionType;
+ 	args?: any;
+@@ -73,7 +73,7 @@ export type HandshakeMessage = AuthRequest | SignRequest | ConnectionTypeRequest
+ 
+ 
+ interface ISimpleConnectionOptions<T extends RemoteConnection = RemoteConnection> {
+-	commit: string | undefined;
++	ipcVersion: string;
+ 	quality: string | undefined;
+ 	connectTo: T;
+ 	connectionToken: string | undefined;
+@@ -280,7 +280,7 @@ async function connectToRemoteExtensionHostAgent<T extends RemoteConnection>(opt
+ 		const signed = await raceWithTimeoutCancellation(options.signService.sign(msg.data), timeoutCancellationToken);
+ 		const connTypeRequest: ConnectionTypeRequest = {
+ 			type: 'connectionType',
+-			commit: options.commit,
++			ipcVersion: options.ipcVersion,
+ 			signedData: signed,
+ 			desiredConnectionType: connectionType
+ 		};
+@@ -376,7 +376,7 @@ async function doConnectRemoteAgentTunnel(options: ISimpleConnectionOptions, sta
+ }
+ 
+ export interface IConnectionOptions<T extends RemoteConnection = RemoteConnection> {
+-	commit: string | undefined;
++	ipcVersion: string;
+ 	quality: string | undefined;
+ 	addressProvider: IAddressProvider<T>;
+ 	remoteSocketFactoryService: IRemoteSocketFactoryService;
+@@ -388,7 +388,7 @@ export interface IConnectionOptions<T extends RemoteConnection = RemoteConnectio
+ async function resolveConnectionOptions<T extends RemoteConnection>(options: IConnectionOptions<T>, reconnectionToken: string, reconnectionProtocol: PersistentProtocol | null): Promise<ISimpleConnectionOptions<T>> {
+ 	const { connectTo, connectionToken } = await options.addressProvider.getAddress();
+ 	return {
+-		commit: options.commit,
++		ipcVersion: options.ipcVersion,
+ 		quality: options.quality,
+ 		connectTo,
+ 		connectionToken: connectionToken,
+diff --git a/src/vs/platform/tunnel/node/tunnelService.ts b/src/vs/platform/tunnel/node/tunnelService.ts
+index f28dc9e..8d9c9d9 100644
+--- a/src/vs/platform/tunnel/node/tunnelService.ts
++++ b/src/vs/platform/tunnel/node/tunnelService.ts
+@@ -204,7 +204,7 @@ export class BaseTunnelService extends AbstractTunnelService {
+ 		} else {
+ 			this.logService.trace(`ForwardedPorts: (TunnelService) Creating tunnel without provider ${remoteHost}:${remotePort} on local port ${localPort}.`);
+ 			const options: IConnectionOptions = {
+-				commit: this.productService.commit,
++				ipcVersion: this.productService.ipcVersion,
+ 				quality: this.productService.quality,
+ 				addressProvider: addressOrTunnelProvider,
+ 				remoteSocketFactoryService: this.remoteSocketFactoryService,
+diff --git a/src/vs/server/node/remoteExtensionHostAgentServer.ts b/src/vs/server/node/remoteExtensionHostAgentServer.ts
+index 4e322be..f46d25c 100644
+--- a/src/vs/server/node/remoteExtensionHostAgentServer.ts
++++ b/src/vs/server/node/remoteExtensionHostAgentServer.ts
+@@ -364,13 +364,10 @@ class RemoteExtensionHostAgentServer extends Disposable implements IServerAPI {
+ 					return rejectWebSocketConnection(`Invalid second message field type`);
+ 				}
+ 
+-				const rendererCommit = msg2.commit;
+-				const myCommit = this._productService.commit;
+-				if (rendererCommit && myCommit) {
+-					// Running in the built version where commits are defined
+-					if (rendererCommit !== myCommit) {
+-						return rejectWebSocketConnection(`Client refused: version mismatch`);
+-					}
++				const clientIpcVersion = msg2.ipcVersion;
++				const myIpcVersion = this._productService.ipcVersion;
++				if (clientIpcVersion !== myIpcVersion) {
++					return rejectWebSocketConnection(`Client refused: IPC version mismatch`);
+ 				}
+ 
+ 				let valid = false;
+diff --git a/src/vs/workbench/api/node/extHostTunnelService.ts b/src/vs/workbench/api/node/extHostTunnelService.ts
+index 2ab734a..9da28cc 100644
+--- a/src/vs/workbench/api/node/extHostTunnelService.ts
++++ b/src/vs/workbench/api/node/extHostTunnelService.ts
+@@ -312,7 +312,7 @@ export class NodeExtHostTunnelService extends ExtHostTunnelService {
+ 		return async (tunnelOptions) => {
+ 			const t = new NodeRemoteTunnel(
+ 				{
+-					commit: this.initData.commit,
++					ipcVersion: this.initData.ipcVersion,
+ 					quality: this.initData.quality,
+ 					logService: this.logService,
+ 					ipcLogger: null,
+diff --git a/src/vs/workbench/services/extensions/browser/webWorkerExtensionHost.ts b/src/vs/workbench/services/extensions/browser/webWorkerExtensionHost.ts
+index b6d4f0f..d767df0 100644
+--- a/src/vs/workbench/services/extensions/browser/webWorkerExtensionHost.ts
++++ b/src/vs/workbench/services/extensions/browser/webWorkerExtensionHost.ts
+@@ -276,7 +276,7 @@ export class WebWorkerExtensionHost extends Disposable implements IExtensionHost
+ 			nlsUrlWithDetails = URI.joinPath(URI.parse(nlsBaseUrl), this._productService.commit, this._productService.version, platform.Language.value());
+ 		}
+ 		return {
+-			commit: this._productService.commit,
++			ipcVersion: this._productService.ipcVersion,
+ 			version: this._productService.version,
+ 			quality: this._productService.quality,
+ 			parentPid: 0,
+diff --git a/src/vs/workbench/services/extensions/common/extensionHostProtocol.ts b/src/vs/workbench/services/extensions/common/extensionHostProtocol.ts
+index b145bc8..178b154 100644
+--- a/src/vs/workbench/services/extensions/common/extensionHostProtocol.ts
++++ b/src/vs/workbench/services/extensions/common/extensionHostProtocol.ts
+@@ -29,6 +29,7 @@ export interface IExtensionHostInitData {
+ 	version: string;
+ 	quality: string | undefined;
+ 	commit?: string;
++	ipcVersion: string;
+ 	/**
+ 	 * When set to `0`, no polling for the parent process still running will happen.
+ 	 */
+diff --git a/src/vs/workbench/services/extensions/common/remoteExtensionHost.ts b/src/vs/workbench/services/extensions/common/remoteExtensionHost.ts
+index 69184c2..b934277 100644
+--- a/src/vs/workbench/services/extensions/common/remoteExtensionHost.ts
++++ b/src/vs/workbench/services/extensions/common/remoteExtensionHost.ts
+@@ -85,7 +85,7 @@ export class RemoteExtensionHost extends Disposable implements IExtensionHost {
+ 
+ 	public start(): Promise<IMessagePassingProtocol> {
+ 		const options: IConnectionOptions = {
+-			commit: this._productService.commit,
++			ipcVersion: this._productService.ipcVersion,
+ 			quality: this._productService.quality,
+ 			addressProvider: {
+ 				getAddress: async () => {
+@@ -205,7 +205,7 @@ export class RemoteExtensionHost extends Disposable implements IExtensionHost {
+ 		this.extensions = remoteInitData.extensions;
+ 		const workspace = this._contextService.getWorkspace();
+ 		return {
+-			commit: this._productService.commit,
++			ipcVersion: this._productService.ipcVersion,
+ 			version: this._productService.version,
+ 			quality: this._productService.quality,
+ 			parentPid: remoteInitData.pid,
+diff --git a/src/vs/workbench/services/extensions/electron-sandbox/localProcessExtensionHost.ts b/src/vs/workbench/services/extensions/electron-sandbox/localProcessExtensionHost.ts
+index 17b4606..f698dab 100644
+--- a/src/vs/workbench/services/extensions/electron-sandbox/localProcessExtensionHost.ts
++++ b/src/vs/workbench/services/extensions/electron-sandbox/localProcessExtensionHost.ts
+@@ -461,7 +461,7 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
+ 		this.extensions = initData.extensions;
+ 		const workspace = this._contextService.getWorkspace();
+ 		return {
+-			commit: this._productService.commit,
++			ipcVersion: this._productService.ipcVersion,
+ 			version: this._productService.version,
+ 			quality: this._productService.quality,
+ 			parentPid: 0,
+diff --git a/src/vs/workbench/services/remote/common/abstractRemoteAgentService.ts b/src/vs/workbench/services/remote/common/abstractRemoteAgentService.ts
+index 9550c6a..28ecf61 100644
+--- a/src/vs/workbench/services/remote/common/abstractRemoteAgentService.ts
++++ b/src/vs/workbench/services/remote/common/abstractRemoteAgentService.ts
+@@ -39,7 +39,7 @@ export abstract class AbstractRemoteAgentService extends Disposable implements I
+ 	) {
+ 		super();
+ 		if (this._environmentService.remoteAuthority) {
+-			this._connection = this._register(new RemoteAgentConnection(this._environmentService.remoteAuthority, productService.commit, productService.quality, this.remoteSocketFactoryService, this._remoteAuthorityResolverService, signService, logService));
++			this._connection = this._register(new RemoteAgentConnection(this._environmentService.remoteAuthority, productService.ipcVersion, productService.quality, this.remoteSocketFactoryService, this._remoteAuthorityResolverService, signService, logService));
+ 		} else {
+ 			this._connection = null;
+ 		}
+@@ -147,7 +147,7 @@ class RemoteAgentConnection extends Disposable implements IRemoteAgentConnection
+ 
+ 	constructor(
+ 		remoteAuthority: string,
+-		private readonly _commit: string | undefined,
++		private readonly _ipcVersion: string,
+ 		private readonly _quality: string | undefined,
+ 		private readonly _remoteSocketFactoryService: IRemoteSocketFactoryService,
+ 		private readonly _remoteAuthorityResolverService: IRemoteAuthorityResolverService,
+@@ -193,7 +193,7 @@ class RemoteAgentConnection extends Disposable implements IRemoteAgentConnection
+ 	private async _createConnection(): Promise<Client<RemoteAgentConnectionContext>> {
+ 		let firstCall = true;
+ 		const options: IConnectionOptions = {
+-			commit: this._commit,
++			ipcVersion: this._ipcVersion,
+ 			quality: this._quality,
+ 			addressProvider: {
+ 				getAddress: async () => {
+-- 
+2.39.3 (Apple Git-145)
