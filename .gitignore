@@ -2,5 +2,5 @@
 __pycache__
 vscode/
 VSCode-darwin-arm64/
-vscode-reh-darwin-arm64/
+vscode-reh-*/
 spm.py
