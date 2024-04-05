@@ -11,7 +11,7 @@ alltargets: $$(LINUX_REH_TARGETS) $$(MACOS_ARCHIVE_TARGETS)
 
 # basic folders
 work out:
-	mkdir work out
+	mkdir $@
 
 # base macOS targets
 MACOS_APP_TARGET_NAME := VSCode-darwin-arm64
@@ -42,14 +42,15 @@ out/vscode-reh-%.zip: $(REL_REH_WORKDIR)/vscode-server-%.tgz $(MACOS_REH_TARGET_
 # build VSCode
 # add app bundle as dependency of REH so that the build is serialised
 # we can't guarantee correctness if the builds are running in parallel
-$(MACOS_REH_TARGET_IND): $(MACOS_APP_TARGET_IND)
+$(MACOS_REH_TARGET_IND): | $(MACOS_APP_TARGET_IND)
 	scripts/build-vscode.sh ../vscode reh
 
 $(MACOS_REH_TARGET_UNPACKED): $(MACOS_REH_TARGET_IND)
 
-$(MACOS_APP_TARGET_IND): .signenv work out
+$(MACOS_APP_TARGET_IND): | .signenv work out
 	scripts/build-vscode.sh ../vscode app
 	scripts/sign-vscode.sh $(dir $@)
+	touch $@
 
 $(MACOS_APP_TARGET_UNPACKED): $(MACOS_APP_TARGET_IND)
 
