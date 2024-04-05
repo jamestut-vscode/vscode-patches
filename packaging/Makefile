@@ -13,6 +13,10 @@ alltargets: $$(LINUX_REH_TARGETS) $$(MACOS_ARCHIVE_TARGETS)
 work out:
 	mkdir $@
 
+# yarn dependencies
+VSCODE_REPO_BASE := ../vscode
+YARN_DEP_IND := $(VSCODE_REPO_BASE)/yarn-ran
+
 # base macOS targets
 MACOS_APP_TARGET_NAME := VSCode-darwin-arm64
 MACOS_APP_TARGET_UNPACKED := $(addprefix ../, $(MACOS_APP_TARGET_NAME))
@@ -41,12 +45,16 @@ out/vscode-reh-%.zip: $(REL_REH_WORKDIR)/vscode-server-%.tgz $(MACOS_REH_TARGET_
 	scripts/package-linux-reh.sh $(MACOS_REH_TARGET_UNPACKED) $< $@
 
 # build VSCode
-$(MACOS_REH_TARGET_IND):
+$(YARN_DEP_IND):
+	cd ../vscode; yarn
+	touch $@
+
+$(MACOS_REH_TARGET_IND): $(YARN_DEP_IND)
 	scripts/build-vscode.sh ../vscode reh
 
 $(MACOS_REH_TARGET_UNPACKED): $(MACOS_REH_TARGET_IND)
 
-$(MACOS_APP_TARGET_IND): | work out
+$(MACOS_APP_TARGET_IND): $(YARN_DEP_IND) | work out
 	scripts/build-vscode.sh ../vscode app
 	touch $@
 

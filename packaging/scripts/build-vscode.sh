@@ -41,9 +41,6 @@ then
     show_help
 fi
 
-echo "Running yarn to update and install dependencies ..."
-yarn
-
 echo "Building VSCode $2 for macOS Arm64 ..."
 yarn gulp $TARGET
 
