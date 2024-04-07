@@ -1,5 +1,5 @@
 base-commit: 1.87.2
-final-commit: 2ca6fe166e10f67390bdfa9e8d5465c1abddd33e
+final-commit: baa43dbed2a66a06334789d81f26283d66d2de4d
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
@@ -34,3 +34,5 @@ reh/0004-disable-linux-requirements-check.patch
 
 simple-file-dialog/0001-Do-not-trim-file-name.patch
 simple-file-dialog/0002-Non-intrusive-autocomplete.patch
+
+search-view/0001-globalFindClipoard-search-view.patch
