@@ -52,12 +52,12 @@ diff --git a/src/vs/workbench/contrib/search/browser/searchView.ts b/src/vs/work
 index 649a025..3fd8b0c 100644
 --- a/src/vs/workbench/contrib/search/browser/searchView.ts
 +++ b/src/vs/workbench/contrib/search/browser/searchView.ts
-@@ -22,12 +22,9 @@ import { URI } from 'vs/base/common/uri';
+@@ -22,17 +22,15 @@ import { URI } from 'vs/base/common/uri';
  import * as network from 'vs/base/common/network';
  import 'vs/css!./media/searchview';
  import { getCodeEditor, isCodeEditor, isDiffEditor } from 'vs/editor/browser/editorBrowser';
 -import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
--import { EmbeddedCodeEditorWidget } from 'vs/editor/browser/widget/embeddedCodeEditorWidget';
+-import { EmbeddedCodeEditorWidget } from 'vs/editor/browser/widget/codeEditor/embeddedCodeEditorWidget';
  import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
  import { Selection } from 'vs/editor/common/core/selection';
  import { IEditor } from 'vs/editor/common/editorCommon';
@@ -65,15 +65,13 @@ index 649a025..3fd8b0c 100644
  import { MultiCursorSelectionController } from 'vs/editor/contrib/multicursor/browser/multicursor';
  import * as nls from 'vs/nls';
  import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
-@@ -81,6 +78,7 @@ import { ITextFileService } from 'vs/workbench/services/textfile/common/textfile
- import { INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
- import { ILogService } from 'vs/platform/log/common/log';
- import { AccessibilitySignal, IAccessibilitySignalService } from 'vs/platform/accessibilitySignal/browser/accessibilitySignalService';
+ import { MenuId } from 'vs/platform/actions/common/actions';
+ import { ICommandService } from 'vs/platform/commands/common/commands';
 +import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
- 
- const $ = dom.$;
- 
-@@ -167,7 +165,6 @@ export class SearchView extends ViewPane {
+ import { IConfigurationChangeEvent, IConfigurationService } from 'vs/platform/configuration/common/configuration';
+ import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+ import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
+@@ -170,7 +168,6 @@ export class SearchView extends ViewPane {
  		options: IViewPaneOptions,
  		@IFileService private readonly fileService: IFileService,
  		@IEditorService private readonly editorService: IEditorService,
@@ -81,7 +79,7 @@ index 649a025..3fd8b0c 100644
  		@IProgressService private readonly progressService: IProgressService,
  		@INotificationService private readonly notificationService: INotificationService,
  		@IDialogService private readonly dialogService: IDialogService,
-@@ -192,7 +189,8 @@ export class SearchView extends ViewPane {
+@@ -195,7 +192,8 @@ export class SearchView extends ViewPane {
  		@ITelemetryService telemetryService: ITelemetryService,
  		@INotebookService private readonly notebookService: INotebookService,
  		@ILogService private readonly logService: ILogService,
@@ -91,7 +89,7 @@ index 649a025..3fd8b0c 100644
  	) {
  
  		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
-@@ -1090,40 +1088,17 @@ export class SearchView extends ViewPane {
+@@ -1154,40 +1152,17 @@ export class SearchView extends ViewPane {
  		}
  	}
  
@@ -138,7 +136,7 @@ index 649a025..3fd8b0c 100644
  	private updateTextFromSelection({ allowUnselectedWord = true, allowSearchOnType = true }, editor?: IEditor): boolean {
  		const seedSearchStringFromSelection = this.configurationService.getValue<IEditorOptions>('editor').find!.seedSearchStringFromSelection;
  		if (!seedSearchStringFromSelection || seedSearchStringFromSelection === 'never') {
-@@ -1151,6 +1126,10 @@ export class SearchView extends ViewPane {
+@@ -1215,6 +1190,10 @@ export class SearchView extends ViewPane {
  			this.searchWidget.setValue(text);
  			this.pauseSearching = false;
  		}

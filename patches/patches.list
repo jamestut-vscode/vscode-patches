@@ -1,5 +1,5 @@
-base-commit: 1.87.2
-final-commit: baa43dbed2a66a06334789d81f26283d66d2de4d
+base-commit: 1.88.1
+final-commit: 18740acff6c099394e87d4b13b64e76e839e9185
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
@@ -11,8 +11,6 @@ ipc-version/0001-IPC-version.patch
 ipc-version/0002-Show-IPC-version.patch
 
 build/0001-Toggle-mangle-build-phase.patch
-
-electron/0001-version-bump.patch
 
 performance/0001-GPU-settings.patch
 performance/0002-Decrease-event-listener-minimum-delay.patch
@@ -30,7 +28,6 @@ remote/0006-Tighten-timeout.patch
 reh/0001-Disable-shorten-reconnection-grace-time.patch
 reh/0002-daemon-support.patch
 reh/0003-stdout-err-logging-redir.patch
-reh/0004-disable-linux-requirements-check.patch
 
 simple-file-dialog/0001-Do-not-trim-file-name.patch
 simple-file-dialog/0002-Non-intrusive-autocomplete.patch

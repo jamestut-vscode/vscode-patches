@@ -58,7 +58,7 @@ diff --git a/resources/server/bin/code-server-linux.sh b/resources/server/bin/co
 index e3d96bdadf2..f4a51bf624c 100644
 --- a/resources/server/bin/code-server-linux.sh
 +++ b/resources/server/bin/code-server-linux.sh
-@@ -1,11 +1,25 @@
+@@ -1,12 +1,34 @@
 -#!/usr/bin/env sh
 +#!/usr/bin/env bash
  #
@@ -87,10 +87,6 @@ index e3d96bdadf2..f4a51bf624c 100644
 +done
  
  ROOT="$(dirname "$(dirname "$(readlink -f "$0")")")"
- 
-@@ -29,4 +43,12 @@ if [ "$(echo "$@" | grep -c -- "--skip-requirements-check")" -eq 0 ] && [ $skip_
- 	fi
- fi
  
 +if ! [[ -z "$LOGFILE" ]]
 +then
