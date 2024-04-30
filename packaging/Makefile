@@ -1,7 +1,7 @@
 SHELL := /usr/bin/env zsh
 .SECONDEXPANSION:
 
-LINUX_PLATFORMS := linux-arm64 linux-x64
+LINUX_PLATFORMS := linux-legacy-arm64 linux-legacy-x64 linux-arm64 linux-x64 alpine-arm64 linux-alpine
 
 BASE_COMMIT := $(shell scripts/get-base-commit.sh)
 MACOS_DOTAPP_NAME := $(shell scripts/get-app-name.py)
