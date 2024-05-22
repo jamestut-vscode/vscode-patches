@@ -1,123 +1,23 @@
-From 3e9beb25986fc7d7d7b023b524c9bf41702e2e61 Mon Sep 17 00:00:00 2001
+From dacb287cea39b5a24ce38e99a74c5bd65fe2c0da Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
-Date: Thu, 23 Nov 2023 17:12:12 +1100
+Date: Wed, 22 May 2024 21:10:47 +1000
 Subject: Optimise automatic color scheme detection
 
 ---
- .../themes/browser/workbenchThemeService.ts   | 28 ++++---------------
- .../themes/common/themeConfiguration.ts       | 17 +++++++++--
- 2 files changed, 19 insertions(+), 26 deletions(-)
+ src/vs/workbench/services/themes/common/themeConfiguration.ts | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/src/vs/workbench/services/themes/browser/workbenchThemeService.ts b/src/vs/workbench/services/themes/browser/workbenchThemeService.ts
-index 102ed180103..b8cdbe3775e 100644
---- a/src/vs/workbench/services/themes/browser/workbenchThemeService.ts
-+++ b/src/vs/workbench/services/themes/browser/workbenchThemeService.ts
-@@ -99,8 +99,6 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
- 	private readonly productIconThemeWatcher: ThemeFileWatcher;
- 	private readonly productIconThemeSequencer: Sequencer;
- 
--	private themeSettingIdBeforeSchemeSwitch: string | undefined;
--
- 	private hasDefaultUpdated: boolean = false;
- 
- 	constructor(
-@@ -118,7 +116,7 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
- 		@ILanguageService languageService: ILanguageService
- 	) {
- 		this.container = layoutService.mainContainer;
--		this.settings = new ThemeConfiguration(configurationService);
-+		this.settings = new ThemeConfiguration(configurationService, hostColorService);
- 
- 		this.colorThemeRegistry = new ThemeRegistry(colorThemesExtPoint, ColorThemeData.fromExtensionTheme);
- 		this.colorThemeWatcher = new ThemeFileWatcher(fileService, environmentService, this.reloadCurrentColorTheme.bind(this));
-@@ -393,24 +391,7 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
- 
- 	private async handlePreferredSchemeUpdated() {
- 		const scheme = this.getPreferredColorScheme();
--		const prevScheme = this.storageService.get(PERSISTED_OS_COLOR_SCHEME, PERSISTED_OS_COLOR_SCHEME_SCOPE);
--		if (scheme !== prevScheme) {
--			this.storageService.store(PERSISTED_OS_COLOR_SCHEME, scheme, PERSISTED_OS_COLOR_SCHEME_SCOPE, StorageTarget.MACHINE);
--			if (scheme) {
--				if (!prevScheme) {
--					// remember the theme before scheme switching
--					this.themeSettingIdBeforeSchemeSwitch = this.settings.colorTheme;
--				}
--				return this.applyPreferredColorTheme(scheme);
--			} else if (prevScheme && this.themeSettingIdBeforeSchemeSwitch) {
--				// reapply the theme before scheme switching
--				const theme = this.colorThemeRegistry.findThemeBySettingsId(this.themeSettingIdBeforeSchemeSwitch, undefined);
--				if (theme) {
--					this.setColorTheme(theme.id, 'auto');
--				}
--			}
--		}
--		return undefined;
-+		return this.applyPreferredColorTheme(scheme);
- 	}
- 
- 	private getPreferredColorScheme(): ColorScheme | undefined {
-@@ -423,14 +404,15 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
- 		return undefined;
- 	}
- 
--	private async applyPreferredColorTheme(type: ColorScheme): Promise<IWorkbenchColorTheme | null> {
-+	private async applyPreferredColorTheme(type: ColorScheme | undefined): Promise<IWorkbenchColorTheme | null> {
- 		let settingId: ThemeSettings;
- 		switch (type) {
- 			case ColorScheme.LIGHT: settingId = ThemeSettings.PREFERRED_LIGHT_THEME; break;
-+			case ColorScheme.DARK: settingId = ThemeSettings.PREFERRED_DARK_THEME; break;
- 			case ColorScheme.HIGH_CONTRAST_DARK: settingId = ThemeSettings.PREFERRED_HC_DARK_THEME; break;
- 			case ColorScheme.HIGH_CONTRAST_LIGHT: settingId = ThemeSettings.PREFERRED_HC_LIGHT_THEME; break;
- 			default:
--				settingId = ThemeSettings.PREFERRED_DARK_THEME;
-+				settingId = ThemeSettings.COLOR_THEME;
- 		}
- 		const themeSettingId = this.configurationService.getValue(settingId);
- 		if (themeSettingId && typeof themeSettingId === 'string') {
 diff --git a/src/vs/workbench/services/themes/common/themeConfiguration.ts b/src/vs/workbench/services/themes/common/themeConfiguration.ts
-index 78d81649dbc..45aebf53f18 100644
+index 8d1f119ce85..89492ab470c 100644
 --- a/src/vs/workbench/services/themes/common/themeConfiguration.ts
 +++ b/src/vs/workbench/services/themes/common/themeConfiguration.ts
-@@ -8,6 +8,8 @@ import * as types from 'vs/base/common/types';
- import { Registry } from 'vs/platform/registry/common/platform';
- import { IConfigurationRegistry, Extensions as ConfigurationExtensions, IConfigurationPropertySchema, IConfigurationNode, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
- 
-+import { IHostColorSchemeService } from 'vs/workbench/services/themes/common/hostColorSchemeService';
-+
- import { IJSONSchema } from 'vs/base/common/jsonSchema';
- import { textmateColorsSchemaId, textmateColorGroupSchemaId } from 'vs/workbench/services/themes/common/colorThemeSchema';
- import { workbenchColorsSchemaId } from 'vs/platform/theme/common/colorRegistry';
-@@ -265,11 +267,21 @@ export function updateProductIconThemeConfigurationSchemas(themes: IWorkbenchPro
- 
- 
- export class ThemeConfiguration {
--	constructor(private configurationService: IConfigurationService) {
-+	constructor(
-+		private configurationService: IConfigurationService,
-+		private hostColorService: IHostColorSchemeService
-+	) {
- 	}
- 
- 	public get colorTheme(): string {
--		return this.configurationService.getValue<string>(ThemeSettings.COLOR_THEME);
-+		let cfgName: ThemeSettings = ThemeSettings.COLOR_THEME;
-+		if (this.configurationService.getValue(ThemeSettings.DETECT_HC) && this.hostColorService.highContrast) {
-+			cfgName = this.hostColorService.dark ? ThemeSettings.PREFERRED_HC_DARK_THEME : ThemeSettings.PREFERRED_HC_LIGHT_THEME;
-+		}
-+		if (this.configurationService.getValue(ThemeSettings.DETECT_COLOR_SCHEME)) {
-+			cfgName = this.hostColorService.dark ? ThemeSettings.PREFERRED_DARK_THEME : ThemeSettings.PREFERRED_LIGHT_THEME;
-+		}
-+		return this.configurationService.getValue<string>(cfgName);
- 	}
- 
- 	public get fileIconTheme(): string | null {
-@@ -293,7 +305,6 @@ export class ThemeConfiguration {
+@@ -325,7 +325,6 @@ export class ThemeConfiguration {
  	}
  
  	public async setColorTheme(theme: IWorkbenchColorTheme, settingsTarget: ThemeSettingTarget): Promise<IWorkbenchColorTheme> {
--		await this.writeConfiguration(ThemeSettings.COLOR_THEME, theme.settingsId, settingsTarget);
+-		await this.writeConfiguration(this.getColorThemeSettingId(), theme.settingsId, settingsTarget);
  		return theme;
  	}
  
 -- 
-2.39.3 (Apple Git-145)
+2.39.3 (Apple Git-146)
