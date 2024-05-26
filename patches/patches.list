@@ -5,11 +5,6 @@ common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
 common/0010-Disable-REH-glibc-check.patch
 
-ui/0001-Unify-about-message.patch
-
-ipc-version/0001-IPC-version.patch
-ipc-version/0002-Show-IPC-version.patch
-
 build/0001-Toggle-mangle-build-phase.patch
 
 performance/0001-GPU-settings.patch
@@ -24,6 +19,12 @@ remote/0003-Disable-client-side-assumption-of-reconnection-grace.patch
 remote/0004-Show-reconnection-progress-instantly.patch
 remote/0005-Reconnecting-timeout-logic-tweak.patch
 remote/0006-Tighten-timeout.patch
+
+ui/0001-Unify-about-message.patch
+ui/0002-Minimal-remote-reconnect-UI.patch
+
+ipc-version/0001-IPC-version.patch
+ipc-version/0002-Show-IPC-version.patch
 
 reh/0001-Disable-shorten-reconnection-grace-time.patch
 reh/0002-daemon-support.patch

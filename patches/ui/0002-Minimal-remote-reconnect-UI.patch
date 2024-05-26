@@ -1,0 +1,183 @@
+From 07108e1c98b48b6ae7bd69ecb2082bf21cae8017 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sun, 26 May 2024 09:49:55 +1000
+Subject: Minimal remote reconnect UI
+
+---
+ .../contrib/remote/browser/remote.ts          | 95 +++----------------
+ 1 file changed, 11 insertions(+), 84 deletions(-)
+
+diff --git a/src/vs/workbench/contrib/remote/browser/remote.ts b/src/vs/workbench/contrib/remote/browser/remote.ts
+index b308fa22f6b..4c843b7277b 100644
+--- a/src/vs/workbench/contrib/remote/browser/remote.ts
++++ b/src/vs/workbench/contrib/remote/browser/remote.ts
+@@ -793,36 +793,24 @@ export class RemoteAgentConnectionStatusListener extends Disposable implements I
+ 		super();
+ 		const connection = remoteAgentService.getConnection();
+ 		if (connection) {
+-			let quickInputVisible = false;
+-			quickInputService.onShow(() => quickInputVisible = true);
+-			quickInputService.onHide(() => quickInputVisible = false);
+-
+ 			let visibleProgress: VisibleProgress | null = null;
+ 			let reconnectWaitEvent: ReconnectionWaitEvent | null = null;
+ 			let disposableListener: IDisposable | null = null;
+ 
+-			function showProgress(location: ProgressLocation.Dialog | ProgressLocation.Notification | null, buttons: { label: string; callback: () => void }[], initialReport: string | null = null): VisibleProgress {
++			function showProgress(buttons: { label: string; callback: () => void }[], initialReport: string | null = null) {
+ 				if (visibleProgress) {
+ 					visibleProgress.dispose();
+ 					visibleProgress = null;
+ 				}
+ 
+-				if (!location) {
+-					location = quickInputVisible ? ProgressLocation.Notification : ProgressLocation.Dialog;
+-				}
+-
+-				return new VisibleProgress(
+-					progressService, location, initialReport, buttons.map(button => button.label),
++				visibleProgress = new VisibleProgress(
++					progressService, ProgressLocation.Notification, initialReport, buttons.map(button => button.label),
+ 					(choice, lastReport) => {
+ 						// Handle choice from dialog
+ 						if (typeof choice !== 'undefined' && buttons[choice]) {
+ 							buttons[choice].callback();
+ 						} else {
+-							if (location === ProgressLocation.Dialog) {
+-								visibleProgress = showProgress(ProgressLocation.Notification, buttons, lastReport);
+-							} else {
+-								hideProgress();
+-							}
++							hideProgress();
+ 						}
+ 					}
+ 				);
+@@ -835,10 +823,6 @@ export class RemoteAgentConnectionStatusListener extends Disposable implements I
+ 				}
+ 			}
+ 
+-			let reconnectionToken: string = '';
+-			let lastIncomingDataTime: number = 0;
+-			let reconnectionAttempts: number = 0;
+-
+ 			const reconnectButton = {
+ 				label: nls.localize('reconnectNow', "Reconnect Now"),
+ 				callback: () => {
+@@ -846,35 +830,6 @@ export class RemoteAgentConnectionStatusListener extends Disposable implements I
+ 				}
+ 			};
+ 
+-			const reloadButton = {
+-				label: nls.localize('reloadWindow', "Reload Window"),
+-				callback: () => {
+-
+-					type ReconnectReloadClassification = {
+-						owner: 'alexdima';
+-						comment: 'The reload button in the builtin permanent reconnection failure dialog was pressed';
+-						remoteName: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'The name of the resolver.' };
+-						reconnectionToken: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'The identifier of the connection.' };
+-						millisSinceLastIncomingData: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'Elapsed time (in ms) since data was last received.' };
+-						attempt: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'The reconnection attempt counter.' };
+-					};
+-					type ReconnectReloadEvent = {
+-						remoteName: string | undefined;
+-						reconnectionToken: string;
+-						millisSinceLastIncomingData: number;
+-						attempt: number;
+-					};
+-					telemetryService.publicLog2<ReconnectReloadEvent, ReconnectReloadClassification>('remoteReconnectionReload', {
+-						remoteName: getRemoteName(environmentService.remoteAuthority),
+-						reconnectionToken: reconnectionToken,
+-						millisSinceLastIncomingData: Date.now() - lastIncomingDataTime,
+-						attempt: reconnectionAttempts
+-					});
+-
+-					commandService.executeCommand(ReloadWindowAction.ID);
+-				}
+-			};
+-
+ 			// Possible state transitions:
+ 			// ConnectionGain      -> ConnectionLost
+ 			// ConnectionLost      -> ReconnectionWait, ReconnectionRunning
+@@ -890,10 +845,6 @@ export class RemoteAgentConnectionStatusListener extends Disposable implements I
+ 				}
+ 				switch (e.type) {
+ 					case PersistentConnectionEventType.ConnectionLost:
+-						reconnectionToken = e.reconnectionToken;
+-						lastIncomingDataTime = Date.now() - e.millisSinceLastIncomingData;
+-						reconnectionAttempts = 0;
+-
+ 						type RemoteConnectionLostClassification = {
+ 							owner: 'alexdima';
+ 							comment: 'The remote connection state is now `ConnectionLost`';
+@@ -909,25 +860,17 @@ export class RemoteAgentConnectionStatusListener extends Disposable implements I
+ 							reconnectionToken: e.reconnectionToken,
+ 						});
+ 
+-						if (!visibleProgress) {
+-							visibleProgress = showProgress(null, [reconnectButton, reloadButton]);
+-						}
+-						visibleProgress.report(nls.localize('connectionLost', "Connection Lost"));
++						showProgress([reconnectButton]);
++						visibleProgress!.report(nls.localize('connectionLost', "Connection Lost"));
+ 						break;
+ 
+ 					case PersistentConnectionEventType.ReconnectionWait:
+-						if (visibleProgress) {
+-							reconnectWaitEvent = e;
+-							visibleProgress = showProgress(null, [reconnectButton, reloadButton]);
+-							visibleProgress.startTimer(Date.now() + 1000 * e.durationSeconds);
+-						}
++						reconnectWaitEvent = e;
++						showProgress([reconnectButton]);
++						visibleProgress!.startTimer(Date.now() + 1000 * e.durationSeconds);
+ 						break;
+ 
+ 					case PersistentConnectionEventType.ReconnectionRunning:
+-						reconnectionToken = e.reconnectionToken;
+-						lastIncomingDataTime = Date.now() - e.millisSinceLastIncomingData;
+-						reconnectionAttempts = e.attempt;
+-
+ 						type RemoteReconnectionRunningClassification = {
+ 							owner: 'alexdima';
+ 							comment: 'The remote connection state is now `ReconnectionRunning`';
+@@ -949,24 +892,12 @@ export class RemoteAgentConnectionStatusListener extends Disposable implements I
+ 							attempt: e.attempt
+ 						});
+ 
+-						visibleProgress = showProgress(null, [reloadButton]);
+-						visibleProgress.report(nls.localize('reconnectionRunning', "Disconnected. Attempting to reconnect..."));
+-
+-						// Register to listen for quick input is opened
+-						disposableListener = quickInputService.onShow(() => {
+-							// Need to move from dialog if being shown and user needs to type in a prompt
+-							if (visibleProgress && visibleProgress.location === ProgressLocation.Dialog) {
+-								visibleProgress = showProgress(ProgressLocation.Notification, [reloadButton], visibleProgress.lastReport);
+-							}
+-						});
++						showProgress([]);
++						visibleProgress!.report(nls.localize('reconnectionRunning', "Disconnected. Attempting to reconnect..."));
+ 
+ 						break;
+ 
+ 					case PersistentConnectionEventType.ReconnectionPermanentFailure:
+-						reconnectionToken = e.reconnectionToken;
+-						lastIncomingDataTime = Date.now() - e.millisSinceLastIncomingData;
+-						reconnectionAttempts = e.attempt;
+-
+ 						type RemoteReconnectionPermanentFailureClassification = {
+ 							owner: 'alexdima';
+ 							comment: 'The remote connection state is now `ReconnectionPermanentFailure`';
+@@ -1011,10 +942,6 @@ export class RemoteAgentConnectionStatusListener extends Disposable implements I
+ 						break;
+ 
+ 					case PersistentConnectionEventType.ConnectionGain:
+-						reconnectionToken = e.reconnectionToken;
+-						lastIncomingDataTime = Date.now() - e.millisSinceLastIncomingData;
+-						reconnectionAttempts = e.attempt;
+-
+ 						type RemoteConnectionGainClassification = {
+ 							owner: 'alexdima';
+ 							comment: 'The remote connection state is now `ConnectionGain`';
+-- 
+2.39.3 (Apple Git-146)
