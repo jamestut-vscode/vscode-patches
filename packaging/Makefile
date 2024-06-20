@@ -69,14 +69,14 @@ $(MACOS_APP_TARGET_SIGN_IND): .signenv | $(MACOS_APP_TARGET_IND)
 	scripts/sign-vscode.sh $(dir $@)
 	touch $@
 
-$(MACOS_APP_TARGET_UNPACKED): $(MACOS_APP_TARGET_IND)
+$(MACOS_APP_TARGET_UNPACKED): $(MACOS_APP_TARGET_SIGN_IND)
 
 # macOS archives
 $(MACOS_REH_TARGET_ARCHIVE): $(MACOS_REH_TARGET_IND) | out
 	scripts/create-archive.sh $(MACOS_REH_TARGET_UNPACKED) $@
 
-$(MACOS_APP_TARGET_ARCHIVE): $(MACOS_APP_TARGET_IND) | out
-	scripts/create-archive.sh "$(dir $<)/$(MACOS_DOTAPP_NAME)" $@
+$(MACOS_APP_TARGET_ARCHIVE): $(MACOS_APP_TARGET_UNPACKED) | out
+	scripts/create-archive.sh "$</$(MACOS_DOTAPP_NAME)" $@
 
 # avoid parallelism on these targets, otherwise results will be incorrect
 .NOTPARALLEL:
