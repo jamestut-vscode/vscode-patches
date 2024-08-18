@@ -1,5 +1,5 @@
-base-commit: 1.90.2
-final-commit: c8a717aa0687d8d86a815fc39a15c266bfda41da
+base-commit: 1.92.2
+final-commit: 2db871d4e8f41e8f0b087e3251e2c913ff332c7d
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
@@ -7,7 +7,6 @@ common/0010-Disable-REH-glibc-check.patch
 
 build/0001-Toggle-mangle-build-phase.patch
 
-performance/0001-GPU-settings.patch
 performance/0002-Decrease-event-listener-minimum-delay.patch
 
 xterm-patches/0001-Use-jamestut-custom-xterm.patch

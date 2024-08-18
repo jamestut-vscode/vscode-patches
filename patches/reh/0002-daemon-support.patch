@@ -9,18 +9,18 @@ Subject: [PATCH] daemon support
  2 files changed, 16 insertions(+), 1 deletion(-)
 
 diff --git a/src/server-main.js b/src/server-main.js
-index 5167527baed..fd9add0aea8 100644
+index f1fad8f0b51..769daa4301d 100644
 --- a/src/server-main.js
 +++ b/src/server-main.js
-@@ -10,6 +10,7 @@ const performance = require('perf_hooks').performance;
- const product = require('../product.json');
- const readline = require('readline');
+@@ -14,6 +14,7 @@
+ // ESM-comment-begin
+ const path = require('path');
  const http = require('http');
 +const cp = require('child_process');
- 
- perf.mark('code/server/start');
- // @ts-ignore
-@@ -20,10 +21,21 @@ async function start() {
+ const os = require('os');
+ const readline = require('readline');
+ const performance = require('perf_hooks').performance;
+@@ -49,10 +50,21 @@ async function start() {
  
  	// Do a quick parse to determine if a server or the cli needs to be started
  	const parsedArgs = minimist(process.argv.slice(2), {
@@ -44,10 +44,10 @@ index 5167527baed..fd9add0aea8 100644
  		if (!parsedArgs[e]) {
  			const envValue = process.env[`VSCODE_SERVER_${e.toUpperCase().replace('-', '_')}`];
 diff --git a/src/vs/server/node/serverEnvironmentService.ts b/src/vs/server/node/serverEnvironmentService.ts
-index ea6cb346184..af54a85d56b 100644
+index fce1842f1bd..ba65efd805e 100644
 --- a/src/vs/server/node/serverEnvironmentService.ts
 +++ b/src/vs/server/node/serverEnvironmentService.ts
-@@ -23,6 +23,7 @@ export const serverOptions: OptionDescriptions<Required<ServerParsedArgs>> = {
+@@ -26,6 +26,7 @@ export const serverOptions: OptionDescriptions<Required<ServerParsedArgs>> = {
  	'disable-websocket-compression': { type: 'boolean' },
  	'print-startup-performance': { type: 'boolean' },
  	'print-ip-address': { type: 'boolean' },
@@ -55,7 +55,7 @@ index ea6cb346184..af54a85d56b 100644
  	'accept-server-license-terms': { type: 'boolean', cat: 'o', description: nls.localize('acceptLicenseTerms', "If set, the user accepts the server license terms and the server will be started without a user prompt.") },
  	'server-data-dir': { type: 'string', cat: 'o', description: nls.localize('serverDataDir', "Specifies the directory that server data is kept in.") },
  	'telemetry-level': { type: 'string', cat: 'o', args: 'level', description: nls.localize('telemetry-level', "Sets the initial telemetry level. Valid levels are: 'off', 'crash', 'error' and 'all'. If not specified, the server will send telemetry until a client connects, it will then use the clients telemetry setting. Setting this to 'off' is equivalent to --disable-telemetry") },
-@@ -131,6 +132,8 @@ export interface ServerParsedArgs {
+@@ -141,6 +142,8 @@ export interface ServerParsedArgs {
  	'print-startup-performance'?: boolean;
  	'print-ip-address'?: boolean;
  
