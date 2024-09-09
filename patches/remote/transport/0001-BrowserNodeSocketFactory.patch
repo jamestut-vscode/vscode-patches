@@ -1,0 +1,236 @@
+From f843b28991f18f64a613ce40283d3a938bd20af3 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Mon, 9 Sep 2024 18:33:00 +1000
+Subject: Add BrowserNodeSocketFactory.
+Allows the use of Node.js socket on renderer context.
+
+---
+ .../browser/browserNodeSocketFactory.ts       | 217 ++++++++++++++++++
+ 1 file changed, 217 insertions(+)
+ create mode 100644 src/vs/platform/remote/browser/browserNodeSocketFactory.ts
+
+diff --git a/src/vs/platform/remote/browser/browserNodeSocketFactory.ts b/src/vs/platform/remote/browser/browserNodeSocketFactory.ts
+new file mode 100644
+index 00000000000..1c20b4d5fd2
+--- /dev/null
++++ b/src/vs/platform/remote/browser/browserNodeSocketFactory.ts
+@@ -0,0 +1,217 @@
++/*---------------------------------------------------------------------------------------------
++ *  Copyright (c) Microsoft Corporation. All rights reserved.
++ *  Licensed under the MIT License. See License.txt in the project root for license information.
++ *--------------------------------------------------------------------------------------------*/
++
++// Node.js socket in renderer context.
++// Copied and adapted from vs/platform/remote/node/nodeSocketFactory.ts
++
++// @ts-ignore
++const net = window.nodeModules.net;
++const Socket = net.Socket;
++
++import { VSBuffer } from 'vs/base/common/buffer';
++import { IDisposable } from 'vs/base/common/lifecycle';
++import { ISocket, SocketCloseEvent, SocketDiagnosticsEventType, SocketCloseEventType, SocketDiagnostics } from 'vs/base/parts/ipc/common/ipc.net';
++import { makeRawSocketHeaders } from 'vs/platform/remote/common/managedSocket';
++import { RemoteConnectionType, WebSocketRemoteConnection } from 'vs/platform/remote/common/remoteAuthorityResolver';
++import { ISocketFactory } from 'vs/platform/remote/common/remoteSocketFactoryService';
++import { onUnexpectedError } from 'vs/base/common/errors';
++
++const socketEndTimeoutMs = 15_000;
++
++export const browserNodeSocketFactory = new class implements ISocketFactory<RemoteConnectionType.WebSocket> {
++
++	supports(connectTo: WebSocketRemoteConnection): boolean {
++		return true;
++	}
++
++	connect({ host, port }: WebSocketRemoteConnection, path: string, query: string, debugLabel: string): Promise<ISocket> {
++		return new Promise<ISocket>((resolve, reject) => {
++			const socket = net.createConnection({ host: host, port: port }, () => {
++				socket.removeListener('error', reject);
++
++				socket.write(makeRawSocketHeaders(path, query, debugLabel));
++
++				const onData = (data: Buffer) => {
++					const strData = data.toString();
++					if (strData.indexOf('\r\n\r\n') >= 0) {
++						// headers received OK
++						socket.off('data', onData);
++						resolve(new BrowserNodeSocket(socket, debugLabel));
++					}
++				};
++				socket.on('data', onData);
++			});
++			// Disable Nagle's algorithm.
++			socket.setNoDelay(true);
++			socket.once('error', reject);
++		});
++	}
++};
++
++export class BrowserNodeSocket implements ISocket {
++
++	public readonly debugLabel: string;
++	public readonly socket: typeof Socket;
++	private readonly _errorListener: (err: any) => void;
++	private readonly _closeListener: (hadError: boolean) => void;
++	private readonly _endListener: () => void;
++	private _canWrite = true;
++
++	public traceSocketEvent(type: SocketDiagnosticsEventType, data?: VSBuffer | Uint8Array | ArrayBuffer | ArrayBufferView | any): void {
++		SocketDiagnostics.traceSocketEvent(this.socket, this.debugLabel, type, data);
++	}
++
++	constructor(socket: typeof Socket, debugLabel: string = '') {
++		this.debugLabel = debugLabel;
++		this.socket = socket;
++		this.traceSocketEvent(SocketDiagnosticsEventType.Created, { type: 'NodeSocket' });
++		this._errorListener = (err: any) => {
++			this.traceSocketEvent(SocketDiagnosticsEventType.Error, { code: err?.code, message: err?.message });
++			if (err) {
++				if (err.code === 'EPIPE') {
++					// An EPIPE exception at the wrong time can lead to a renderer process crash
++					// so ignore the error since the socket will fire the close event soon anyways:
++					// > https://nodejs.org/api/errors.html#errors_common_system_errors
++					// > EPIPE (Broken pipe): A write on a pipe, socket, or FIFO for which there is no
++					// > process to read the data. Commonly encountered at the net and http layers,
++					// > indicative that the remote side of the stream being written to has been closed.
++					return;
++				}
++				onUnexpectedError(err);
++			}
++		};
++		this.socket.on('error', this._errorListener);
++
++		let endTimeoutHandle: NodeJS.Timeout | undefined;
++		this._closeListener = (hadError: boolean) => {
++			this.traceSocketEvent(SocketDiagnosticsEventType.Close, { hadError });
++			this._canWrite = false;
++			if (endTimeoutHandle) {
++				clearTimeout(endTimeoutHandle);
++			}
++		};
++		this.socket.on('close', this._closeListener);
++
++		this._endListener = () => {
++			this.traceSocketEvent(SocketDiagnosticsEventType.NodeEndReceived);
++			this._canWrite = false;
++			endTimeoutHandle = setTimeout(() => socket.destroy(), socketEndTimeoutMs);
++		};
++		this.socket.on('end', this._endListener);
++	}
++
++	public dispose(): void {
++		this.socket.off('error', this._errorListener);
++		this.socket.off('close', this._closeListener);
++		this.socket.off('end', this._endListener);
++		this.socket.destroy();
++	}
++
++	public onData(_listener: (e: VSBuffer) => void): IDisposable {
++		const listener = (buff: Buffer) => {
++			this.traceSocketEvent(SocketDiagnosticsEventType.Read, buff);
++			_listener(VSBuffer.wrap(buff));
++		};
++		this.socket.on('data', listener);
++		return {
++			dispose: () => this.socket.off('data', listener)
++		};
++	}
++
++	public onClose(listener: (e: SocketCloseEvent) => void): IDisposable {
++		const adapter = (hadError: boolean) => {
++			listener({
++				type: SocketCloseEventType.NodeSocketCloseEvent,
++				hadError: hadError,
++				error: undefined
++			});
++		};
++		this.socket.on('close', adapter);
++		return {
++			dispose: () => this.socket.off('close', adapter)
++		};
++	}
++
++	public onEnd(listener: () => void): IDisposable {
++		const adapter = () => {
++			listener();
++		};
++		this.socket.on('end', adapter);
++		return {
++			dispose: () => this.socket.off('end', adapter)
++		};
++	}
++
++	public write(buffer: VSBuffer): void {
++		// return early if socket has been destroyed in the meantime
++		if (this.socket.destroyed || !this._canWrite) {
++			return;
++		}
++
++		// we ignore the returned value from `write` because we would have to cached the data
++		// anyways and nodejs is already doing that for us:
++		// > https://nodejs.org/api/stream.html#stream_writable_write_chunk_encoding_callback
++		// > However, the false return value is only advisory and the writable stream will unconditionally
++		// > accept and buffer chunk even if it has not been allowed to drain.
++		try {
++			this.traceSocketEvent(SocketDiagnosticsEventType.Write, buffer);
++			this.socket.write(buffer.buffer, (err: any) => {
++				if (err) {
++					if (err.code === 'EPIPE') {
++						// An EPIPE exception at the wrong time can lead to a renderer process crash
++						// so ignore the error since the socket will fire the close event soon anyways:
++						// > https://nodejs.org/api/errors.html#errors_common_system_errors
++						// > EPIPE (Broken pipe): A write on a pipe, socket, or FIFO for which there is no
++						// > process to read the data. Commonly encountered at the net and http layers,
++						// > indicative that the remote side of the stream being written to has been closed.
++						return;
++					}
++					onUnexpectedError(err);
++				}
++			});
++		} catch (err) {
++			if (err.code === 'EPIPE') {
++				// An EPIPE exception at the wrong time can lead to a renderer process crash
++				// so ignore the error since the socket will fire the close event soon anyways:
++				// > https://nodejs.org/api/errors.html#errors_common_system_errors
++				// > EPIPE (Broken pipe): A write on a pipe, socket, or FIFO for which there is no
++				// > process to read the data. Commonly encountered at the net and http layers,
++				// > indicative that the remote side of the stream being written to has been closed.
++				return;
++			}
++			onUnexpectedError(err);
++		}
++	}
++
++	public end(): void {
++		this.traceSocketEvent(SocketDiagnosticsEventType.NodeEndSent);
++		this.socket.end();
++	}
++
++	public drain(): Promise<void> {
++		this.traceSocketEvent(SocketDiagnosticsEventType.NodeDrainBegin);
++		return new Promise<void>((resolve, reject) => {
++			if (this.socket.bufferSize === 0) {
++				this.traceSocketEvent(SocketDiagnosticsEventType.NodeDrainEnd);
++				resolve();
++				return;
++			}
++			const finished = () => {
++				this.socket.off('close', finished);
++				this.socket.off('end', finished);
++				this.socket.off('error', finished);
++				this.socket.off('timeout', finished);
++				this.socket.off('drain', finished);
++				this.traceSocketEvent(SocketDiagnosticsEventType.NodeDrainEnd);
++				resolve();
++			};
++			this.socket.on('close', finished);
++			this.socket.on('end', finished);
++			this.socket.on('error', finished);
++			this.socket.on('timeout', finished);
++			this.socket.on('drain', finished);
++		});
++	}
++}
+-- 
+2.39.5 (Apple Git-154)

@@ -1,0 +1,33 @@
+From 0fe9409a188664ffefa5219116544c412e9c5aa1 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Mon, 9 Sep 2024 18:34:57 +1000
+Subject: Use BrowserNodeSocket for transport
+
+---
+ src/vs/workbench/electron-sandbox/desktop.main.ts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/vs/workbench/electron-sandbox/desktop.main.ts b/src/vs/workbench/electron-sandbox/desktop.main.ts
+index 90b3fb50616..661f251e0a5 100644
+--- a/src/vs/workbench/electron-sandbox/desktop.main.ts
++++ b/src/vs/workbench/electron-sandbox/desktop.main.ts
+@@ -55,7 +55,7 @@ import { PolicyChannelClient } from 'vs/platform/policy/common/policyIpc';
+ import { IPolicyService, NullPolicyService } from 'vs/platform/policy/common/policy';
+ import { UserDataProfileService } from 'vs/workbench/services/userDataProfile/common/userDataProfileService';
+ import { IUserDataProfileService } from 'vs/workbench/services/userDataProfile/common/userDataProfile';
+-import { BrowserSocketFactory } from 'vs/platform/remote/browser/browserSocketFactory';
++import { browserNodeSocketFactory } from 'vs/platform/remote/browser/browserNodeSocketFactory';
+ import { RemoteSocketFactoryService, IRemoteSocketFactoryService } from 'vs/platform/remote/common/remoteSocketFactoryService';
+ import { ElectronRemoteResourceLoader } from 'vs/platform/remote/electron-sandbox/electronRemoteResourceLoader';
+ import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+@@ -259,7 +259,7 @@ export class DesktopMain extends Disposable {
+ 
+ 		// Remote Agent
+ 		const remoteSocketFactoryService = new RemoteSocketFactoryService();
+-		remoteSocketFactoryService.register(RemoteConnectionType.WebSocket, new BrowserSocketFactory(null));
++		remoteSocketFactoryService.register(RemoteConnectionType.WebSocket, browserNodeSocketFactory);
+ 		serviceCollection.set(IRemoteSocketFactoryService, remoteSocketFactoryService);
+ 		const remoteAgentService = this._register(new RemoteAgentService(remoteSocketFactoryService, userDataProfileService, environmentService, productService, remoteAuthorityResolverService, signService, logService));
+ 		serviceCollection.set(IRemoteAgentService, remoteAgentService);
+-- 
+2.39.5 (Apple Git-154)

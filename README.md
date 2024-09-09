@@ -11,15 +11,13 @@ Starting from `1.85.0-m2`, the released packages have additional private patches
 - **Enable proposed API for all extensions.**  
   All extensions can now use proposed APIs without having to run this version of VSCode with a special command line argument.
 - **Tweak reconnection timeout.**  
-  When connection to remote fails, immediately shows the dialog that prompts user to reconnect or reload window. When reconnecting, the timeout is set to 15 seconds per stage instead of 40 seconds globally.
+  When connection to remote fails, immediately shows the dialog that prompts user to reconnect or reload window. When reconnecting, the timeout is set to 15 seconds per stage instead of 40 seconds globally. The UI is also redesigned to be less intrusive.
 - **Disable shorten reconnect grace period.**  
   When there are ungracefully-disconnected client on VSCode's REH server, do not reduce their grace reconnection period when a new client is reconnected.
+- **Reliable reconnection.**  
+  The use of node.js' socket system dramatically improves the reliability of reconnection versus the original one, which uses Chromium's WebSocket implementation.
 - **Increase input polling to max 250 Hz.**  
   Maximum input polling is increased to 250 Hz (vs 120 Hz previously). This only changes the maximum: if your device have 120 Hz display, it will still be capped at 120 Hz.
-- **ANGLE Metal backend.**  
-  Uses Apple's Metal as ANGLE's backend. This could improve performance and compatibility with macOS virtual machines on Metal-only macs such as a virtualized macOS on Apple Silicon.
-- **Updated to Chromium 116.**  
-  Chromium 116 has a considerable amount of improvements related to ANGLE Metal, including compatibility with macOS Sonoma.
 - **Non intrusive autocomplete.**  
   Just type or copy-paste the file or folder path that you want to open, even on high latency connections to Remote Extension Host! The auto-complete will not interfere with what you've typed/pasted!
 - **Server Daemon Support.**  

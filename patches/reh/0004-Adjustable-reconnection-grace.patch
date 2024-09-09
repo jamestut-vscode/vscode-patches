@@ -1,0 +1,116 @@
+From 2560415331696b809212c5276144b0916de1c196 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Mon, 9 Sep 2024 19:30:28 +1000
+Subject: Adjustable reconnection grace
+
+---
+ src/server-main.js                                 |  2 +-
+ src/vs/base/parts/ipc/common/ipc.net.ts            |  2 +-
+ .../server/node/remoteExtensionHostAgentServer.ts  |  4 +++-
+ src/vs/server/node/remoteExtensionManagement.ts    | 14 +++++++++++++-
+ src/vs/server/node/serverEnvironmentService.ts     |  3 +++
+ 5 files changed, 21 insertions(+), 4 deletions(-)
+
+diff --git a/src/server-main.js b/src/server-main.js
+index f9c8976615f..db53af662b3 100644
+--- a/src/server-main.js
++++ b/src/server-main.js
+@@ -51,7 +51,7 @@ async function start() {
+ 	// Do a quick parse to determine if a server or the cli needs to be started
+ 	const parsedArgs = minimist(process.argv.slice(2), {
+ 		boolean: ['start-server', 'list-extensions', 'print-ip-address', 'help', 'version', 'accept-server-license-terms', 'update-extensions', 'daemonize'],
+-		string: ['install-extension', 'install-builtin-extension', 'uninstall-extension', 'locate-extension', 'socket-path', 'host', 'port', 'compatibility'],
++		string: ['install-extension', 'install-builtin-extension', 'uninstall-extension', 'locate-extension', 'socket-path', 'host', 'port', 'compatibility', 'grace-period'],
+ 		alias: { help: 'h', version: 'v' }
+ 	});
+ 
+diff --git a/src/vs/base/parts/ipc/common/ipc.net.ts b/src/vs/base/parts/ipc/common/ipc.net.ts
+index d752235b95e..ce6a7e13471 100644
+--- a/src/vs/base/parts/ipc/common/ipc.net.ts
++++ b/src/vs/base/parts/ipc/common/ipc.net.ts
+@@ -295,7 +295,7 @@ export const enum ProtocolConstants {
+ 	/**
+ 	 * If there is no reconnection within this time-frame, consider the connection permanently closed...
+ 	 */
+-	ReconnectionGraceTime = 3 * 60 * 60 * 1000, // 3hrs
++	ReconnectionGraceTime = 24 * 60 * 60 * 1000, // 24hrs
+ 	/**
+ 	 * Maximal grace time between the first and the last reconnection...
+ 	 */
+diff --git a/src/vs/server/node/remoteExtensionHostAgentServer.ts b/src/vs/server/node/remoteExtensionHostAgentServer.ts
+index 1f43b2cf30f..a1574e47eaf 100644
+--- a/src/vs/server/node/remoteExtensionHostAgentServer.ts
++++ b/src/vs/server/node/remoteExtensionHostAgentServer.ts
+@@ -35,7 +35,7 @@ import { ConnectionType, ConnectionTypeRequest, ErrorMessage, HandshakeMessage,
+ import { RemoteAgentConnectionContext } from 'vs/platform/remote/common/remoteAgentEnvironment';
+ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+ import { ExtensionHostConnection } from 'vs/server/node/extensionHostConnection';
+-import { ManagementConnection } from 'vs/server/node/remoteExtensionManagement';
++import { setReconnectionGrace, ManagementConnection } from 'vs/server/node/remoteExtensionManagement';
+ import { determineServerConnectionToken, requestHasValidConnectionToken as httpRequestHasValidConnectionToken, ServerConnectionToken, ServerConnectionTokenParseError, ServerConnectionTokenType } from 'vs/server/node/serverConnectionToken';
+ import { IServerEnvironmentService, ServerParsedArgs } from 'vs/server/node/serverEnvironmentService';
+ import { setupServerServices, SocketServer } from 'vs/server/node/serverServices';
+@@ -658,6 +658,8 @@ export async function createServer(address: string | net.AddressInfo | null, arg
+ 		process.exit(1);
+ 	}
+ 
++	setReconnectionGrace(args['grace-period']);
++
+ 	// setting up error handlers, first with console.error, then, once available, using the log service
+ 
+ 	function initUnexpectedErrorHandler(handler: (err: any) => void) {
+diff --git a/src/vs/server/node/remoteExtensionManagement.ts b/src/vs/server/node/remoteExtensionManagement.ts
+index 8c19086588a..6f8149240d8 100644
+--- a/src/vs/server/node/remoteExtensionManagement.ts
++++ b/src/vs/server/node/remoteExtensionManagement.ts
+@@ -32,6 +32,18 @@ function printTime(ms: number): string {
+ 	return `${_h}${_m}${_s}${_ms}`;
+ }
+ 
++const reconnectionGraceTime = [ProtocolConstants.ReconnectionGraceTime];
++
++export function setReconnectionGrace(value: string | undefined) {
++	if (value) {
++		const graceTimeHour = parseInt(value);
++		if (!(graceTimeHour >= 1)) {
++			throw new Error('Grace time period must be a positive integer');
++		}
++		reconnectionGraceTime[0] = graceTimeHour * 60 * 60 * 1000;
++	}
++}
++
+ export class ManagementConnection {
+ 
+ 	private _onClose = new Emitter<void>();
+@@ -52,7 +64,7 @@ export class ManagementConnection {
+ 		remoteAddress: string,
+ 		protocol: PersistentProtocol
+ 	) {
+-		this._reconnectionGraceTime = ProtocolConstants.ReconnectionGraceTime;
++		this._reconnectionGraceTime = reconnectionGraceTime[0];
+ 		this._reconnectionShortGraceTime = ProtocolConstants.ReconnectionShortGraceTime;
+ 		this._remoteAddress = remoteAddress;
+ 
+diff --git a/src/vs/server/node/serverEnvironmentService.ts b/src/vs/server/node/serverEnvironmentService.ts
+index ba65efd805e..a1da92d8408 100644
+--- a/src/vs/server/node/serverEnvironmentService.ts
++++ b/src/vs/server/node/serverEnvironmentService.ts
+@@ -27,6 +27,7 @@ export const serverOptions: OptionDescriptions<Required<ServerParsedArgs>> = {
+ 	'print-startup-performance': { type: 'boolean' },
+ 	'print-ip-address': { type: 'boolean' },
+ 	'daemonize': { type: 'boolean', cat: 'o', description: nls.localize('daemonize', 'Fork and run in the background as a daemon.') },
++	'grace-period': { type: 'string', cat: 'o', description: nls.localize('gracePeriod', "Specify the reconnection grace period in hour.") },
+ 	'accept-server-license-terms': { type: 'boolean', cat: 'o', description: nls.localize('acceptLicenseTerms', "If set, the user accepts the server license terms and the server will be started without a user prompt.") },
+ 	'server-data-dir': { type: 'string', cat: 'o', description: nls.localize('serverDataDir', "Specifies the directory that server data is kept in.") },
+ 	'telemetry-level': { type: 'string', cat: 'o', args: 'level', description: nls.localize('telemetry-level', "Sets the initial telemetry level. Valid levels are: 'off', 'crash', 'error' and 'all'. If not specified, the server will send telemetry until a client connects, it will then use the clients telemetry setting. Setting this to 'off' is equivalent to --disable-telemetry") },
+@@ -144,6 +145,8 @@ export interface ServerParsedArgs {
+ 
+ 	'daemonize'?: boolean;
+ 
++	'grace-period': string;
++
+ 	'accept-server-license-terms': boolean;
+ 
+ 	'server-data-dir'?: string;
+-- 
+2.39.5 (Apple Git-154)

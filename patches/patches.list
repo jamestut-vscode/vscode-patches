@@ -1,9 +1,14 @@
 base-commit: 1.92.2
-final-commit: 2db871d4e8f41e8f0b087e3251e2c913ff332c7d
+final-commit: f3ea98da8299e8960865644d8c3bf1c422c804af
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
 common/0010-Disable-REH-glibc-check.patch
+
+sandbox/0001-disable-chromium-sandbox.patch
+sandbox/0002-bootstrap-no-sandbox.patch
+sandbox/0003-preload-nodejs-export.patch
+sandbox/0004-disable-renderer-isolation.patch
 
 build/0001-Toggle-mangle-build-phase.patch
 
@@ -18,6 +23,8 @@ remote/0003-Disable-client-side-assumption-of-reconnection-grace.patch
 remote/0004-Show-reconnection-progress-instantly.patch
 remote/0005-Reconnecting-timeout-logic-tweak.patch
 remote/0006-Tighten-timeout.patch
+remote/transport/0001-BrowserNodeSocketFactory.patch
+remote/transport/0002-Use-BrowserNodeSocket-transport.patch
 
 ui/0001-Unify-about-message.patch
 ui/0002-Minimal-remote-reconnect-UI.patch
@@ -28,6 +35,7 @@ ipc-version/0002-Show-IPC-version.patch
 reh/0001-Disable-shorten-reconnection-grace-time.patch
 reh/0002-daemon-support.patch
 reh/0003-stdout-err-logging-redir.patch
+reh/0004-Adjustable-reconnection-grace.patch
 
 simple-file-dialog/0001-Do-not-trim-file-name.patch
 simple-file-dialog/0002-Non-intrusive-autocomplete.patch

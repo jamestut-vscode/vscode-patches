@@ -1,0 +1,59 @@
+From 9d91772e051d84f7b85274f85371621a2bf4c14a Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Mon, 9 Sep 2024 18:05:11 +1000
+Subject: Make bootstrap works with sandbox disabled
+
+---
+ src/bootstrap.js | 27 ++++++++++++---------------
+ 1 file changed, 12 insertions(+), 15 deletions(-)
+
+diff --git a/src/bootstrap.js b/src/bootstrap.js
+index 63e7501a696..f59279a2d1d 100644
+--- a/src/bootstrap.js
++++ b/src/bootstrap.js
+@@ -19,23 +19,13 @@
+ // const __dirname = path.dirname(fileURLToPath(import.meta.url));
+ // ESM-uncomment-end
+ 
+-// Simple module style to support node.js and browser environments
+-(function (factory) {
+-
+-	// Node.js
+-	if (typeof module === 'object' && typeof module.exports === 'object') {
+-		module.exports = factory();
+-	}
+-
+-	// Browser
+-	else {
+-		// @ts-ignore
+-		globalThis.MonacoBootstrap = factory();
+-	}
+-}(function () {
++function factory() {
+ 	const Module = typeof require === 'function' ? require('module') : undefined;
+ 	const path = typeof require === 'function' ? require('path') : undefined;
+ 
++	// @ts-ignore
++	// globalThis.cp = require('child_process');
++
+ 	//#region global bootstrapping
+ 
+ 	// increase number of stack frames(from 10, https://github.com/v8/v8/wiki/Stack-Trace-API)
+@@ -133,7 +123,14 @@
+ 		enableASARSupport,
+ 		fileUriFromPath
+ 	};
+-}));
++}
++
++// Node.js
++if (typeof module === 'object' && typeof module.exports === 'object') {
++	module.exports = factory();
++}
++// @ts-ignore
++globalThis.MonacoBootstrap = factory();
+ 
+ // ESM-uncomment-begin
+ // export const enableASARSupport = module.exports.enableASARSupport;
+-- 
+2.39.5 (Apple Git-154)
