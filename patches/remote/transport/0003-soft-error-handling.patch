@@ -16,7 +16,7 @@ index 35d640993fb..876447d2ba7 100644
  					continue;
  				}
 -				if ((err.code === 'ETIMEDOUT' || err.code === 'ENETUNREACH' || err.code === 'ECONNREFUSED' || err.code === 'ECONNRESET') && err.syscall === 'connect') {
-+				if ((err.code === 'ETIMEDOUT' || err.code === 'ENETUNREACH' || err.code === 'ECONNREFUSED' || err.code === 'ECONNRESET' || err.code === 'ENOTFOUND') && (err.syscall === 'connect' || err.syscall === 'getaddrinfo')) {
++				if ((err.code === 'ETIMEDOUT' || err.code === 'ENETUNREACH' || err.code === 'ECONNREFUSED' || err.code === 'ECONNRESET' || err.code === 'ENOTFOUND' || err.code === 'EHOSTUNREACH') && (err.syscall === 'connect' || err.syscall === 'getaddrinfo')) {
  					this._options.logService.info(`${logPrefix} A network error occurred while trying to reconnect, will try again...`);
  					this._options.logService.trace(err);
  					// try again!
