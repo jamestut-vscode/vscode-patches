@@ -1,5 +1,5 @@
 base-commit: 1.92.2
-final-commit: f3ea98da8299e8960865644d8c3bf1c422c804af
+final-commit: a172b9124eeaaeb4eaef3c9cd525a6484ee3cb8b
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
@@ -25,6 +25,7 @@ remote/0005-Reconnecting-timeout-logic-tweak.patch
 remote/0006-Tighten-timeout.patch
 remote/transport/0001-BrowserNodeSocketFactory.patch
 remote/transport/0002-Use-BrowserNodeSocket-transport.patch
+remote/transport/0003-soft-error-handling.patch
 
 ui/0001-Unify-about-message.patch
 ui/0002-Minimal-remote-reconnect-UI.patch

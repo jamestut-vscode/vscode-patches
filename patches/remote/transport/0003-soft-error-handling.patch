@@ -1,0 +1,24 @@
+From 9b798ac6090aabb89ec6a8f866a401b388420902 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Tue, 10 Sep 2024 21:03:27 +1000
+Subject: Handle resolve error as a soft failure
+
+---
+ src/vs/platform/remote/common/remoteAgentConnection.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/vs/platform/remote/common/remoteAgentConnection.ts b/src/vs/platform/remote/common/remoteAgentConnection.ts
+index 35d640993fb..876447d2ba7 100644
+--- a/src/vs/platform/remote/common/remoteAgentConnection.ts
++++ b/src/vs/platform/remote/common/remoteAgentConnection.ts
+@@ -679,7 +679,7 @@ export abstract class PersistentConnection extends Disposable {
+ 					// try again!
+ 					continue;
+ 				}
+-				if ((err.code === 'ETIMEDOUT' || err.code === 'ENETUNREACH' || err.code === 'ECONNREFUSED' || err.code === 'ECONNRESET') && err.syscall === 'connect') {
++				if ((err.code === 'ETIMEDOUT' || err.code === 'ENETUNREACH' || err.code === 'ECONNREFUSED' || err.code === 'ECONNRESET' || err.code === 'ENOTFOUND') && (err.syscall === 'connect' || err.syscall === 'getaddrinfo')) {
+ 					this._options.logService.info(`${logPrefix} A network error occurred while trying to reconnect, will try again...`);
+ 					this._options.logService.trace(err);
+ 					// try again!
+-- 
+2.39.5 (Apple Git-154)

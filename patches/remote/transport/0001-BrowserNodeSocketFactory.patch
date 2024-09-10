@@ -1,20 +1,20 @@
-From f843b28991f18f64a613ce40283d3a938bd20af3 Mon Sep 17 00:00:00 2001
+From ba75927de1e50c2a0e3211c31caff5e26f779fdc Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
 Date: Mon, 9 Sep 2024 18:33:00 +1000
 Subject: Add BrowserNodeSocketFactory.
 Allows the use of Node.js socket on renderer context.
 
 ---
- .../browser/browserNodeSocketFactory.ts       | 217 ++++++++++++++++++
- 1 file changed, 217 insertions(+)
+ .../browser/browserNodeSocketFactory.ts       | 223 ++++++++++++++++++
+ 1 file changed, 223 insertions(+)
  create mode 100644 src/vs/platform/remote/browser/browserNodeSocketFactory.ts
 
 diff --git a/src/vs/platform/remote/browser/browserNodeSocketFactory.ts b/src/vs/platform/remote/browser/browserNodeSocketFactory.ts
 new file mode 100644
-index 00000000000..1c20b4d5fd2
+index 00000000000..b50b3b419fa
 --- /dev/null
 +++ b/src/vs/platform/remote/browser/browserNodeSocketFactory.ts
-@@ -0,0 +1,217 @@
+@@ -0,0 +1,223 @@
 +/*---------------------------------------------------------------------------------------------
 + *  Copyright (c) Microsoft Corporation. All rights reserved.
 + *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -210,6 +210,12 @@ index 00000000000..1c20b4d5fd2
 +	public drain(): Promise<void> {
 +		this.traceSocketEvent(SocketDiagnosticsEventType.NodeDrainBegin);
 +		return new Promise<void>((resolve, reject) => {
++			if (!this.socket.writableNeedDrain) {
++				if (!this.socket.writable && this.socket.closed) {
++					resolve();
++					return;
++				}
++			}
 +			if (this.socket.bufferSize === 0) {
 +				this.traceSocketEvent(SocketDiagnosticsEventType.NodeDrainEnd);
 +				resolve();
