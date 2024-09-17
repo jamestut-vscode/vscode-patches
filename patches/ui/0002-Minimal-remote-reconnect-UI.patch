@@ -16,8 +16,8 @@ index b308fa22f6b..4c843b7277b 100644
  		const connection = remoteAgentService.getConnection();
  		if (connection) {
 -			let quickInputVisible = false;
--			quickInputService.onShow(() => quickInputVisible = true);
--			quickInputService.onHide(() => quickInputVisible = false);
+-			this._register(quickInputService.onShow(() => quickInputVisible = true));
+-			this._register(quickInputService.onHide(() => quickInputVisible = false));
 -
  			let visibleProgress: VisibleProgress | null = null;
  			let reconnectWaitEvent: ReconnectionWaitEvent | null = null;
