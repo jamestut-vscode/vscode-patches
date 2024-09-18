@@ -6,8 +6,8 @@ common/0002-Optimise-theme-detection.patch
 common/0010-Disable-REH-glibc-check.patch
 
 sandbox/0001-disable-chromium-sandbox.patch
-sandbox/0003-preload-nodejs-export.patch
-sandbox/0004-disable-renderer-isolation.patch
+sandbox/0002-preload-nodejs-export.patch
+sandbox/0003-disable-renderer-isolation.patch
 
 build/0001-Toggle-mangle-build-phase.patch
 
