@@ -1,24 +1,42 @@
-From 9b798ac6090aabb89ec6a8f866a401b388420902 Mon Sep 17 00:00:00 2001
+From 56f1d4b7aff1af50b79849e4af941ab30a0bc66d Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
 Date: Tue, 10 Sep 2024 21:03:27 +1000
 Subject: Handle resolve error as a soft failure
 
 ---
- src/vs/platform/remote/common/remoteAgentConnection.ts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../platform/remote/common/remoteAgentConnection.ts | 13 +++----------
+ 1 file changed, 3 insertions(+), 10 deletions(-)
 
 diff --git a/src/vs/platform/remote/common/remoteAgentConnection.ts b/src/vs/platform/remote/common/remoteAgentConnection.ts
-index 35d640993fb..876447d2ba7 100644
+index c6e24a82a8b..3d5a9710800 100644
 --- a/src/vs/platform/remote/common/remoteAgentConnection.ts
 +++ b/src/vs/platform/remote/common/remoteAgentConnection.ts
-@@ -679,7 +679,7 @@ export abstract class PersistentConnection extends Disposable {
+@@ -679,12 +679,6 @@ export abstract class PersistentConnection extends Disposable {
  					// try again!
  					continue;
  				}
 -				if ((err.code === 'ETIMEDOUT' || err.code === 'ENETUNREACH' || err.code === 'ECONNREFUSED' || err.code === 'ECONNRESET') && err.syscall === 'connect') {
-+				if ((err.code === 'ETIMEDOUT' || err.code === 'ENETUNREACH' || err.code === 'ECONNREFUSED' || err.code === 'ECONNRESET' || err.code === 'ENOTFOUND' || err.code === 'EHOSTUNREACH') && (err.syscall === 'connect' || err.syscall === 'getaddrinfo')) {
- 					this._options.logService.info(`${logPrefix} A network error occurred while trying to reconnect, will try again...`);
+-					this._options.logService.info(`${logPrefix} A network error occurred while trying to reconnect, will try again...`);
+-					this._options.logService.trace(err);
+-					// try again!
+-					continue;
+-				}
+ 				if (isCancellationError(err)) {
+ 					this._options.logService.info(`${logPrefix} A promise cancelation error occurred while trying to reconnect, will try again...`);
  					this._options.logService.trace(err);
- 					// try again!
+@@ -697,10 +691,9 @@ export abstract class PersistentConnection extends Disposable {
+ 					this._onReconnectionPermanentFailure(this.protocol.getMillisSinceLastIncomingData(), attempt + 1, RemoteAuthorityResolverError.isHandled(err));
+ 					break;
+ 				}
+-				this._options.logService.error(`${logPrefix} An unknown error occurred while trying to reconnect, since this is an unknown case, it will be treated as a permanent error! Will give up now! Error:`);
+-				this._options.logService.error(err);
+-				this._onReconnectionPermanentFailure(this.protocol.getMillisSinceLastIncomingData(), attempt + 1, false);
+-				break;
++				// try again!
++				this._options.logService.info(`${logPrefix} A network error occurred while trying to reconnect, will try again...`);
++				this._options.logService.info(err);
+ 			}
+ 		} while (!this._isPermanentFailure && !this._isDisposed);
+ 	}
 -- 
 2.39.5 (Apple Git-154)

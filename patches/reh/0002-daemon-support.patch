@@ -1,7 +1,7 @@
 From aebe06a72bd54780a94d0a9c70513dd7d9184a4a Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
 Date: Thu, 27 Jul 2023 20:14:12 +1000
-Subject: [PATCH] daemon support
+Subject: daemon support
 
 ---
  src/server-main.js                             | 14 +++++++++++++-
