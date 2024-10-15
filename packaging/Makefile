@@ -12,9 +12,9 @@ alltargets: $$(LINUX_REH_TARGETS) $$(MACOS_ARCHIVE_TARGETS)
 work out:
 	mkdir $@
 
-# yarn dependencies
+# npm dependencies
 VSCODE_REPO_BASE := ../vscode
-YARN_DEP_IND := $(VSCODE_REPO_BASE)/yarn-ran
+NPM_DEP_IND := $(VSCODE_REPO_BASE)/npm-ran
 
 # base macOS targets
 MACOS_APP_TARGET_NAME := VSCode-darwin-arm64
@@ -47,21 +47,21 @@ out/vscode-reh-%.zip: $(REL_REH_WORKDIR)/vscode-server-%.tgz $(LINUX_REH_TARGET_
 	scripts/package-linux-reh.sh $(LINUX_REH_TARGET_UNPACKED) $< $@
 
 # build VSCode
-$(YARN_DEP_IND):
-	cd ../vscode; yarn
+$(NPM_DEP_IND):
+	cd ../vscode; npm install
 	touch $@
 
-$(MACOS_REH_TARGET_IND): $(YARN_DEP_IND)
+$(MACOS_REH_TARGET_IND): $(NPM_DEP_IND)
 	scripts/build-vscode.sh ../vscode reh
 
 $(MACOS_REH_TARGET_UNPACKED): $(MACOS_REH_TARGET_IND)
 
-$(LINUX_REH_TARGET_IND): $(YARN_DEP_IND)
+$(LINUX_REH_TARGET_IND): $(NPM_DEP_IND)
 	scripts/build-vscode.sh ../vscode linux-reh
 
 $(LINUX_REH_TARGET_UNPACKED): $(LINUX_REH_TARGET_IND)
 
-$(MACOS_APP_TARGET_IND): $(YARN_DEP_IND)
+$(MACOS_APP_TARGET_IND): $(NPM_DEP_IND)
 	scripts/build-vscode.sh ../vscode app
 	touch $@
 

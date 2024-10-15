@@ -14,12 +14,12 @@ index f1fad8f0b51..769daa4301d 100644
 +++ b/src/server-main.js
 @@ -14,6 +14,7 @@
  // ESM-comment-begin
- const path = require('path');
- const http = require('http');
-+const cp = require('child_process');
- const os = require('os');
- const readline = require('readline');
- const performance = require('perf_hooks').performance;
+ import * as path from 'path';
+ import * as http from 'http';
++import * as cp from 'cp';
+ import * as os from 'os';
+ import * as readline from 'readline';
+ import { performance } from 'perf_hooks';
 @@ -49,10 +50,21 @@ async function start() {
  
  	// Do a quick parse to determine if a server or the cli needs to be started

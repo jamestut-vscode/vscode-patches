@@ -42,14 +42,14 @@ index 1f43b2cf30f..a1574e47eaf 100644
 --- a/src/vs/server/node/remoteExtensionHostAgentServer.ts
 +++ b/src/vs/server/node/remoteExtensionHostAgentServer.ts
 @@ -35,7 +35,7 @@ import { ConnectionType, ConnectionTypeRequest, ErrorMessage, HandshakeMessage,
- import { RemoteAgentConnectionContext } from 'vs/platform/remote/common/remoteAgentEnvironment';
- import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
- import { ExtensionHostConnection } from 'vs/server/node/extensionHostConnection';
--import { ManagementConnection } from 'vs/server/node/remoteExtensionManagement';
-+import { setReconnectionGrace, ManagementConnection } from 'vs/server/node/remoteExtensionManagement';
- import { determineServerConnectionToken, requestHasValidConnectionToken as httpRequestHasValidConnectionToken, ServerConnectionToken, ServerConnectionTokenParseError, ServerConnectionTokenType } from 'vs/server/node/serverConnectionToken';
- import { IServerEnvironmentService, ServerParsedArgs } from 'vs/server/node/serverEnvironmentService';
- import { setupServerServices, SocketServer } from 'vs/server/node/serverServices';
+ import { RemoteAgentConnectionContext } from '../../platform/remote/common/remoteAgentEnvironment.js';
+ import { ITelemetryService } from '../../platform/telemetry/common/telemetry.js';
+ import { ExtensionHostConnection } from './extensionHostConnection.js';
+-import { ManagementConnection } from './remoteExtensionManagement.js';
++import { setReconnectionGrace, ManagementConnection } from './remoteExtensionManagement.js';
+ import { determineServerConnectionToken, requestHasValidConnectionToken as httpRequestHasValidConnectionToken, ServerConnectionToken, ServerConnectionTokenParseError, ServerConnectionTokenType } from './serverConnectionToken.js';
+ import { IServerEnvironmentService, ServerParsedArgs } from './serverEnvironmentService.js';
+ import { setupServerServices, SocketServer } from './serverServices.js';
 @@ -658,6 +658,8 @@ export async function createServer(address: string | net.AddressInfo | null, arg
  		process.exit(1);
  	}

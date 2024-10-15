@@ -16,11 +16,12 @@ diff --git a/src/vs/workbench/browser/parts/dialogs/dialog.web.contribution.ts b
 index a97e57d2cbe..bceeaaaeac6 100644
 --- a/src/vs/workbench/browser/parts/dialogs/dialog.web.contribution.ts
 +++ b/src/vs/workbench/browser/parts/dialogs/dialog.web.contribution.ts
-@@ -16,6 +16,7 @@ import { DialogService } from 'vs/workbench/services/dialogs/common/dialogServic
- import { Disposable } from 'vs/base/common/lifecycle';
- import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
- import { Lazy } from 'vs/base/common/lazy';
-+import { INativeHostService } from 'vs/platform/native/common/native';
+@@ -16,7 +16,8 @@ import { DialogService } from 'vs/workbench/services/dialogs/common/dialogServic
+ import { DialogService } from '../../../services/dialogs/common/dialogService.js';
+ import { Disposable } from '../../../../base/common/lifecycle.js';
+ import { IInstantiationService } from '../../../../platform/instantiation/common/instantiation.js';
++import { INativeHostService } from '../../../../platform/native/common/native.js';
+ import { Lazy } from '../../../../base/common/lazy.js';
  
  export class DialogHandlerContribution extends Disposable implements IWorkbenchContribution {
  
@@ -46,21 +47,21 @@ index c064ebced0c..6c0060dbd60 100644
 @@ -4,6 +4,7 @@
   *--------------------------------------------------------------------------------------------*/
  
- import { localize } from 'vs/nls';
-+import { aboutString } from 'vs/workbench/constants';
- import { IConfirmation, IConfirmationResult, IInputResult, ICheckbox, IInputElement, ICustomDialogOptions, IInput, AbstractDialogHandler, DialogType, IPrompt, IAsyncPromptResult } from 'vs/platform/dialogs/common/dialogs';
- import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
- import { ILogService } from 'vs/platform/log/common/log';
+ import { localize } from '../../../../nls.js';
++import { aboutString } from '../../../../workbench/constants.js';
+ import { IConfirmation, IConfirmationResult, IInputResult, ICheckbox, IInputElement, ICustomDialogOptions, IInput, AbstractDialogHandler, DialogType, IPrompt, IAsyncPromptResult } from '../../../../platform/dialogs/common/dialogs.js';
+ import { ILayoutService } from '../../../../platform/layout/browser/layoutService.js';
+ import { ILogService } from '../../../../platform/log/common/log.js';
 @@ -15,11 +16,11 @@ import { EventHelper } from 'vs/base/browser/dom';
- import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
- import { IProductService } from 'vs/platform/product/common/productService';
- import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
--import { fromNow } from 'vs/base/common/date';
- import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
- import { MarkdownRenderer } from 'vs/editor/browser/widget/markdownRenderer/browser/markdownRenderer';
- import { defaultButtonStyles, defaultCheckboxStyles, defaultDialogStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
- import { ResultKind } from 'vs/platform/keybinding/common/keybindingResolver';
-+import { INativeHostService } from 'vs/platform/native/common/native';
+ import { IKeybindingService } from '../../../../platform/keybinding/common/keybinding.js';
+ import { IProductService } from '../../../../platform/product/common/productService.js';
+ import { IClipboardService } from '../../../../platform/clipboard/common/clipboardService.js';
+-import { fromNow } from '../../../../base/common/date.js';
+ import { IInstantiationService } from '../../../../platform/instantiation/common/instantiation.js';
+ import { MarkdownRenderer } from '../../../../editor/browser/widget/markdownRenderer/browser/markdownRenderer.js';
+ import { defaultButtonStyles, defaultCheckboxStyles, defaultDialogStyles, defaultInputBoxStyles } from '../../../../platform/theme/browser/defaultStyles.js';
+ import { ResultKind } from '../../../../platform/keybinding/common/keybindingResolver.js';
++import { INativeHostService } from '../../../../platform/native/common/native.js';
  
  export class BrowserDialogHandler extends AbstractDialogHandler {
  
@@ -101,12 +102,12 @@ index 00000000000..44b543aeca0
 --- /dev/null
 +++ b/src/vs/workbench/constants.ts
 @@ -0,0 +1,21 @@
-+import { localize } from 'vs/nls';
-+import { fromNow } from 'vs/base/common/date';
-+import { isLinuxSnap } from 'vs/base/common/platform';
-+import { IProductService } from 'vs/platform/product/common/productService';
-+import { IOSProperties } from 'vs/platform/native/common/native';
-+import { process } from 'vs/base/parts/sandbox/electron-sandbox/globals';
++import { localize } from '../nls.js';
++import { fromNow } from '../base/common/date.js';
++import { isLinuxSnap } from '../base/common/platform.js';
++import { IProductService } from '../platform/product/common/productService.js';
++import { IOSProperties } from '../platform/native/common/native.js';
++import { process } from '../base/parts/sandbox/electron-sandbox/globals.js';
 +
 +export const aboutString = (osProps: IOSProperties, productService: IProductService, useAgo: boolean): string => {
 +	return localize({ key: 'aboutDetail', comment: ['Electron, Chromium, Node.js and V8 are product names that need no translation'] },
@@ -142,17 +143,17 @@ index f2cc82ab8c5..a3d2da88c68 100644
 @@ -4,14 +4,12 @@
   *--------------------------------------------------------------------------------------------*/
  
- import { localize } from 'vs/nls';
--import { fromNow } from 'vs/base/common/date';
--import { isLinuxSnap } from 'vs/base/common/platform';
-+import { aboutString } from 'vs/workbench/constants';
- import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
- import { AbstractDialogHandler, IConfirmation, IConfirmationResult, IPrompt, IAsyncPromptResult } from 'vs/platform/dialogs/common/dialogs';
- import { ILogService } from 'vs/platform/log/common/log';
- import { INativeHostService } from 'vs/platform/native/common/native';
- import { IProductService } from 'vs/platform/product/common/productService';
--import { process } from 'vs/base/parts/sandbox/electron-sandbox/globals';
- import { getActiveWindow } from 'vs/base/browser/dom';
+ import { localize } from '../../../../nls.js';
+-import { fromNow } from '../../../../base/common/date.js';
+-import { isLinuxSnap } from '../../../../base/common/platform.js';
++import { aboutString } from '../../../../workbench/constants.js';
+ import { IClipboardService } from '../../../../platform/clipboard/common/clipboardService.js';
+ import { AbstractDialogHandler, IConfirmation, IConfirmationResult, IPrompt, IAsyncPromptResult } from '../../../../platform/dialogs/common/dialogs.js';
+ import { ILogService } from '../../../../platform/log/common/log.js';
+ import { INativeHostService } from '../../../../platform/native/common/native.js';
+ import { IProductService } from '../../../../platform/product/common/productService.js';
+-import { process } from '../../../../base/parts/sandbox/electron-sandbox/globals.js';
+ import { getActiveWindow } from '../../../../base/browser/dom.js';
  
  export class NativeDialogHandler extends AbstractDialogHandler {
 @@ -79,23 +77,8 @@ export class NativeDialogHandler extends AbstractDialogHandler {

@@ -53,24 +53,24 @@ index 649a025..3fd8b0c 100644
 --- a/src/vs/workbench/contrib/search/browser/searchView.ts
 +++ b/src/vs/workbench/contrib/search/browser/searchView.ts
 @@ -22,17 +22,15 @@ import { URI } from 'vs/base/common/uri';
- import * as network from 'vs/base/common/network';
- import 'vs/css!./media/searchview';
- import { getCodeEditor, isCodeEditor, isDiffEditor } from 'vs/editor/browser/editorBrowser';
--import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
--import { EmbeddedCodeEditorWidget } from 'vs/editor/browser/widget/codeEditor/embeddedCodeEditorWidget';
- import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
- import { Selection } from 'vs/editor/common/core/selection';
- import { IEditor } from 'vs/editor/common/editorCommon';
--import { CommonFindController } from 'vs/editor/contrib/find/browser/findController';
- import { MultiCursorSelectionController } from 'vs/editor/contrib/multicursor/browser/multicursor';
- import * as nls from 'vs/nls';
- import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
- import { MenuId } from 'vs/platform/actions/common/actions';
- import { ICommandService } from 'vs/platform/commands/common/commands';
-+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
- import { IConfigurationChangeEvent, IConfigurationService } from 'vs/platform/configuration/common/configuration';
- import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
- import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
+ import * as network from '../../../../base/common/network.js';
+ import './media/searchview.css';
+ import { getCodeEditor, isCodeEditor, isDiffEditor } from '../../../../editor/browser/editorBrowser.js';
+-import { ICodeEditorService } from '../../../../editor/browser/services/codeEditorService.js';
+-import { EmbeddedCodeEditorWidget } from '../../../../editor/browser/widget/codeEditor/embeddedCodeEditorWidget.js';
+ import { IEditorOptions } from '../../../../editor/common/config/editorOptions.js';
+ import { Selection } from '../../../../editor/common/core/selection.js';
+ import { IEditor } from '../../../../editor/common/editorCommon.js';
+-import { CommonFindController } from '../../../../editor/contrib/find/browser/findController.js';
+ import { MultiCursorSelectionController } from '../../../../editor/contrib/multicursor/browser/multicursor.js';
+ import * as nls from '../../../../nls.js';
+ import { IAccessibilityService } from '../../../../platform/accessibility/common/accessibility.js';
+ import { MenuId } from '../../../../platform/actions/common/actions.js';
+ import { ICommandService } from '../../../../platform/commands/common/commands.js';
++import { IClipboardService } from '../../../../platform/clipboard/common/clipboardService.js';
+ import { IConfigurationChangeEvent, IConfigurationService } from '../../../../platform/configuration/common/configuration.js';
+ import { IContextKey, IContextKeyService } from '../../../../platform/contextkey/common/contextkey.js';
+ import { IContextMenuService, IContextViewService } from '../../../../platform/contextview/browser/contextView.js';
 @@ -170,7 +168,6 @@ export class SearchView extends ViewPane {
  		options: IViewPaneOptions,
  		@IFileService private readonly fileService: IFileService,
