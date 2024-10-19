@@ -28,7 +28,7 @@ index c2e3138..e866461 100644
 +					updatedText = await openedView.updateTextFromFindWidgetOrSelection({ allowUnselectedWord: typeof args.replace !== 'string' });
  				}
  				openedView.setSearchParameters(args);
- 
+ 				if (typeof args.showIncludesExcludes === 'boolean') {
 diff --git a/src/vs/workbench/contrib/search/browser/searchActionsNav.ts b/src/vs/workbench/contrib/search/browser/searchActionsNav.ts
 index 3ae42ec..893c5fb 100644
 --- a/src/vs/workbench/contrib/search/browser/searchActionsNav.ts
@@ -80,7 +80,7 @@ index 649a025..3fd8b0c 100644
  		@INotificationService private readonly notificationService: INotificationService,
  		@IDialogService private readonly dialogService: IDialogService,
 @@ -195,7 +192,8 @@ export class SearchView extends ViewPane {
- 		@ITelemetryService telemetryService: ITelemetryService,
+ 		@IHoverService hoverService: IHoverService,
  		@INotebookService private readonly notebookService: INotebookService,
  		@ILogService private readonly logService: ILogService,
 -		@IAccessibilitySignalService private readonly accessibilitySignalService: IAccessibilitySignalService
@@ -88,7 +88,7 @@ index 649a025..3fd8b0c 100644
 +		@IClipboardService private readonly clipboardService: IClipboardService
  	) {
  
- 		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
+ 		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService, hoverService);
 @@ -1154,40 +1152,17 @@ export class SearchView extends ViewPane {
  		}
  	}

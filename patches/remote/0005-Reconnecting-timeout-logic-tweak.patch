@@ -12,8 +12,8 @@ index 26dc0d6124c..a3af8977ad3 100644
 --- a/src/vs/platform/remote/common/remoteAgentConnection.ts
 +++ b/src/vs/platform/remote/common/remoteAgentConnection.ts
 @@ -21,7 +21,7 @@ import { getRemoteServerRootPath } from 'vs/platform/remote/common/remoteHosts';
- import { IRemoteSocketFactoryService } from 'vs/platform/remote/common/remoteSocketFactoryService';
- import { ISignService } from 'vs/platform/sign/common/sign';
+ import { IRemoteSocketFactoryService } from './remoteSocketFactoryService.js';
+ import { ISignService } from '../../sign/common/sign.js';
 
 -const RECONNECT_TIMEOUT = 30 * 1000 /* 30s */;
 +const RECONNECT_TIMEOUT = 15 * 1000; // in milliseconds
@@ -52,7 +52,7 @@ index 26dc0d6124c..a3af8977ad3 100644
  	let socket: ISocket;
 +	timeoutCancellationToken = createTimeoutCancellation(RECONNECT_TIMEOUT);
  	try {
- 		socket = await createSocket(options.logService, options.remoteSocketFactoryService, options.connectTo, getRemoteServerRootPath(options), `reconnectionToken=${options.reconnectionToken}&reconnection=${options.reconnectionProtocol ? 'true' : 'false'}`, connectionTypeToString(connectionType), `renderer-${connectionTypeToString(connectionType)}-${options.reconnectionToken}`, timeoutCancellationToken);
+ 		socket = await createSocket(options.logService, options.remoteSocketFactoryService, options.connectTo, RemoteAuthorities.getServerRootPath(), `reconnectionToken=${options.reconnectionToken}&reconnection=${options.reconnectionProtocol ? 'true' : 'false'}`, connectionTypeToString(connectionType), `renderer-${connectionTypeToString(connectionType)}-${options.reconnectionToken}`, timeoutCancellationToken);
  	} catch (error) {
 @@ -255,6 +248,7 @@ async function connectToRemoteExtensionHostAgent<T extends RemoteConnection>(opt
  	}

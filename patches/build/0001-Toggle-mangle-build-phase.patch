@@ -37,7 +37,7 @@ index 7f485a072c0..d951b52b0a4 100644
 -const { compileBuildTask } = require('./gulpfile.compile');
 +const { compileBuildTask, compileBuildTaskNoMangle } = require('./gulpfile.compile');
  const { compileExtensionsBuildTask, compileExtensionMediaBuildTask } = require('./gulpfile.extensions');
- const { vscodeWebEntryPoints, vscodeWebResourceIncludes, createVSCodeWebFileContentMapper } = require('./gulpfile.vscode.web');
+ const { vscodeWebResourceIncludes, createVSCodeWebFileContentMapper } = require('./gulpfile.vscode.web');
  const cp = require('child_process');
 @@ -445,7 +445,7 @@ function tweakProductForServerWeb(product) {
  			gulp.task(serverTaskCI);
@@ -60,7 +60,7 @@ index 857114fea15..4b0fbcf88ea 100644
 +const { compileBuildTask, compileBuildTaskNoMangle } = require('./gulpfile.compile');
  const { compileExtensionsBuildTask, compileExtensionMediaBuildTask } = require('./gulpfile.extensions');
  const { promisify } = require('util');
- const glob = promisify(require('glob'));
+ const { isAMD } = require('./lib/amd');
 @@ -453,7 +453,7 @@ BUILD_TARGETS.forEach(buildTarget => {
  		gulp.task(vscodeTaskCI);
  

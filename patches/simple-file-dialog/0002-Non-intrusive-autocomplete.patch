@@ -38,7 +38,7 @@ index 09a171641cb..d7e3b4254f6 100644
 +			}
  			this.filePickBox.valueSelection = [this.filePickBox.value.length, this.filePickBox.value.length];
  
- 			function doResolve(dialog: SimpleFileDialog, uri: URI | undefined) {
+ 			const doResolve = (uri: URI | undefined) => {
 @@ -386,10 +389,6 @@ export class SimpleFileDialog implements ISimpleFileDialog {
  				if ((i.length === 1) && this.isSelectionChangeFromUser()) {
  					this.filePickBox.validationMessage = undefined;
@@ -49,7 +49,7 @@ index 09a171641cb..d7e3b4254f6 100644
 -					}
  					this.setAutoComplete(userPath, this.userEnteredPathSegment, i[0], true);
  				}
- 			});
+ 			}));
 @@ -406,12 +405,7 @@ export class SimpleFileDialog implements ISimpleFileDialog {
  
  			this.filePickBox.show();
