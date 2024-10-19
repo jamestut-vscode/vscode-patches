@@ -6,13 +6,6 @@ set -e
 
 cd ${0:a:h}
 
-if ! [ -e spm.py ]
-then
-    echo "Downloading Simple Patch Manager ..."
-    curl -L https://raw.githubusercontent.com/jamestut/spm/main/spm.py > spm.py
-    chmod +x spm.py
-fi
-
 # get some basic info about our base
 BASE_TAG=$(packaging/scripts/get-base-commit.sh --no-resolve-hash)
 
@@ -44,7 +37,7 @@ fi
 
 cd ..
 echo "Applying patches ..."
-./spm.py patches vscode
+spm/spm.py patches vscode
 
 echo "Applying doctor ..."
 packaging/scripts/doctor-product-info.py --pre
