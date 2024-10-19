@@ -1,0 +1,90 @@
+From 1f75287b3a2bb42c3c5ad165198072dbcf3f6d5a Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sat, 19 Oct 2024 10:42:51 +1100
+Subject: Use CommonJS file name for preload
+
+---
+ build/gulpfile.vscode.js                                    | 6 +++---
+ .../sandbox/electron-sandbox/{preload.js => preload.cjs}    | 0
+ src/vs/platform/issue/electron-main/issueMainService.ts     | 2 +-
+ src/vs/platform/issue/electron-main/processMainService.ts   | 2 +-
+ src/vs/platform/windows/electron-main/windowImpl.ts         | 2 +-
+ 5 files changed, 6 insertions(+), 6 deletions(-)
+ rename src/vs/base/parts/sandbox/electron-sandbox/{preload.js => preload.cjs} (100%)
+
+diff --git a/build/gulpfile.vscode.js b/build/gulpfile.vscode.js
+index 9dfb6a3..7c3ce52 100644
+--- a/build/gulpfile.vscode.js
++++ b/build/gulpfile.vscode.js
+@@ -71,7 +71,7 @@ const vscodeResourceIncludes = !isAMD() ? [
+ 	'out-build/vs/code/electron-sandbox/workbench/workbench.esm.html',
+ 
+ 	// Electron Preload
+-	'out-build/vs/base/parts/sandbox/electron-sandbox/preload.js',
++	'out-build/vs/base/parts/sandbox/electron-sandbox/preload.cjs',
+ 	'out-build/vs/base/parts/sandbox/electron-sandbox/preload-aux.js',
+ 
+ 	// Node Scripts
+@@ -125,7 +125,7 @@ const vscodeResourceIncludes = !isAMD() ? [
+ 	'!out-build/vs/editor/standalone/**/*.svg',
+ 	'out-build/vs/base/node/{stdForkStart.js,terminateProcess.sh,cpuUsage.sh,ps.sh}',
+ 	'out-build/vs/base/browser/ui/codicons/codicon/**',
+-	'out-build/vs/base/parts/sandbox/electron-sandbox/preload.js',
++	'out-build/vs/base/parts/sandbox/electron-sandbox/preload.cjs',
+ 	'out-build/vs/base/parts/sandbox/electron-sandbox/preload-aux.js',
+ 	'out-build/vs/workbench/browser/media/*-theme.css',
+ 	'out-build/vs/workbench/contrib/debug/**/*.json',
+@@ -292,7 +292,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
+ 		const out = sourceFolderName;
+ 
+ 		const checksums = computeChecksums(out, [
+-			'vs/base/parts/sandbox/electron-sandbox/preload.js',
++			'vs/base/parts/sandbox/electron-sandbox/preload.cjs',
+ 			'vs/workbench/workbench.desktop.main.js',
+ 			'vs/workbench/workbench.desktop.main.css',
+ 			'vs/workbench/api/node/extensionHostProcess.js',
+diff --git a/src/vs/base/parts/sandbox/electron-sandbox/preload.js b/src/vs/base/parts/sandbox/electron-sandbox/preload.cjs
+similarity index 100%
+rename from src/vs/base/parts/sandbox/electron-sandbox/preload.js
+rename to src/vs/base/parts/sandbox/electron-sandbox/preload.cjs
+diff --git a/src/vs/platform/issue/electron-main/issueMainService.ts b/src/vs/platform/issue/electron-main/issueMainService.ts
+index 00a203c..701c6e8 100644
+--- a/src/vs/platform/issue/electron-main/issueMainService.ts
++++ b/src/vs/platform/issue/electron-main/issueMainService.ts
+@@ -217,7 +217,7 @@ export class IssueMainService implements IIssueMainService {
+ 			title: options.title,
+ 			backgroundColor: options.backgroundColor || IssueMainService.DEFAULT_BACKGROUND_COLOR,
+ 			webPreferences: {
+-				preload: FileAccess.asFileUri('vs/base/parts/sandbox/electron-sandbox/preload.js').fsPath,
++				preload: FileAccess.asFileUri('vs/base/parts/sandbox/electron-sandbox/preload.cjs').fsPath,
+ 				additionalArguments: [`--vscode-window-config=${ipcObjectUrl.resource.toString()}`],
+ 				v8CacheOptions: this.environmentMainService.useCodeCache ? 'bypassHeatCheck' : 'none',
+ 				enableWebSQL: false,
+diff --git a/src/vs/platform/issue/electron-main/processMainService.ts b/src/vs/platform/issue/electron-main/processMainService.ts
+index dd2a275..0331a72 100644
+--- a/src/vs/platform/issue/electron-main/processMainService.ts
++++ b/src/vs/platform/issue/electron-main/processMainService.ts
+@@ -342,7 +342,7 @@ export class ProcessMainService implements IProcessMainService {
+ 			title: options.title,
+ 			backgroundColor: options.backgroundColor || ProcessMainService.DEFAULT_BACKGROUND_COLOR,
+ 			webPreferences: {
+-				preload: FileAccess.asFileUri('vs/base/parts/sandbox/electron-sandbox/preload.js').fsPath,
++				preload: FileAccess.asFileUri('vs/base/parts/sandbox/electron-sandbox/preload.cjs').fsPath,
+ 				additionalArguments: [`--vscode-window-config=${ipcObjectUrl.resource.toString()}`],
+ 				v8CacheOptions: this.environmentMainService.useCodeCache ? 'bypassHeatCheck' : 'none',
+ 				enableWebSQL: false,
+diff --git a/src/vs/platform/windows/electron-main/windowImpl.ts b/src/vs/platform/windows/electron-main/windowImpl.ts
+index 7660162..ca943fd 100644
+--- a/src/vs/platform/windows/electron-main/windowImpl.ts
++++ b/src/vs/platform/windows/electron-main/windowImpl.ts
+@@ -605,7 +605,7 @@ export class CodeWindow extends BaseWindow implements ICodeWindow {
+ 			this.logService.trace('window#ctor: using window state', state);
+ 
+ 			const options = instantiationService.invokeFunction(defaultBrowserWindowOptions, this.windowState, undefined, {
+-				preload: FileAccess.asFileUri('vs/base/parts/sandbox/electron-sandbox/preload.js').fsPath,
++				preload: FileAccess.asFileUri('vs/base/parts/sandbox/electron-sandbox/preload.cjs').fsPath,
+ 				additionalArguments: [`--vscode-window-config=${this.configObjectUrl.resource.toString()}`],
+ 				v8CacheOptions: this.environmentMainService.useCodeCache ? 'bypassHeatCheck' : 'none',
+ 				nodeIntegration: true,
+-- 
+2.39.5 (Apple Git-154)

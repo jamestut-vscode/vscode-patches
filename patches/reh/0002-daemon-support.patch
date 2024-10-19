@@ -16,7 +16,7 @@ index f1fad8f0b51..769daa4301d 100644
  import './bootstrap-server.js'; // this MUST come before other imports as it changes global state
  import * as path from 'path';
  import * as http from 'http';
-+import * as cp from 'cp';
++import * as cp from 'child_process';
  import * as os from 'os';
  import * as readline from 'readline';
  import { performance } from 'perf_hooks';

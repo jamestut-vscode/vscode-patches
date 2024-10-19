@@ -1,5 +1,5 @@
 base-commit: 1.94.2
-final-commit: 24975298f496fca8dccd04a1a39a5d9f63e6b64c
+final-commit: 7e3809e34b99dee0ef7c20fb7785f251d210dea5
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
@@ -8,6 +8,7 @@ common/0010-Disable-REH-glibc-check.patch
 sandbox/0001-disable-chromium-sandbox.patch
 sandbox/0002-preload-nodejs-export.patch
 sandbox/0003-disable-renderer-isolation.patch
+sandbox/0010-use-commonjs-preload.patch
 
 build/0001-Toggle-mangle-build-phase.patch
 

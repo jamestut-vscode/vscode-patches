@@ -27,13 +27,13 @@ index 00000000000..b50b3b419fa
 +const net = window.nodeModules.net;
 +const Socket = net.Socket;
 +
-+import { VSBuffer } from 'vs/base/common/buffer';
-+import { IDisposable } from 'vs/base/common/lifecycle';
-+import { ISocket, SocketCloseEvent, SocketDiagnosticsEventType, SocketCloseEventType, SocketDiagnostics } from 'vs/base/parts/ipc/common/ipc.net';
-+import { makeRawSocketHeaders } from 'vs/platform/remote/common/managedSocket';
-+import { RemoteConnectionType, WebSocketRemoteConnection } from 'vs/platform/remote/common/remoteAuthorityResolver';
-+import { ISocketFactory } from 'vs/platform/remote/common/remoteSocketFactoryService';
-+import { onUnexpectedError } from 'vs/base/common/errors';
++import { VSBuffer } from '../../../base/common/buffer.js';
++import { IDisposable } from '../../../base/common/lifecycle.js';
++import { ISocket, SocketCloseEvent, SocketDiagnosticsEventType, SocketCloseEventType, SocketDiagnostics } from '../../../base/parts/ipc/common/ipc.net.js';
++import { makeRawSocketHeaders } from '../../../platform/remote/common/managedSocket.js';
++import { RemoteConnectionType, WebSocketRemoteConnection } from '../../../platform/remote/common/remoteAuthorityResolver.js';
++import { ISocketFactory } from '../../../platform/remote/common/remoteSocketFactoryService.js';
++import { onUnexpectedError } from '../../../base/common/errors.js';
 +
 +const socketEndTimeoutMs = 15_000;
 +
