@@ -1,0 +1,56 @@
+From 3dfd7a45ccce7e64ad16cb664d4a83c08f6e94a0 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sun, 20 Oct 2024 15:57:50 +1100
+Subject: Add vscode-remote-resolver extension
+
+---
+ .gitmodules                       | 3 +++
+ build/gulpfile.extensions.js      | 1 +
+ build/npm/dirs.js                 | 1 +
+ extensions/vscode-remote-resolver | 1 +
+ 4 files changed, 6 insertions(+)
+ create mode 100644 .gitmodules
+ create mode 160000 extensions/vscode-remote-resolver
+
+diff --git a/.gitmodules b/.gitmodules
+new file mode 100644
+index 0000000..4c789d0
+--- /dev/null
++++ b/.gitmodules
+@@ -0,0 +1,3 @@
++[submodule "ext-vscode-remote-resolver"]
++    path = extensions/vscode-remote-resolver
++    url = https://github.com/jamestut-vscode/vscode-remote-resolver.git
+diff --git a/build/gulpfile.extensions.js b/build/gulpfile.extensions.js
+index 4f745ae..94f4b1d 100644
+--- a/build/gulpfile.extensions.js
++++ b/build/gulpfile.extensions.js
+@@ -66,6 +66,7 @@ const compilations = [
+ 	'extensions/vscode-api-tests/tsconfig.json',
+ 	'extensions/vscode-colorize-tests/tsconfig.json',
+ 	'extensions/vscode-test-resolver/tsconfig.json',
++	'extensions/vscode-remote-resolver/tsconfig.json',
+ 
+ 	'.vscode/extensions/vscode-selfhost-test-provider/tsconfig.json',
+ 	'.vscode/extensions/vscode-selfhost-import-aid/tsconfig.json',
+diff --git a/build/npm/dirs.js b/build/npm/dirs.js
+index b9645e6..3582b8c 100644
+--- a/build/npm/dirs.js
++++ b/build/npm/dirs.js
+@@ -45,6 +45,7 @@ const dirs = [
+ 	'extensions/vscode-api-tests',
+ 	'extensions/vscode-colorize-tests',
+ 	'extensions/vscode-test-resolver',
++	'extensions/vscode-remote-resolver',
+ 	'remote',
+ 	'remote/web',
+ 	'test/automation',
+diff --git a/extensions/vscode-remote-resolver b/extensions/vscode-remote-resolver
+new file mode 160000
+index 0000000..0e2c554
+--- /dev/null
++++ b/extensions/vscode-remote-resolver
+@@ -0,0 +1 @@
++Subproject commit 8a6eb9250ace5434d30b85378296522701016fb1
+-- 
+2.39.5 (Apple Git-154)

@@ -1,5 +1,5 @@
 base-commit: 1.94.2
-final-commit: 7e3809e34b99dee0ef7c20fb7785f251d210dea5
+final-commit: 1486f71252045b0c2502ee8fd569b283eb2d673d
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
@@ -42,3 +42,5 @@ simple-file-dialog/0001-Do-not-trim-file-name.patch
 simple-file-dialog/0002-Non-intrusive-autocomplete.patch
 
 search-view/0001-globalFindClipoard-search-view.patch
+
+extensions/0001-vscode-remote-resolver.patch

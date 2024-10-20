@@ -45,4 +45,7 @@ cd vscode
 git add '*.json'
 git commit --no-verify -m 'Doctor product.json and package.json'
 
+echo "Updating submodules ..."
+git submodule update --init
+
 echo "Done! The custom VSCode is ready to be built!"
