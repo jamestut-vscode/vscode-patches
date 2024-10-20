@@ -47,7 +47,7 @@ then
 fi
 
 echo "Building VSCode with target '$TARGET' and commit ID '$BUILD_SOURCEVERSION' ..."
-yarn gulp $TARGET
+npx gulp $TARGET
 
 # doctor the product.json's commit
 echo "Updating product.json ..."
