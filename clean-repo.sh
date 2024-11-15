@@ -38,11 +38,14 @@ if [[ "$ANSWER" == 'yes' ]]
 then
     echo "Cleaning repository ..."
     cd vscode
-    git reset --hard HEAD
     if [[ $DEEPCLEAN -eq 1 ]]
     then
-        git clean -fdx
+        echo "Cleaning ..."
+        rm -rf $(ls -A | grep -v '^.git$')
+        echo "Restoring from commit ..."
+        git restore .
     else
+        git reset --hard HEAD
         git clean -fd
     fi
 else
