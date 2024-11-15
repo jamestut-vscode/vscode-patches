@@ -4,25 +4,25 @@ Date: Mon, 9 Sep 2024 19:30:28 +1000
 Subject: Adjustable reconnection grace
 
 ---
- src/server-main.js                                 |  2 +-
+ src/server-main.ts                                 |  2 +-
  src/vs/base/parts/ipc/common/ipc.net.ts            |  2 +-
  .../server/node/remoteExtensionHostAgentServer.ts  |  4 +++-
  src/vs/server/node/remoteExtensionManagement.ts    | 14 +++++++++++++-
  src/vs/server/node/serverEnvironmentService.ts     |  3 +++
  5 files changed, 21 insertions(+), 4 deletions(-)
 
-diff --git a/src/server-main.js b/src/server-main.js
+diff --git a/src/server-main.ts b/src/server-main.ts
 index f9c8976615f..db53af662b3 100644
---- a/src/server-main.js
-+++ b/src/server-main.js
+--- a/src/server-main.ts
++++ b/src/server-main.ts
 @@ -51,7 +51,7 @@ async function start() {
- 	// Do a quick parse to determine if a server or the cli needs to be started
- 	const parsedArgs = minimist(process.argv.slice(2), {
- 		boolean: ['start-server', 'list-extensions', 'print-ip-address', 'help', 'version', 'accept-server-license-terms', 'update-extensions', 'daemonize'],
--		string: ['install-extension', 'install-builtin-extension', 'uninstall-extension', 'locate-extension', 'socket-path', 'host', 'port', 'compatibility'],
-+		string: ['install-extension', 'install-builtin-extension', 'uninstall-extension', 'locate-extension', 'socket-path', 'host', 'port', 'compatibility', 'grace-period'],
- 		alias: { help: 'h', version: 'v' }
- 	});
+ // Do a quick parse to determine if a server or the cli needs to be started
+ const parsedArgs = minimist(process.argv.slice(2), {
+ 	boolean: ['start-server', 'list-extensions', 'print-ip-address', 'help', 'version', 'accept-server-license-terms', 'update-extensions', 'daemonize'],
+-	string: ['install-extension', 'install-builtin-extension', 'uninstall-extension', 'locate-extension', 'socket-path', 'host', 'port', 'compatibility'],
++	string: ['install-extension', 'install-builtin-extension', 'uninstall-extension', 'locate-extension', 'socket-path', 'host', 'port', 'compatibility', 'grace-period'],
+ 	alias: { help: 'h', version: 'v' }
+ });
  
 diff --git a/src/vs/base/parts/ipc/common/ipc.net.ts b/src/vs/base/parts/ipc/common/ipc.net.ts
 index d752235b95e..ce6a7e13471 100644

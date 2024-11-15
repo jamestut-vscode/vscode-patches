@@ -1,0 +1,120 @@
+From 1a6e0a7755bfd47978c7eda1fdbde4df84688b7c Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sat, 16 Nov 2024 02:35:35 +1100
+Subject: Generate preload.cjs
+
+---
+ build/gulpfile.compile.js |  3 ++-
+ build/gulpfile.js         |  6 ++++--
+ build/lib/util.js         | 22 ++++++++++++++++++++++
+ build/lib/util.ts         | 22 ++++++++++++++++++++++
+ 4 files changed, 50 insertions(+), 3 deletions(-)
+
+diff --git a/build/gulpfile.compile.js b/build/gulpfile.compile.js
+index 1f4a64fe670..78155feecb3 100644
+--- a/build/gulpfile.compile.js
++++ b/build/gulpfile.compile.js
+@@ -20,7 +20,8 @@ function makeCompileBuildTask(disableMangle) {
+ 		util.rimraf('out-build'),
+ 		date.writeISODate('out-build'),
+ 		compilation.compileApiProposalNamesTask,
+-		compilation.compileTask('src', 'out-build', true, { disableMangle })
++		compilation.compileTask('src', 'out-build', true, { disableMangle }),
++		util.copyFile('preload-cjs', 'out-build/vs/base/parts/sandbox/electron-sandbox/preload.js', 'out-build/vs/base/parts/sandbox/electron-sandbox/preload.cjs')
+ 	);
+ }
+
+diff --git a/build/gulpfile.js b/build/gulpfile.js
+index 7894398c2ea..748cd9b0bad 100644
+--- a/build/gulpfile.js
++++ b/build/gulpfile.js
+@@ -28,10 +28,12 @@ const transpileClientTask = task.define('transpile-client', task.series(util.rim
+ gulp.task(transpileClientTask);
+
+ // Fast compile for development time
+-const compileClientTask = task.define('compile-client', task.series(util.rimraf('out'), compileApiProposalNamesTask, compileTask('src', 'out', false)));
++const compileClientTask = task.define('compile-client', task.series(util.rimraf('out'), compileApiProposalNamesTask, compileTask('src', 'out', false),
++	util.copyFile('preload-cjs', 'out/vs/base/parts/sandbox/electron-sandbox/preload.js', 'out/vs/base/parts/sandbox/electron-sandbox/preload.cjs')));
+ gulp.task(compileClientTask);
+
+-const watchClientTask = task.define('watch-client', task.series(util.rimraf('out'), task.parallel(watchTask('out', false), watchApiProposalNamesTask)));
++const watchClientTask = task.define('watch-client', task.series(util.rimraf('out'), task.parallel(watchTask('out', false), watchApiProposalNamesTask,
++	util.watchAndCopyFile('preload-cjs', 'out/vs/base/parts/sandbox/electron-sandbox/preload.js', 'out/vs/base/parts/sandbox/electron-sandbox/preload.cjs'))));
+ gulp.task(watchClientTask);
+
+ // All
+diff --git a/build/lib/util.js b/build/lib/util.js
+index 82e4189dd1a..786094fbe5e 100644
+--- a/build/lib/util.js
++++ b/build/lib/util.js
+@@ -17,6 +17,8 @@ exports.$if = $if;
+ exports.appendOwnPathSourceURL = appendOwnPathSourceURL;
+ exports.rewriteSourceMappingURL = rewriteSourceMappingURL;
+ exports.rimraf = rimraf;
++exports.copyFile = copyFile;
++exports.watchAndCopyFile = watchAndCopyFile;
+ exports.rreddir = rreddir;
+ exports.ensureDir = ensureDir;
+ exports.rebase = rebase;
+@@ -255,6 +257,26 @@ function rimraf(dir) {
+     result.taskName = `clean-${path.basename(dir).toLowerCase()}`;
+     return result;
+ }
++// update the corresponding util.js by running `npx tsc -p ./build/tsconfig.build.json`
++function copyFile(name, src, dst) {
++    const result = () => new Promise((c, _e) => {
++        fs.copyFileSync(src, dst);
++        return c();
++    });
++    result.taskName = `copy-${name}`;
++    return result;
++}
++function watchAndCopyFile(name, src, dst) {
++    const result = () => new Promise((_c, _e) => {
++        fs.watchFile(src, (cur, _prev) => {
++            if (cur.isFile()) {
++                fs.copyFileSync(src, dst);
++            }
++        });
++    });
++    result.taskName = `watch-copy-${name}`;
++    return result;
++}
+ function _rreaddir(dirPath, prepend, result) {
+     const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+     for (const entry of entries) {
+diff --git a/build/lib/util.ts b/build/lib/util.ts
+index 08921834676..9a8aba4eb69 100644
+--- a/build/lib/util.ts
++++ b/build/lib/util.ts
+@@ -318,6 +318,28 @@ export function rimraf(dir: string): () => Promise<void> {
+ 	return result;
+ }
+
++// update the corresponding util.js by running `npx tsc -p ./build/tsconfig.build.json`
++export function copyFile(name: string, src: string, dst: string): () => Promise<void> {
++	const result = () => new Promise<void>((c, _e) => {
++		fs.copyFileSync(src, dst);
++		return c();
++	});
++	result.taskName = `copy-${name}`;
++	return result;
++}
++
++export function watchAndCopyFile(name: string, src: string, dst: string): () => Promise<void> {
++	const result = () => new Promise<void>((_c, _e) => {
++		fs.watchFile(src, (cur: fs.Stats, _prev: fs.Stats) => {
++			if (cur.isFile()) {
++				fs.copyFileSync(src, dst);
++			}
++		});
++	});
++	result.taskName = `watch-copy-${name}`;
++	return result;
++}
++
+ function _rreaddir(dirPath: string, prepend: string, result: string[]): void {
+ 	const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+ 	for (const entry of entries) {
+--
+2.39.5 (Apple Git-154)

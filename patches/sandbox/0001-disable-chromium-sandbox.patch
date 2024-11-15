@@ -4,13 +4,13 @@ Date: Mon, 9 Sep 2024 18:06:25 +1000
 Subject: Disable Chromium sandbox
 
 ---
- src/main.js | 18 ++----------------
+ src/main.ts | 18 ++----------------
  1 file changed, 2 insertions(+), 16 deletions(-)
 
-diff --git a/src/main.js b/src/main.js
+diff --git a/src/main.ts b/src/main.ts
 index 94c05171e0f..cbafe72dffc 100644
---- a/src/main.js
-+++ b/src/main.js
+--- a/src/main.ts
++++ b/src/main.ts
 @@ -63,22 +63,8 @@ const minimist = require('minimist'); // !!! IMPORTANT: MUST come after bootstra
  const args = parseCLIArgs();
  // Configure static command line arguments

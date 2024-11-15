@@ -4,45 +4,45 @@ Date: Thu, 27 Jul 2023 20:14:12 +1000
 Subject: daemon support
 
 ---
- src/server-main.js                             | 14 +++++++++++++-
+ src/server-main.ts                             | 14 +++++++++++++-
  src/vs/server/node/serverEnvironmentService.ts |  3 +++
  2 files changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/src/server-main.js b/src/server-main.js
+diff --git a/src/server-main.ts b/src/server-main.ts
 index f1fad8f0b51..769daa4301d 100644
---- a/src/server-main.js
-+++ b/src/server-main.js
+--- a/src/server-main.ts
++++ b/src/server-main.ts
 @@ -14,6 +14,7 @@
  import './bootstrap-server.js'; // this MUST come before other imports as it changes global state
  import * as path from 'path';
  import * as http from 'http';
 +import * as cp from 'child_process';
+ import { AddressInfo } from 'net';
  import * as os from 'os';
  import * as readline from 'readline';
- import { performance } from 'perf_hooks';
 @@ -49,10 +50,21 @@ async function start() {
  
- 	// Do a quick parse to determine if a server or the cli needs to be started
- 	const parsedArgs = minimist(process.argv.slice(2), {
--		boolean: ['start-server', 'list-extensions', 'print-ip-address', 'help', 'version', 'accept-server-license-terms', 'update-extensions'],
-+		boolean: ['start-server', 'list-extensions', 'print-ip-address', 'help', 'version', 'accept-server-license-terms', 'update-extensions', 'daemonize'],
- 		string: ['install-extension', 'install-builtin-extension', 'uninstall-extension', 'locate-extension', 'socket-path', 'host', 'port', 'compatibility'],
- 		alias: { help: 'h', version: 'v' }
- 	});
+ // Do a quick parse to determine if a server or the cli needs to be started
+ const parsedArgs = minimist(process.argv.slice(2), {
+-	boolean: ['start-server', 'list-extensions', 'print-ip-address', 'help', 'version', 'accept-server-license-terms', 'update-extensions'],
++	boolean: ['start-server', 'list-extensions', 'print-ip-address', 'help', 'version', 'accept-server-license-terms', 'update-extensions', 'daemonize'],
+ 	string: ['install-extension', 'install-builtin-extension', 'uninstall-extension', 'locate-extension', 'socket-path', 'host', 'port', 'compatibility'],
+ 	alias: { help: 'h', version: 'v' }
+ });
 +
-+	if (parsedArgs.daemonize) {
-+		const newArgv = process.argv.slice();
-+		newArgv.splice(0, 1);
-+		newArgv.splice(newArgv.indexOf('--daemonize'), 1);
-+		const proc = cp.spawn(process.execPath, newArgv, { stdio: 'ignore', detached: true });
-+		console.log(`PID of server daemon is ${proc.pid}`);
-+		proc.unref();
-+		process.exit(0);
-+	}
++if (parsedArgs.daemonize) {
++	const newArgv = process.argv.slice();
++	newArgv.splice(0, 1);
++	newArgv.splice(newArgv.indexOf('--daemonize'), 1);
++	const proc = cp.spawn(process.execPath, newArgv, { stdio: 'ignore', detached: true });
++	console.log(`PID of server daemon is ${proc.pid}`);
++	proc.unref();
++	process.exit(0);
++}
 +
- 	['host', 'port', 'accept-server-license-terms'].forEach(e => {
- 		if (!parsedArgs[e]) {
- 			const envValue = process.env[`VSCODE_SERVER_${e.toUpperCase().replace('-', '_')}`];
+ ['host', 'port', 'accept-server-license-terms'].forEach(e => {
+ 	if (!parsedArgs[e]) {
+ 		const envValue = process.env[`VSCODE_SERVER_${e.toUpperCase().replace('-', '_')}`];
 diff --git a/src/vs/server/node/serverEnvironmentService.ts b/src/vs/server/node/serverEnvironmentService.ts
 index fce1842f1bd..ba65efd805e 100644
 --- a/src/vs/server/node/serverEnvironmentService.ts

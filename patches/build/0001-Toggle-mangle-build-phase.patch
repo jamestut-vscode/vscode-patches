@@ -47,7 +47,7 @@ index 7f485a072c0..d951b52b0a4 100644
 +				minified ? compileBuildTask : compileBuildTaskNoMangle,
  				compileExtensionsBuildTask,
  				compileExtensionMediaBuildTask,
- 				minified ? minifyTask : optimizeTask,
+ 				minified ? minifyTask : bundleTask,
 diff --git a/build/gulpfile.vscode.js b/build/gulpfile.vscode.js
 index 857114fea15..4b0fbcf88ea 100644
 --- a/build/gulpfile.vscode.js
@@ -60,7 +60,7 @@ index 857114fea15..4b0fbcf88ea 100644
 +const { compileBuildTask, compileBuildTaskNoMangle } = require('./gulpfile.compile');
  const { compileExtensionsBuildTask, compileExtensionMediaBuildTask } = require('./gulpfile.extensions');
  const { promisify } = require('util');
- const { isAMD } = require('./lib/amd');
+ const glob = promisify(require('glob'));
 @@ -453,7 +453,7 @@ BUILD_TARGETS.forEach(buildTarget => {
  		gulp.task(vscodeTaskCI);
  
@@ -69,7 +69,7 @@ index 857114fea15..4b0fbcf88ea 100644
 +			minified ? compileBuildTask : compileBuildTaskNoMangle,
  			compileExtensionsBuildTask,
  			compileExtensionMediaBuildTask,
- 			minified ? minifyVSCodeTask : optimizeVSCodeTask,
+ 			minified ? minifyVSCodeTask : bundleVSCodeTask,
 diff --git a/extensions/mangle-loader.js b/extensions/mangle-loader.js
 index b6b22ce3f1a..3de6721988e 100644
 --- a/extensions/mangle-loader.js

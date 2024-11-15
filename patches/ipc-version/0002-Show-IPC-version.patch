@@ -156,8 +156,7 @@ index 6695c4b..96a055e 100644
  		return;
  	}
  	if (parsedArgs.version) {
-@@ -483,7 +484,7 @@ function mapFileToRemoteUri(uri: string): string {
- 	return uri.replace(/^file:\/\//, 'vscode-remote://' + cliRemoteAuthority);
+@@ -483,6 +484,6 @@ function mapFileToRemoteUri(uri: string): string {
  }
  
 -const [, , productName, version, commit, executableName, ...remainingArgs] = process.argv;

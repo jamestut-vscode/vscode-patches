@@ -13,11 +13,11 @@ Subject: Use CommonJS file name for preload
  rename src/vs/base/parts/sandbox/electron-sandbox/{preload.js => preload.cjs} (100%)
 
 diff --git a/build/gulpfile.vscode.js b/build/gulpfile.vscode.js
-index 9dfb6a3..7c3ce52 100644
+index da753e9..9435905 100644
 --- a/build/gulpfile.vscode.js
 +++ b/build/gulpfile.vscode.js
-@@ -71,7 +71,7 @@ const vscodeResourceIncludes = !isAMD() ? [
- 	'out-build/vs/code/electron-sandbox/workbench/workbench.esm.html',
+@@ -60,7 +60,7 @@ const vscodeResourceIncludes = [
+ 	'out-build/vs/code/electron-sandbox/workbench/workbench.html',
  
  	// Electron Preload
 -	'out-build/vs/base/parts/sandbox/electron-sandbox/preload.js',
@@ -25,16 +25,7 @@ index 9dfb6a3..7c3ce52 100644
  	'out-build/vs/base/parts/sandbox/electron-sandbox/preload-aux.js',
  
  	// Node Scripts
-@@ -125,7 +125,7 @@ const vscodeResourceIncludes = !isAMD() ? [
- 	'!out-build/vs/editor/standalone/**/*.svg',
- 	'out-build/vs/base/node/{stdForkStart.js,terminateProcess.sh,cpuUsage.sh,ps.sh}',
- 	'out-build/vs/base/browser/ui/codicons/codicon/**',
--	'out-build/vs/base/parts/sandbox/electron-sandbox/preload.js',
-+	'out-build/vs/base/parts/sandbox/electron-sandbox/preload.cjs',
- 	'out-build/vs/base/parts/sandbox/electron-sandbox/preload-aux.js',
- 	'out-build/vs/workbench/browser/media/*-theme.css',
- 	'out-build/vs/workbench/contrib/debug/**/*.json',
-@@ -292,7 +292,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
+@@ -240,7 +240,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
  		const out = sourceFolderName;
  
  		const checksums = computeChecksums(out, [
@@ -43,10 +34,6 @@ index 9dfb6a3..7c3ce52 100644
  			'vs/workbench/workbench.desktop.main.js',
  			'vs/workbench/workbench.desktop.main.css',
  			'vs/workbench/api/node/extensionHostProcess.js',
-diff --git a/src/vs/base/parts/sandbox/electron-sandbox/preload.js b/src/vs/base/parts/sandbox/electron-sandbox/preload.cjs
-similarity index 100%
-rename from src/vs/base/parts/sandbox/electron-sandbox/preload.js
-rename to src/vs/base/parts/sandbox/electron-sandbox/preload.cjs
 diff --git a/src/vs/platform/issue/electron-main/issueMainService.ts b/src/vs/platform/issue/electron-main/issueMainService.ts
 index 00a203c..701c6e8 100644
 --- a/src/vs/platform/issue/electron-main/issueMainService.ts

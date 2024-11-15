@@ -4,16 +4,16 @@ Date: Mon, 9 Sep 2024 18:17:29 +1000
 Subject: Preload export node.js modules to renderer
 
 ---
- src/vs/base/parts/sandbox/electron-sandbox/preload.js | 6 ++++++
+ src/vs/base/parts/sandbox/electron-sandbox/preload.ts | 6 ++++++
  1 file changed, 6 insertions(+)
 
-diff --git a/src/vs/base/parts/sandbox/electron-sandbox/preload.js b/src/vs/base/parts/sandbox/electron-sandbox/preload.js
+diff --git a/src/vs/base/parts/sandbox/electron-sandbox/preload.ts b/src/vs/base/parts/sandbox/electron-sandbox/preload.ts
 index 7e2339e49da..aaacea503e0 100644
---- a/src/vs/base/parts/sandbox/electron-sandbox/preload.js
-+++ b/src/vs/base/parts/sandbox/electron-sandbox/preload.js
+--- a/src/vs/base/parts/sandbox/electron-sandbox/preload.ts
++++ b/src/vs/base/parts/sandbox/electron-sandbox/preload.ts
 @@ -16,6 +16,12 @@
  
- 	const { ipcRenderer, webFrame, contextBridge, webUtils } = require('electron');
+ 	type ISandboxConfiguration = import('vs/base/parts/sandbox/common/sandboxTypes.js').ISandboxConfiguration;
  
 +	// export node.js modules to renderer context
 +	// @ts-ignore
@@ -23,6 +23,6 @@ index 7e2339e49da..aaacea503e0 100644
 +
  	//#region Utilities
  
- 	/**
+ 	function validateIPC(channel: string): true | never {
 -- 
 2.39.5 (Apple Git-154)
