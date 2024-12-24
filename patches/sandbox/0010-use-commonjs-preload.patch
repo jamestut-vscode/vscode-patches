@@ -34,23 +34,10 @@ index da753e9..9435905 100644
  			'vs/workbench/workbench.desktop.main.js',
  			'vs/workbench/workbench.desktop.main.css',
  			'vs/workbench/api/node/extensionHostProcess.js',
-diff --git a/src/vs/platform/issue/electron-main/issueMainService.ts b/src/vs/platform/issue/electron-main/issueMainService.ts
-index 00a203c..701c6e8 100644
---- a/src/vs/platform/issue/electron-main/issueMainService.ts
-+++ b/src/vs/platform/issue/electron-main/issueMainService.ts
-@@ -217,7 +217,7 @@ export class IssueMainService implements IIssueMainService {
- 			title: options.title,
- 			backgroundColor: options.backgroundColor || IssueMainService.DEFAULT_BACKGROUND_COLOR,
- 			webPreferences: {
--				preload: FileAccess.asFileUri('vs/base/parts/sandbox/electron-sandbox/preload.js').fsPath,
-+				preload: FileAccess.asFileUri('vs/base/parts/sandbox/electron-sandbox/preload.cjs').fsPath,
- 				additionalArguments: [`--vscode-window-config=${ipcObjectUrl.resource.toString()}`],
- 				v8CacheOptions: this.environmentMainService.useCodeCache ? 'bypassHeatCheck' : 'none',
- 				enableWebSQL: false,
-diff --git a/src/vs/platform/issue/electron-main/processMainService.ts b/src/vs/platform/issue/electron-main/processMainService.ts
+diff --git a/src/vs/platform/process/electron-main/processMainService.ts b/src/vs/platform/process/electron-main/processMainService.ts
 index dd2a275..0331a72 100644
---- a/src/vs/platform/issue/electron-main/processMainService.ts
-+++ b/src/vs/platform/issue/electron-main/processMainService.ts
+--- a/src/vs/platform/process/electron-main/processMainService.ts
++++ b/src/vs/platform/process/electron-main/processMainService.ts
 @@ -342,7 +342,7 @@ export class ProcessMainService implements IProcessMainService {
  			title: options.title,
  			backgroundColor: options.backgroundColor || ProcessMainService.DEFAULT_BACKGROUND_COLOR,

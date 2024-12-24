@@ -52,7 +52,7 @@ index c064ebced0c..6c0060dbd60 100644
  import { IConfirmation, IConfirmationResult, IInputResult, ICheckbox, IInputElement, ICustomDialogOptions, IInput, AbstractDialogHandler, DialogType, IPrompt, IAsyncPromptResult } from '../../../../platform/dialogs/common/dialogs.js';
  import { ILayoutService } from '../../../../platform/layout/browser/layoutService.js';
  import { ILogService } from '../../../../platform/log/common/log.js';
-@@ -15,11 +16,11 @@ import { EventHelper } from 'vs/base/browser/dom';
+@@ -15,12 +16,12 @@ import { EventHelper } from 'vs/base/browser/dom';
  import { IKeybindingService } from '../../../../platform/keybinding/common/keybinding.js';
  import { IProductService } from '../../../../platform/product/common/productService.js';
  import { IClipboardService } from '../../../../platform/clipboard/common/clipboardService.js';
@@ -62,6 +62,7 @@ index c064ebced0c..6c0060dbd60 100644
  import { defaultButtonStyles, defaultCheckboxStyles, defaultDialogStyles, defaultInputBoxStyles } from '../../../../platform/theme/browser/defaultStyles.js';
  import { ResultKind } from '../../../../platform/keybinding/common/keybindingResolver.js';
 +import { INativeHostService } from '../../../../platform/native/common/native.js';
+ import { CancellationToken } from '../../../../base/common/cancellation.js';
  
  export class BrowserDialogHandler extends AbstractDialogHandler {
  

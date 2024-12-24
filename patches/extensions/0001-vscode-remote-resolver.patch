@@ -26,8 +26,8 @@ index 4f745ae..94f4b1d 100644
 --- a/build/gulpfile.extensions.js
 +++ b/build/gulpfile.extensions.js
 @@ -66,6 +66,7 @@ const compilations = [
- 	'extensions/vscode-api-tests/tsconfig.json',
  	'extensions/vscode-colorize-tests/tsconfig.json',
+ 	'extensions/vscode-colorize-perf-tests/tsconfig.json',
  	'extensions/vscode-test-resolver/tsconfig.json',
 +	'extensions/vscode-remote-resolver/tsconfig.json',
  
@@ -38,8 +38,8 @@ index b9645e6..3582b8c 100644
 --- a/build/npm/dirs.js
 +++ b/build/npm/dirs.js
 @@ -45,6 +45,7 @@ const dirs = [
- 	'extensions/vscode-api-tests',
  	'extensions/vscode-colorize-tests',
+ 	'extensions/vscode-colorize-perf-tests',
  	'extensions/vscode-test-resolver',
 +	'extensions/vscode-remote-resolver',
  	'remote',

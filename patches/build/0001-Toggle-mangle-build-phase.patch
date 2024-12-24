@@ -36,7 +36,7 @@ index 7f485a072c0..d951b52b0a4 100644
  const glob = require('glob');
 -const { compileBuildTask } = require('./gulpfile.compile');
 +const { compileBuildTask, compileBuildTaskNoMangle } = require('./gulpfile.compile');
- const { compileExtensionsBuildTask, compileExtensionMediaBuildTask } = require('./gulpfile.extensions');
+ const { cleanExtensionsBuildTask, compileNonNativeExtensionsBuildTask, compileNativeExtensionsBuildTask, compileExtensionMediaBuildTask } = require('./gulpfile.extensions');
  const { vscodeWebResourceIncludes, createVSCodeWebFileContentMapper } = require('./gulpfile.vscode.web');
  const cp = require('child_process');
 @@ -445,7 +445,7 @@ function tweakProductForServerWeb(product) {
@@ -45,9 +45,9 @@ index 7f485a072c0..d951b52b0a4 100644
  			const serverTask = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
 -				compileBuildTask,
 +				minified ? compileBuildTask : compileBuildTaskNoMangle,
- 				compileExtensionsBuildTask,
+ 				cleanExtensionsBuildTask,
+ 				compileNonNativeExtensionsBuildTask,
  				compileExtensionMediaBuildTask,
- 				minified ? minifyTask : bundleTask,
 diff --git a/build/gulpfile.vscode.js b/build/gulpfile.vscode.js
 index 857114fea15..4b0fbcf88ea 100644
 --- a/build/gulpfile.vscode.js
@@ -58,7 +58,7 @@ index 857114fea15..4b0fbcf88ea 100644
  const minimist = require('minimist');
 -const { compileBuildTask } = require('./gulpfile.compile');
 +const { compileBuildTask, compileBuildTaskNoMangle } = require('./gulpfile.compile');
- const { compileExtensionsBuildTask, compileExtensionMediaBuildTask } = require('./gulpfile.extensions');
+ const { compileNonNativeExtensionsBuildTask, compileNativeExtensionsBuildTask, compileAllExtensionsBuildTask, compileExtensionMediaBuildTask, cleanExtensionsBuildTask } = require('./gulpfile.extensions');
  const { promisify } = require('util');
  const glob = promisify(require('glob'));
 @@ -453,7 +453,7 @@ BUILD_TARGETS.forEach(buildTarget => {
@@ -67,9 +67,9 @@ index 857114fea15..4b0fbcf88ea 100644
  		const vscodeTask = task.define(`vscode${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
 -			compileBuildTask,
 +			minified ? compileBuildTask : compileBuildTaskNoMangle,
- 			compileExtensionsBuildTask,
+ 			cleanExtensionsBuildTask,
+ 			compileNonNativeExtensionsBuildTask,
  			compileExtensionMediaBuildTask,
- 			minified ? minifyVSCodeTask : bundleVSCodeTask,
 diff --git a/extensions/mangle-loader.js b/extensions/mangle-loader.js
 index b6b22ce3f1a..3de6721988e 100644
 --- a/extensions/mangle-loader.js

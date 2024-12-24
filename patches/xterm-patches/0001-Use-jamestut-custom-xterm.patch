@@ -11,14 +11,10 @@ diff --git a/package.json b/package.json
 index e7c898fc1fe..5f9baccf873 100644
 --- a/package.json
 +++ b/package.json
-@@ -94,7 +94,7 @@
-     "@xterm/addon-unicode11": "^0.9.0-beta.65",
-     "@xterm/addon-webgl": "^0.19.0-beta.65",
-     "@xterm/headless": "^5.6.0-beta.65",
--    "@xterm/xterm": "^5.6.0-beta.65",
-+    "@xterm/xterm": "https://github.com/jamestut-vscode/xterm.js-patches/releases/download/5.6.0-beta.65-m1s/xtermjs.tar.gz",
+@@ -94,3 +94,3 @@
+     "@xterm/headless": "^5.6.0-beta.70",
+-    "@xterm/xterm": "^5.6.0-beta.70",
++    "@xterm/xterm": "https://github.com/jamestut-vscode/xterm.js-patches/releases/download/5.6.0-beta.70-m1s/xtermjs.tar.gz",
      "http-proxy-agent": "^7.0.0",
-     "https-proxy-agent": "^7.0.2",
-     "jschardet": "3.1.4",
 -- 
 2.39.2 (Apple Git-144)
