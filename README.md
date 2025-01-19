@@ -20,6 +20,12 @@ Starting from `1.85.0-m2`, the released packages have additional private patches
   Maximum input polling is increased to 250 Hz (vs 120 Hz previously). This only changes the maximum: if your device have 120 Hz display, it will still be capped at 120 Hz.
 - **Non intrusive autocomplete.**  
   Just type or copy-paste the file or folder path that you want to open, even on high latency connections to Remote Extension Host! The auto-complete will not interfere with what you've typed/pasted!
+- **No automatic expansion of minimized editor group**
+  When an editor group is at its minimum size, focusing on it won't automatically expand it.
+- **Unified recently opened list**
+  The recently opened list is unified across all remotes.
+- **Allow extensions to access large files**
+  Extensions can now access large files. Enable the **Large File Sync** settings to activate this feature.
 - **Server Daemon Support.**  
   Simply add the `--daemonize` option to start the REH server as a daemon.
 

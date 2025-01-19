@@ -1,0 +1,31 @@
+From 1b1460191893c81914546e8168b9a93e2cf51a69 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sat, 18 Jan 2025 15:45:46 +1100
+Subject: Disable auto editor group expansion
+
+---
+ src/vs/workbench/browser/parts/editor/editorPart.ts | 9 ---------
+ 1 file changed, 9 deletions(-)
+
+diff --git a/src/vs/workbench/browser/parts/editor/editorPart.ts b/src/vs/workbench/browser/parts/editor/editorPart.ts
+index b472ab4e8f3..2c5d44e8675 100644
+--- a/src/vs/workbench/browser/parts/editor/editorPart.ts
++++ b/src/vs/workbench/browser/parts/editor/editorPart.ts
+@@ -708,15 +708,6 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupsView {
+ 		if (this.hasMaximizedGroup() && !this.isGroupMaximized(group)) {
+ 			this.unmaximizeGroup();
+ 		}
+-
+-		try {
+-			const viewSize = this.gridWidget.getViewSize(group);
+-			if (viewSize.width === group.minimumWidth || viewSize.height === group.minimumHeight) {
+-				this.arrangeGroups(GroupsArrangement.EXPAND, group);
+-			}
+-		} catch (error) {
+-			// ignore: method might be called too early before view is known to grid
+-		}
+ 	}
+ 
+ 	private doUpdateMostRecentActive(group: IEditorGroupView, makeMostRecentlyActive?: boolean): void {
+-- 
+2.39.5 (Apple Git-154)

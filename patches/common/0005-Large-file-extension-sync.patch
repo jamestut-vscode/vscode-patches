@@ -1,0 +1,163 @@
+From e77f2b1e7c91d6f4bf068272d43c43eb15a16b2b Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sun, 19 Jan 2025 22:57:13 +1100
+Subject: Large file sync to web workers and extensions
+
+---
+ src/vs/editor/common/config/editorConfigurationSchema.ts | 5 +++++
+ src/vs/editor/common/core/textModelDefaults.ts           | 1 +
+ src/vs/editor/common/model.ts                            | 1 +
+ src/vs/editor/common/model/textModel.ts                  | 3 ++-
+ src/vs/editor/common/services/modelService.ts            | 7 +++++++
+ src/vs/editor/standalone/browser/standaloneCodeEditor.ts | 5 +++++
+ src/vs/editor/test/common/testTextModel.ts               | 2 ++
+ src/vs/monaco.d.ts                                       | 5 +++++
+ 8 files changed, 28 insertions(+), 1 deletion(-)
+
+diff --git a/src/vs/editor/common/config/editorConfigurationSchema.ts b/src/vs/editor/common/config/editorConfigurationSchema.ts
+index 436daa7e04c..d0cfadb7a33 100644
+--- a/src/vs/editor/common/config/editorConfigurationSchema.ts
++++ b/src/vs/editor/common/config/editorConfigurationSchema.ts
+@@ -61,6 +61,11 @@ const editorConfiguration: IConfigurationNode = {
+ 			default: EDITOR_MODEL_DEFAULTS.largeFileOptimizations,
+ 			description: nls.localize('largeFileOptimizations', "Special handling for large files to disable certain memory intensive features.")
+ 		},
++		'editor.largeFileSync': {
++			type: 'boolean',
++			default: EDITOR_MODEL_DEFAULTS.largeFileSync,
++			description: nls.localize('largeFileSync', "Enable web workers and extensions to access large files.")
++		},
+ 		'editor.wordBasedSuggestions': {
+ 			enum: ['off', 'currentDocument', 'matchingDocuments', 'allDocuments'],
+ 			default: 'matchingDocuments',
+diff --git a/src/vs/editor/common/core/textModelDefaults.ts b/src/vs/editor/common/core/textModelDefaults.ts
+index cb0150baacf..e4694cc7fdb 100644
+--- a/src/vs/editor/common/core/textModelDefaults.ts
++++ b/src/vs/editor/common/core/textModelDefaults.ts
+@@ -10,6 +10,7 @@ export const EDITOR_MODEL_DEFAULTS = {
+ 	detectIndentation: true,
+ 	trimAutoWhitespace: true,
+ 	largeFileOptimizations: true,
++	largeFileSync: false,
+ 	bracketPairColorizationOptions: {
+ 		enabled: true,
+ 		independentColorPoolPerBracketType: false,
+diff --git a/src/vs/editor/common/model.ts b/src/vs/editor/common/model.ts
+index 6700e53da2c..8ccfcd72a39 100644
+--- a/src/vs/editor/common/model.ts
++++ b/src/vs/editor/common/model.ts
+@@ -593,6 +593,7 @@ export interface ITextModelCreationOptions {
+ 	defaultEOL: DefaultEndOfLine;
+ 	isForSimpleWidget: boolean;
+ 	largeFileOptimizations: boolean;
++	largeFileSync: boolean;
+ 	bracketPairColorizationOptions: BracketPairColorizationOptions;
+ }
+ 
+diff --git a/src/vs/editor/common/model/textModel.ts b/src/vs/editor/common/model/textModel.ts
+index 0313e5c208a..5291995d12f 100644
+--- a/src/vs/editor/common/model/textModel.ts
++++ b/src/vs/editor/common/model/textModel.ts
+@@ -190,6 +190,7 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
+ 		defaultEOL: model.DefaultEndOfLine.LF,
+ 		trimAutoWhitespace: EDITOR_MODEL_DEFAULTS.trimAutoWhitespace,
+ 		largeFileOptimizations: EDITOR_MODEL_DEFAULTS.largeFileOptimizations,
++		largeFileSync: EDITOR_MODEL_DEFAULTS.largeFileSync,
+ 		bracketPairColorizationOptions: EDITOR_MODEL_DEFAULTS.bracketPairColorizationOptions,
+ 	};
+ 
+@@ -355,7 +356,7 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
+ 			this._isTooLargeForHeapOperation = false;
+ 		}
+ 
+-		this._isTooLargeForSyncing = (bufferTextLength > TextModel._MODEL_SYNC_LIMIT);
++		this._isTooLargeForSyncing = creationOptions.largeFileSync ? false : (bufferTextLength > TextModel._MODEL_SYNC_LIMIT);
+ 
+ 		this._versionId = 1;
+ 		this._alternativeVersionId = 1;
+diff --git a/src/vs/editor/common/services/modelService.ts b/src/vs/editor/common/services/modelService.ts
+index c0293db8390..b5c79d23ef0 100644
+--- a/src/vs/editor/common/services/modelService.ts
++++ b/src/vs/editor/common/services/modelService.ts
+@@ -56,6 +56,7 @@ interface IRawEditorConfig {
+ 	trimAutoWhitespace?: any;
+ 	creationOptions?: any;
+ 	largeFileOptimizations?: any;
++	largeFileSync?: any;
+ 	bracketPairColorization?: any;
+ }
+ 
+@@ -166,6 +167,11 @@ export class ModelService extends Disposable implements IModelService {
+ 		if (config.editor && typeof config.editor.largeFileOptimizations !== 'undefined') {
+ 			largeFileOptimizations = (config.editor.largeFileOptimizations === 'false' ? false : Boolean(config.editor.largeFileOptimizations));
+ 		}
++
++		let largeFileSync = EDITOR_MODEL_DEFAULTS.largeFileSync;
++		if (config.editor && typeof config.editor.largeFileSync !== 'undefined') {
++			largeFileSync = (config.editor.largeFileSync === 'false' ? false : Boolean(config.editor.largeFileSync));
++		}
+ 		let bracketPairColorizationOptions = EDITOR_MODEL_DEFAULTS.bracketPairColorizationOptions;
+ 		if (config.editor?.bracketPairColorization && typeof config.editor.bracketPairColorization === 'object') {
+ 			bracketPairColorizationOptions = {
+@@ -183,6 +189,7 @@ export class ModelService extends Disposable implements IModelService {
+ 			defaultEOL: newDefaultEOL,
+ 			trimAutoWhitespace: trimAutoWhitespace,
+ 			largeFileOptimizations: largeFileOptimizations,
++			largeFileSync: largeFileSync,
+ 			bracketPairColorizationOptions
+ 		};
+ 	}
+diff --git a/src/vs/editor/standalone/browser/standaloneCodeEditor.ts b/src/vs/editor/standalone/browser/standaloneCodeEditor.ts
+index 2b7abea38c1..9f18cf1a706 100644
+--- a/src/vs/editor/standalone/browser/standaloneCodeEditor.ts
++++ b/src/vs/editor/standalone/browser/standaloneCodeEditor.ts
+@@ -119,6 +119,11 @@ export interface IGlobalEditorOptions {
+ 	 * Defaults to true.
+ 	 */
+ 	largeFileOptimizations?: boolean;
++	/**
++	 * Enable web workers and extensions to access large files.
++	 * Defaults to false.
++	 */
++	largeFileSync?: boolean;
+ 	/**
+ 	 * Controls whether completions should be computed based on words in the document.
+ 	 * Defaults to true.
+diff --git a/src/vs/editor/test/common/testTextModel.ts b/src/vs/editor/test/common/testTextModel.ts
+index 01732b71158..6d7a1f38619 100644
+--- a/src/vs/editor/test/common/testTextModel.ts
++++ b/src/vs/editor/test/common/testTextModel.ts
+@@ -58,6 +58,7 @@ export interface IRelaxedTextModelCreationOptions {
+ 	defaultEOL?: DefaultEndOfLine;
+ 	isForSimpleWidget?: boolean;
+ 	largeFileOptimizations?: boolean;
++	largeFileSync?: boolean;
+ 	bracketColorizationOptions?: BracketPairColorizationOptions;
+ }
+ 
+@@ -72,6 +73,7 @@ function resolveOptions(_options: IRelaxedTextModelCreationOptions): ITextModelC
+ 		defaultEOL: (typeof _options.defaultEOL === 'undefined' ? defaultOptions.defaultEOL : _options.defaultEOL),
+ 		isForSimpleWidget: (typeof _options.isForSimpleWidget === 'undefined' ? defaultOptions.isForSimpleWidget : _options.isForSimpleWidget),
+ 		largeFileOptimizations: (typeof _options.largeFileOptimizations === 'undefined' ? defaultOptions.largeFileOptimizations : _options.largeFileOptimizations),
++		largeFileSync: (typeof _options.largeFileSync === 'undefined' ? defaultOptions.largeFileSync : _options.largeFileSync),
+ 		bracketPairColorizationOptions: (typeof _options.bracketColorizationOptions === 'undefined' ? defaultOptions.bracketPairColorizationOptions : _options.bracketColorizationOptions),
+ 	};
+ }
+diff --git a/src/vs/monaco.d.ts b/src/vs/monaco.d.ts
+index 7dddce76da2..063058a0f22 100644
+--- a/src/vs/monaco.d.ts
++++ b/src/vs/monaco.d.ts
+@@ -1314,6 +1314,11 @@ declare namespace monaco.editor {
+ 		 * Defaults to true.
+ 		 */
+ 		largeFileOptimizations?: boolean;
++		/**
++		 * Enable web workers and extensions to access large files.
++		 * Defaults to false.
++		 */
++		largeFileSync?: boolean;
+ 		/**
+ 		 * Controls whether completions should be computed based on words in the document.
+ 		 * Defaults to true.
+-- 
+2.39.5 (Apple Git-154)
