@@ -1,23 +1,24 @@
-From 44c93b21071ec998dffff217b3c88660c6bf7861 Mon Sep 17 00:00:00 2001
+From d5aa3edcac361fbd76dd78391c58910c207990c7 Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
 Date: Sun, 19 Jan 2025 15:12:47 +1100
 Subject: Host independent recent files
 
 ---
- .../electron-main/windowsMainService.ts       | 33 +++++++++++++++++--
+ .../electron-main/windowsMainService.ts       | 34 +++++++++++++++++--
  .../workspacesHistoryMainService.ts           | 19 ++++++++++-
- 2 files changed, 48 insertions(+), 4 deletions(-)
+ 2 files changed, 49 insertions(+), 4 deletions(-)
 
 diff --git a/src/vs/platform/windows/electron-main/windowsMainService.ts b/src/vs/platform/windows/electron-main/windowsMainService.ts
-index f441f7d5fb7..9af3510df09 100644
+index f441f7d5fb7..6cc1c99ac07 100644
 --- a/src/vs/platform/windows/electron-main/windowsMainService.ts
 +++ b/src/vs/platform/windows/electron-main/windowsMainService.ts
-@@ -301,6 +301,36 @@ export class WindowsMainService extends Disposable implements IWindowsMainServic
+@@ -301,6 +301,37 @@ export class WindowsMainService extends Disposable implements IWindowsMainServic
  		let filesToOpen: IFilesToOpen | undefined;
  		let openOneEmptyWindow = false;
  
 +		// assign remoteAuthority to URIs if needed
-+		if (openConfig.remoteAuthority && openConfig.urisToOpen && openConfig.urisToOpen.length > 0) {
++		const remoteAuthority = openConfig.remoteAuthority || this.getLastActiveWindow()?.remoteAuthority;
++		if (remoteAuthority && openConfig.urisToOpen && openConfig.urisToOpen.length > 0) {
 +			const newUrisToOpen = openConfig.urisToOpen.map((openable): IWindowOpenable => {
 +				let uri: URI;
 +				if (isWorkspaceToOpen(openable)) {
@@ -29,7 +30,7 @@ index f441f7d5fb7..9af3510df09 100644
 +				}
 +				const newUri = URI.from({
 +					scheme: 'vscode-remote',
-+					authority: openConfig.remoteAuthority,
++					authority: remoteAuthority,
 +					path: uri.path
 +				});
 +				if (isWorkspaceToOpen(openable)) {
@@ -49,7 +50,7 @@ index f441f7d5fb7..9af3510df09 100644
  		// Identify things to open from open config
  		const pathsToOpen = await this.getPathsToOpen(openConfig);
  		this.logService.trace('windowsManager#open pathsToOpen', pathsToOpen);
-@@ -1114,9 +1144,6 @@ export class WindowsMainService extends Disposable implements IWindowsMainServic
+@@ -1114,9 +1145,6 @@ export class WindowsMainService extends Disposable implements IWindowsMainServic
  
  			const fileUri = URI.file(path);
  
