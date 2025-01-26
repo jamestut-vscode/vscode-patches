@@ -1,5 +1,5 @@
 base-commit: 1.96.4
-final-commit: f7f542c560fee50d61f59a9204b9d3d967d9ae2a
+final-commit: b28b10054d51c23379e478aa25c5f654dc563e4e
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
@@ -7,12 +7,6 @@ common/0003-Disable-auto-editor-group-expansion.patch
 common/0004-Recent-open-host-independent.patch
 common/0005-Large-file-extension-sync.patch
 common/0010-Disable-REH-glibc-check.patch
-
-sandbox/0001-disable-chromium-sandbox.patch
-sandbox/0002-preload-nodejs-export.patch
-sandbox/0003-disable-renderer-isolation.patch
-sandbox/0004-generate-preload-cjs.patch
-sandbox/0010-use-commonjs-preload.patch
 
 build/0001-Toggle-mangle-build-phase.patch
 
@@ -27,9 +21,7 @@ remote/0003-Disable-client-side-assumption-of-reconnection-grace.patch
 remote/0004-Show-reconnection-progress-instantly.patch
 remote/0005-Reconnecting-timeout-logic-tweak.patch
 remote/0006-Tighten-timeout.patch
-remote/transport/0001-BrowserNodeSocketFactory.patch
-remote/transport/0002-Use-BrowserNodeSocket-transport.patch
-remote/transport/0003-soft-error-handling.patch
+remote/0007-soft-error-handling.patch
 
 ui/0001-Unify-about-message.patch
 ui/0002-Minimal-remote-reconnect-UI.patch
