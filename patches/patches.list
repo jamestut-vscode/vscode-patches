@@ -1,5 +1,5 @@
 base-commit: 1.96.4
-final-commit: b28b10054d51c23379e478aa25c5f654dc563e4e
+final-commit: 98e07e82c514a63c79955117edd794bffb7ab3ee
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
