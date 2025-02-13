@@ -1,0 +1,24 @@
+From 773032b59bdef130bc050313ecb4838ba722e4b2 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Thu, 13 Feb 2025 17:30:12 +1100
+Subject: No connection token by default
+
+---
+ src/vs/server/node/serverConnectionToken.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/vs/server/node/serverConnectionToken.ts b/src/vs/server/node/serverConnectionToken.ts
+index b2036788008..676b26f6e6c 100644
+--- a/src/vs/server/node/serverConnectionToken.ts
++++ b/src/vs/server/node/serverConnectionToken.ts
+@@ -87,7 +87,7 @@ export async function parseServerConnectionToken(args: ServerParsedArgs, default
+ 		return new MandatoryServerConnectionToken(connectionToken);
+ 	}
+
+-	return new MandatoryServerConnectionToken(await defaultValue());
++	return new NoneServerConnectionToken();
+ }
+
+ export async function determineServerConnectionToken(args: ServerParsedArgs): Promise<ServerConnectionToken | ServerConnectionTokenParseError> {
+--
+2.39.5 (Apple Git-154)

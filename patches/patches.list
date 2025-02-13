@@ -1,5 +1,5 @@
 base-commit: 1.96.4
-final-commit: f7f542c560fee50d61f59a9204b9d3d967d9ae2a
+final-commit: eb38f1e3d53c3bbcde5f1d4c6d0fbab8d54818e4
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
@@ -41,6 +41,7 @@ reh/0001-Disable-shorten-reconnection-grace-time.patch
 reh/0002-daemon-support.patch
 reh/0003-stdout-err-logging-redir.patch
 reh/0004-Adjustable-reconnection-grace.patch
+reh/0005-No-connection-token-by-default.patch
 
 simple-file-dialog/0001-Do-not-trim-file-name.patch
 simple-file-dialog/0002-Non-intrusive-autocomplete.patch
