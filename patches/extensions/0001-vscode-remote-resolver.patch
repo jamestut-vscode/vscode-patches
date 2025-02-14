@@ -51,6 +51,6 @@ index 0000000..0e2c554
 --- /dev/null
 +++ b/extensions/vscode-remote-resolver
 @@ -0,0 +1 @@
-+Subproject commit de83e81ba800965054fe01569289ccfda964b778
++Subproject commit 6a8bb92ecc1a403da7914dbaa6af987ce18b2d3d
 -- 
 2.39.5 (Apple Git-154)
