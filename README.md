@@ -1,30 +1,39 @@
 # James' Visual Studio Code
 
-This fork contains my personal modifications to Visual Studio Code that are not approved by upstream maintainers.
+This repository contains my personal modifications to Visual Studio Code, particularly tailored to significantly enhance the remote development experience. Additionally, it includes numerous quality-of-life improvements that cannot be implemented as an extension and are not approved by the upstream maintainers.
 
-Starting from `1.85.0-m2`, the released packages have additional private patches that are not in this public repository. Prerelease packages will have less optimisation on its Javascript code compared to the released version.
+Starting from `1.85.0-m2`, the released packages have additional private patches that are not in this public repository. Prerelease packages will have less optimization for their JavaScript code compared to the release version.
 
-## Changes Made
+## Remote Development
+
+Remote development is natively supported on this project, eliminating the need for additional extensions. Simply execute the REH component of this project on the remote computer you intend to use for development. Then, connect using one of the **REH Connector** commands from the command palette. For more detailed information on its usage, refer to [this document](https://github.com/jamestut-vscode/vscode-remote-resolver).
+
+Some notable improvements to the remote development capabilities are:
+
+- **Session persistence.**  
+  The remote component of this project operates independently on the remote computer. Therefore, There is no need to reload your remote workspace's window after a disruption to the network's connectivity as all sessions are persisted.
+- **Instant reconnection.**  
+  Using operating system's native communication primitives instead of Chromium's, instantenous and reliable reconnection can be achieved.
+- **User interface optimized for reconnection.**  
+  The user interface is optimized for this project's remote development capabilities. Reconnection prompts are now minimal and do not steal focus.
+- **Multiple transport method.**  
+  It is possible to connect to the REH using several different connection methods. Refer to [this document](https://github.com/jamestut-vscode/vscode-remote-resolver) for more details.
+
+## Other Changes
 
 - **Updated built-in terminal.**  
-  The built-in terminal now uses my own [xterm.js fork](https://github.com/jamestut/xterm.js). The differences are described there.
+  The built-in terminal uses [my fork of xterm.js](https://github.com/jamestut/xterm.js). The differences are described there.
 - **Enable proposed API for all extensions.**  
   All extensions can now use proposed APIs without having to run this version of VSCode with a special command line argument.
-- **Tweak reconnection timeout.**  
-  When connection to remote fails, immediately shows the dialog that prompts user to reconnect or reload window. When reconnecting, the timeout is set to 15 seconds per stage instead of 40 seconds globally. The UI is also redesigned to be less intrusive.
-- **Disable shorten reconnect grace period.**  
-  When there are ungracefully-disconnected client on VSCode's REH server, do not reduce their grace reconnection period when a new client is reconnected.
-- **Reliable reconnection.**  
-  The use of node.js' socket system dramatically improves the reliability of reconnection versus the original one, which uses Chromium's WebSocket implementation.
 - **Increase input polling to max 250 Hz.**  
-  Maximum input polling is increased to 250 Hz (vs 120 Hz previously). This only changes the maximum: if your device have 120 Hz display, it will still be capped at 120 Hz.
+  The maximum input polling rate has been increased to 250 Hz (up from 120 Hz previously). However, this change only affects the maximum polling rate; if your device has a 120 Hz display, it will still be capped at 120 Hz.
 - **Non intrusive autocomplete.**  
-  Just type or copy-paste the file or folder path that you want to open, even on high latency connections to Remote Extension Host! The auto-complete will not interfere with what you've typed/pasted!
-- **No automatic expansion of minimized editor group**
+  Just type or copy-paste the file or folder path you want to open, even on high latency connections to Remote Extension Host! The auto-complete feature won't interfere with what you've already typed or pasted!
+- **No automatic expansion of minimized editor group**  
   When an editor group is at its minimum size, focusing on it won't automatically expand it.
-- **Unified recently opened list**
-  The recently opened list is unified across all remotes.
-- **Allow extensions to access large files**
+- **Unified recently opened list**  
+  The "recently opened" list is unified across all remotes. Selecting an item from that list will open it in the current window.
+- **Allow extensions to access large files**  
   Extensions can now access large files. Enable the **Large File Sync** settings to activate this feature.
 - **Server Daemon Support.**  
   Simply add the `--daemonize` option to start the REH server as a daemon.
