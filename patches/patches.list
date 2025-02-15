@@ -1,11 +1,12 @@
 base-commit: 1.96.4
-final-commit: c5fc942c8edb4e97f88785c74375e44c9e2edc27
+final-commit: ab5061bfb794959b05f92e56e1d9f61e696f9dc7
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
 common/0003-Disable-auto-editor-group-expansion.patch
 common/0004-Recent-open-host-independent.patch
 common/0005-Large-file-extension-sync.patch
+common/0006-Precompute-token-limit.patch
 common/0010-Disable-REH-glibc-check.patch
 
 sandbox/0001-disable-chromium-sandbox.patch
