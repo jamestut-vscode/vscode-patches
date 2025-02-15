@@ -1,4 +1,4 @@
-From e77f2b1e7c91d6f4bf068272d43c43eb15a16b2b Mon Sep 17 00:00:00 2001
+From 3db7ba1cb817eb5edfffde3d3fccc6fc31723241 Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
 Date: Sun, 19 Jan 2025 22:57:13 +1100
 Subject: Large file sync to web workers and extensions
@@ -7,12 +7,12 @@ Subject: Large file sync to web workers and extensions
  src/vs/editor/common/config/editorConfigurationSchema.ts | 5 +++++
  src/vs/editor/common/core/textModelDefaults.ts           | 1 +
  src/vs/editor/common/model.ts                            | 1 +
- src/vs/editor/common/model/textModel.ts                  | 3 ++-
+ src/vs/editor/common/model/textModel.ts                  | 5 +++--
  src/vs/editor/common/services/modelService.ts            | 7 +++++++
  src/vs/editor/standalone/browser/standaloneCodeEditor.ts | 5 +++++
  src/vs/editor/test/common/testTextModel.ts               | 2 ++
  src/vs/monaco.d.ts                                       | 5 +++++
- 8 files changed, 28 insertions(+), 1 deletion(-)
+ 8 files changed, 29 insertions(+), 2 deletions(-)
 
 diff --git a/src/vs/editor/common/config/editorConfigurationSchema.ts b/src/vs/editor/common/config/editorConfigurationSchema.ts
 index 436daa7e04c..d0cfadb7a33 100644
@@ -55,7 +55,7 @@ index 6700e53da2c..8ccfcd72a39 100644
  }
  
 diff --git a/src/vs/editor/common/model/textModel.ts b/src/vs/editor/common/model/textModel.ts
-index 0313e5c208a..5291995d12f 100644
+index 0313e5c208a..fe1e07d9621 100644
 --- a/src/vs/editor/common/model/textModel.ts
 +++ b/src/vs/editor/common/model/textModel.ts
 @@ -190,6 +190,7 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
@@ -66,7 +66,14 @@ index 0313e5c208a..5291995d12f 100644
  		bracketPairColorizationOptions: EDITOR_MODEL_DEFAULTS.bracketPairColorizationOptions,
  	};
  
-@@ -355,7 +356,7 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
+@@ -349,13 +350,13 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
+ 				|| (bufferLineCount > TextModel.LARGE_FILE_LINE_COUNT_THRESHOLD)
+ 			);
+
+-			this._isTooLargeForHeapOperation = bufferTextLength > TextModel.LARGE_FILE_HEAP_OPERATION_THRESHOLD;
++			this._isTooLargeForHeapOperation = creationOptions.largeFileSync ? false : (bufferTextLength > TextModel.LARGE_FILE_HEAP_OPERATION_THRESHOLD);
+ 		} else {
+ 			this._isTooLargeForTokenization = false;
  			this._isTooLargeForHeapOperation = false;
  		}
  
