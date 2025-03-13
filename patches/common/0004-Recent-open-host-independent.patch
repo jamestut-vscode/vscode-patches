@@ -14,7 +14,7 @@ index f441f7d5fb7..6cc1c99ac07 100644
 +++ b/src/vs/platform/windows/electron-main/windowsMainService.ts
 @@ -301,6 +301,37 @@ export class WindowsMainService extends Disposable implements IWindowsMainServic
  		let filesToOpen: IFilesToOpen | undefined;
- 		let openOneEmptyWindow = false;
+ 		let maybeOpenEmptyWindow = false;
  
 +		// assign remoteAuthority to URIs if needed
 +		const remoteAuthority = openConfig.remoteAuthority || this.getLastActiveWindow()?.remoteAuthority;
@@ -58,7 +58,7 @@ index f441f7d5fb7..6cc1c99ac07 100644
 -			this.workspacesHistoryMainService.removeRecentlyOpened([fileUri]);
 -
  			// assume this is a file that does not yet exist
- 			if (options.ignoreFileNotFound) {
+ 			if (options.ignoreFileNotFound && error.code === 'ENOENT') {
  				return {
 diff --git a/src/vs/platform/workspaces/electron-main/workspacesHistoryMainService.ts b/src/vs/platform/workspaces/electron-main/workspacesHistoryMainService.ts
 index 0ee2bec4960..f398dd9bcd1 100644

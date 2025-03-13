@@ -66,7 +66,7 @@ index 0313e5c208a..fe1e07d9621 100644
  		bracketPairColorizationOptions: EDITOR_MODEL_DEFAULTS.bracketPairColorizationOptions,
  	};
  
-@@ -349,13 +350,13 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
+@@ -332,7 +332,7 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
  				|| (bufferLineCount > TextModel.LARGE_FILE_LINE_COUNT_THRESHOLD)
  			);
 
@@ -75,7 +75,8 @@ index 0313e5c208a..fe1e07d9621 100644
  		} else {
  			this._isTooLargeForTokenization = false;
  			this._isTooLargeForHeapOperation = false;
- 		}
+@@ -355,6 +355,6 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
+ 		);
  
 -		this._isTooLargeForSyncing = (bufferTextLength > TextModel._MODEL_SYNC_LIMIT);
 +		this._isTooLargeForSyncing = creationOptions.largeFileSync ? false : (bufferTextLength > TextModel._MODEL_SYNC_LIMIT);

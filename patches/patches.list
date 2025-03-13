@@ -1,12 +1,11 @@
-base-commit: 1.96.4
-final-commit: 7fcf3d6065bd39d9bb64de8f8dd7b8dbef0bc1ec
+base-commit: 1.98.1
+final-commit: 2d896ec7cf974316b43d30d9e65a217bd8faaaa7
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
 common/0003-Disable-auto-editor-group-expansion.patch
 common/0004-Recent-open-host-independent.patch
 common/0005-Large-file-extension-sync.patch
-common/0006-Precompute-token-limit.patch
 common/0010-Disable-REH-glibc-check.patch
 
 build/0001-Toggle-mangle-build-phase.patch
@@ -35,11 +34,6 @@ reh/0002-daemon-support.patch
 reh/0003-stdout-err-logging-redir.patch
 reh/0004-Adjustable-reconnection-grace.patch
 reh/0005-No-connection-token-by-default.patch
-
-simple-file-dialog/0001-Do-not-trim-file-name.patch
-simple-file-dialog/0002-Non-intrusive-autocomplete.patch
-
-search-view/0001-globalFindClipoard-search-view.patch
 
 workspace/0001-Fix-reload-on-workspace-change.patch
 workspace/0002-Fix-terminal-remote-workspace-cwd.patch

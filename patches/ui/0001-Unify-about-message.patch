@@ -22,21 +22,20 @@ index a97e57d2cbe..bceeaaaeac6 100644
  import { IInstantiationService } from '../../../../platform/instantiation/common/instantiation.js';
 +import { INativeHostService } from '../../../../platform/native/common/native.js';
  import { Lazy } from '../../../../base/common/lazy.js';
+ import { IOpenerService } from '../../../../platform/opener/common/opener.js';
  
  export class DialogHandlerContribution extends Disposable implements IWorkbenchContribution {
- 
 @@ -33,11 +34,12 @@ export class DialogHandlerContribution extends Disposable implements IWorkbenchC
- 		@IKeybindingService keybindingService: IKeybindingService,
  		@IInstantiationService instantiationService: IInstantiationService,
  		@IProductService productService: IProductService,
--		@IClipboardService clipboardService: IClipboardService
-+		@IClipboardService clipboardService: IClipboardService,
-+		@INativeHostService nativeHostService: INativeHostService
+ 		@IClipboardService clipboardService: IClipboardService,
++		@INativeHostService nativeHostService: INativeHostService,
+ 		@IOpenerService openerService: IOpenerService
  	) {
  		super();
  
--		this.impl = new Lazy(() => new BrowserDialogHandler(logService, layoutService, keybindingService, instantiationService, productService, clipboardService));
-+		this.impl = new Lazy(() => new BrowserDialogHandler(logService, nativeHostService, layoutService, keybindingService, instantiationService, productService, clipboardService));
+-		this.impl = new Lazy(() => new BrowserDialogHandler(logService, layoutService, keybindingService, instantiationService, productService, clipboardService, openerService));
++		this.impl = new Lazy(() => new BrowserDialogHandler(logService, nativeHostService, layoutService, keybindingService, instantiationService, productService, clipboardService, openerService));
  
  		this.model = (this.dialogService as DialogService).model;
  
@@ -58,11 +57,11 @@ index c064ebced0c..6c0060dbd60 100644
  import { IClipboardService } from '../../../../platform/clipboard/common/clipboardService.js';
 -import { fromNow } from '../../../../base/common/date.js';
  import { IInstantiationService } from '../../../../platform/instantiation/common/instantiation.js';
- import { MarkdownRenderer } from '../../../../editor/browser/widget/markdownRenderer/browser/markdownRenderer.js';
+ import { MarkdownRenderer, openLinkFromMarkdown } from '../../../../editor/browser/widget/markdownRenderer/browser/markdownRenderer.js';
  import { defaultButtonStyles, defaultCheckboxStyles, defaultDialogStyles, defaultInputBoxStyles } from '../../../../platform/theme/browser/defaultStyles.js';
  import { ResultKind } from '../../../../platform/keybinding/common/keybindingResolver.js';
 +import { INativeHostService } from '../../../../platform/native/common/native.js';
- import { CancellationToken } from '../../../../base/common/cancellation.js';
+ import { IOpenerService } from '../../../../platform/opener/common/opener.js';
  
  export class BrowserDialogHandler extends AbstractDialogHandler {
  
@@ -132,8 +131,8 @@ index d9493a6453d..33dbdfeade5 100644
  	) {
  		super();
  
--		this.browserImpl = new Lazy(() => new BrowserDialogHandler(logService, layoutService, keybindingService, instantiationService, productService, clipboardService));
-+		this.browserImpl = new Lazy(() => new BrowserDialogHandler(logService, nativeHostService, layoutService, keybindingService, instantiationService, productService, clipboardService));
+-		this.browserImpl = new Lazy(() => new BrowserDialogHandler(logService, layoutService, keybindingService, instantiationService, productService, clipboardService, openerService));
++		this.browserImpl = new Lazy(() => new BrowserDialogHandler(logService, nativeHostService, layoutService, keybindingService, instantiationService, productService, clipboardService, openerService));
  		this.nativeImpl = new Lazy(() => new NativeDialogHandler(logService, nativeHostService, productService, clipboardService));
  
  		this.model = (this.dialogService as DialogService).model;
