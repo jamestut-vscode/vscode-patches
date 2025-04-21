@@ -1,0 +1,23 @@
+From bcddf295eefa03bb6c4e9411e9fff66bf25b33a6 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Fri, 4 Apr 2025 16:33:45 +1100
+Subject: Remove extension signature verification
+
+---
+ .../common/abstractExtensionManagementService.ts                 | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/vs/platform/extensionManagement/common/abstractExtensionManagementService.ts b/src/vs/platform/extensionManagement/common/abstractExtensionManagementService.ts
+index 73fbccd8f51..d97196ed7ce 100644
+--- a/src/vs/platform/extensionManagement/common/abstractExtensionManagementService.ts
++++ b/src/vs/platform/extensionManagement/common/abstractExtensionManagementService.ts
+@@ -322,6 +322,7 @@ export abstract class AbstractExtensionManagementService extends CommontExtensio
+ 				const installExtensionTaskOptions: InstallExtensionTaskOptions = {
+ 					...options,
+ 					isApplicationScoped,
++					donotVerifySignature: true,
+ 					profileLocation: isApplicationScoped ? this.userDataProfilesService.defaultProfile.extensionsResource : options.profileLocation ?? this.getCurrentExtensionsManifestLocation(),
+ 					productVersion: options.productVersion ?? { version: this.productService.version, date: this.productService.date }
+ 				};
+--
+2.39.5 (Apple Git-154)

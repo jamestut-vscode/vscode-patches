@@ -1,11 +1,12 @@
 base-commit: 1.98.2
-final-commit: 5f0bef6a505b793002e4a17ed0841cb80b98e39b
+final-commit: a56412adf70f95286508c9a80e9dbb0d7481642a
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
 common/0003-Disable-auto-editor-group-expansion.patch
 common/0004-Recent-open-host-independent.patch
 common/0005-Large-file-extension-sync.patch
+common/0006-Disable-extension-signature-verification.patch
 common/0010-Disable-REH-glibc-check.patch
 
 simple-file-dialog/0001-Do-not-trim-file-name.patch
