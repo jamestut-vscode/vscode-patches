@@ -96,7 +96,7 @@ index e3d96bdadf2..f4a51bf624c 100644
 +	export STDERROUT_REDIRECT=1
 +fi
 +
- "$ROOT/node" ${INSPECT:-} "$ROOT/out/server-main.js" "$@"
+ # Set rpath before changing the interpreter path
 diff --git a/src/server-main.ts b/src/server-main.ts
 index d3510fa5f93..8df27f2bd73 100644
 --- a/src/server-main.ts

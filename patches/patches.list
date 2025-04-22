@@ -1,5 +1,5 @@
-base-commit: 1.98.2
-final-commit: a56412adf70f95286508c9a80e9dbb0d7481642a
+base-commit: 1.99.3
+final-commit: e3ca00fae49aa514fcf4e7e6a930a1b86b309bc5
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
@@ -41,5 +41,6 @@ reh/0005-No-connection-token-by-default.patch
 
 workspace/0001-Fix-reload-on-workspace-change.patch
 workspace/0002-Fix-terminal-remote-workspace-cwd.patch
+workspace/0003-Fix-open-saved-remote-workspace.patch
 
 extensions/0001-vscode-remote-resolver.patch

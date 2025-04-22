@@ -1,0 +1,24 @@
+From 6d8e1d0a524946df5a90c7f16d7078d97d8b4ef2 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Tue, 22 Apr 2025 00:55:25 +1000
+Subject: Fix open saved workspace on remote
+
+---
+ .../workspaces/electron-main/workspacesHistoryMainService.ts    | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/vs/platform/workspaces/electron-main/workspacesHistoryMainService.ts b/src/vs/platform/workspaces/electron-main/workspacesHistoryMainService.ts
+index f398dd9bcd1..0ba8f9dc23e 100644
+--- a/src/vs/platform/workspaces/electron-main/workspacesHistoryMainService.ts
++++ b/src/vs/platform/workspaces/electron-main/workspacesHistoryMainService.ts
+@@ -85,7 +85,7 @@ export class WorkspacesHistoryMainService extends Disposable implements IWorkspa
+ 
+ 		function stripRemoteFromRecent(recent: IRecent): IRecent {
+ 			if (isRecentWorkspace(recent)) {
+-				const wsConfig = recent.workspace;
++				const wsConfig = { ...recent.workspace };
+ 				wsConfig.configPath = stripRemoteFromUri(wsConfig.configPath);
+ 				return { label: recent.label, workspace: wsConfig };
+ 			} else if (isRecentFolder(recent)) {
+-- 
+2.39.5 (Apple Git-154)

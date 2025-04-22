@@ -51,17 +51,16 @@ index c064ebced0c..6c0060dbd60 100644
  import { IConfirmation, IConfirmationResult, IInputResult, ICheckbox, IInputElement, ICustomDialogOptions, IInput, AbstractDialogHandler, DialogType, IPrompt, IAsyncPromptResult } from '../../../../platform/dialogs/common/dialogs.js';
  import { ILayoutService } from '../../../../platform/layout/browser/layoutService.js';
  import { ILogService } from '../../../../platform/log/common/log.js';
-@@ -15,12 +16,12 @@ import { EventHelper } from 'vs/base/browser/dom';
+@@ -15,11 +16,11 @@ import { EventHelper } from 'vs/base/browser/dom';
  import { IKeybindingService } from '../../../../platform/keybinding/common/keybinding.js';
  import { IProductService } from '../../../../platform/product/common/productService.js';
  import { IClipboardService } from '../../../../platform/clipboard/common/clipboardService.js';
 -import { fromNow } from '../../../../base/common/date.js';
  import { IInstantiationService } from '../../../../platform/instantiation/common/instantiation.js';
  import { MarkdownRenderer, openLinkFromMarkdown } from '../../../../editor/browser/widget/markdownRenderer/browser/markdownRenderer.js';
- import { defaultButtonStyles, defaultCheckboxStyles, defaultDialogStyles, defaultInputBoxStyles } from '../../../../platform/theme/browser/defaultStyles.js';
- import { ResultKind } from '../../../../platform/keybinding/common/keybindingResolver.js';
 +import { INativeHostService } from '../../../../platform/native/common/native.js';
  import { IOpenerService } from '../../../../platform/opener/common/opener.js';
+ import { createWorkbenchDialogOptions } from '../../../../platform/dialogs/browser/dialog.js';
  
  export class BrowserDialogHandler extends AbstractDialogHandler {
  
@@ -72,7 +71,7 @@ index c064ebced0c..6c0060dbd60 100644
 +		@INativeHostService private readonly nativeHostService: INativeHostService,
  		@ILayoutService private readonly layoutService: ILayoutService,
  		@IKeybindingService private readonly keybindingService: IKeybindingService,
- 		@IInstantiationService private readonly instantiationService: IInstantiationService,
+ 		@IInstantiationService instantiationService: IInstantiationService,
 @@ -76,18 +78,10 @@ export class BrowserDialogHandler extends AbstractDialogHandler {
  	}
  
