@@ -1,5 +1,5 @@
 base-commit: 1.99.3
-final-commit: 28aa39aa8a2723dc967c3afd49106b1fcf090352
+final-commit: 982cb44ae148679c56f4ad2944baa75121044003
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
 common/0002-Optimise-theme-detection.patch
@@ -8,6 +8,8 @@ common/0004-Recent-open-host-independent.patch
 common/0005-Large-file-extension-sync.patch
 common/0006-Disable-extension-signature-verification.patch
 common/0010-Disable-REH-glibc-check.patch
+
+windowing/0001-disable-macOS-new-tab.patch
 
 simple-file-dialog/0001-Do-not-trim-file-name.patch
 simple-file-dialog/0002-Non-intrusive-autocomplete.patch
