@@ -1,0 +1,28 @@
+From 53b97c4ac3db9ae6796b42e9b7b91597f5583269 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Wed, 23 Apr 2025 18:26:20 +1000
+Subject: Disable macOS native window tab arrangement
+
+The current way will break if creating a new window already results in the creation of a new tab.
+
+---
+ src/vs/platform/windows/electron-main/windowsMainService.ts | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/src/vs/platform/windows/electron-main/windowsMainService.ts b/src/vs/platform/windows/electron-main/windowsMainService.ts
+index b3619e62b5f..6914b23ebe1 100644
+--- a/src/vs/platform/windows/electron-main/windowsMainService.ts
++++ b/src/vs/platform/windows/electron-main/windowsMainService.ts
+@@ -1555,10 +1555,4 @@ export class WindowsMainService extends Disposable implements IWindowsMainServic
+ 			mark('code/didCreateCodeWindow');
+ 
+-			// Add as window tab if configured (macOS only)
+-			if (options.forceNewTabbedWindow) {
+-				const activeWindow = this.getLastActiveWindow();
+-				activeWindow?.addTabbedWindow(createdWindow);
+-			}
+-
+ 			// Add to our list of windows
+ 			this.windows.set(createdWindow.id, createdWindow);
+-- 
+2.39.5 (Apple Git-154)
