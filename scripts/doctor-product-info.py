@@ -7,6 +7,7 @@ import sys
 import os
 import argparse
 import contextlib
+import subprocess
 import json
 from os import path
 import importlib.util
@@ -28,6 +29,9 @@ def scan_modules(script_path):
                 ret.append(module)
     return ret
 
+def get_repo_path():
+    return subprocess.check_output(['git', 'rev-parse', '--show-toplevel']).decode('utf8').rstrip()
+
 def main():
     # base directory of this script
     script_path = path.realpath(path.dirname(sys.argv[0]))
@@ -36,7 +40,7 @@ def main():
     # the actual path of the javascript root (the path that contains product.json and package.json)
     target_dir = None
     # base directory of this repo
-    repo_path = path.realpath(path.join(script_path, '../..'))
+    repo_path = get_repo_path()
 
     # function name of the module to run
     fn_name = None
@@ -44,14 +48,16 @@ def main():
     ap = argparse.ArgumentParser(description="Doctor various properties in package.json and product.json.")
     ap.add_argument('--pre', help='Specify to run prebuild doctoring.', action='store_true')
     ap.add_argument('--post', help='Specify to run postbuild doctoring.', action='store_true')
-    ap.add_argument('target', help='Base directory (optional source code path for pre or built macOS app or REH for post).', nargs='?')
+    ap.add_argument('target', help='Base directory (optional source code path for pre or built macOS app or REH for post).')
     args = ap.parse_args()
 
     if args.pre:
         fn_name = 'pre_run'
-        target_base_dir = args.target or path.join(script_path, '../../vscode')
+        target_base_dir = args.target
         target_dir = ''
     elif args.post:
+        print("post run functionality is disabled for now.")
+        return 1
         fn_name = 'post_run'
         target_base_dir = args.target
         if target_base_dir.endswith('.app'):

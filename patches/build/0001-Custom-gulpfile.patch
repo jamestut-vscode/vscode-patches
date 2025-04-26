@@ -1,0 +1,55 @@
+From 17531bc6dcdc446b71a956cbbb92fb1181355ce0 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sun, 26 Apr 2024 17:21:18 +1100
+Subject: Custom gulpfile to support the build system
+
+diff --git a/build/gulpfile.jamestut.js b/build/gulpfile.jamestut.js
+new file mode 100644
+index 00000000000..e041b7dc713
+--- /dev/null
++++ b/build/gulpfile.jamestut.js
+@@ -0,0 +1,20 @@
++'use strict';
++
++const gulp = require('gulp');
++const path = require('path');
++const task = require('./lib/task');
++const { compileNonNativeExtensionsBuildTask, compileNativeExtensionsBuildTask, compileExtensionMediaBuildTask } = require('./gulpfile.extensions');
++const { packageRehTask } = require('./gulpfile.reh');
++const { packageClientTask } = require('./gulpfile.vscode');
++
++gulp.task(task.define('compile-all-extensions', task.series(
++    compileNonNativeExtensionsBuildTask, compileExtensionMediaBuildTask, compileNativeExtensionsBuildTask
++)));
++
++gulp.task(task.define('package-vscode-reh-darwin-arm64', task.series(
++    packageRehTask("reh", "darwin", "arm64", "out-vscode-reh-min", "vscode-reh-darwin-arm64")
++)));
++
++gulp.task(task.define('package-vscode-darwin-arm64', task.series(
++    packageClientTask("darwin", "arm64", "out-vscode-min", "VSCode-darwin-arm64")
++)));
+diff --git a/build/gulpfile.reh.js b/build/gulpfile.reh.js
+index d151983b1c4..f9c269aa1ff 100644
+--- a/build/gulpfile.reh.js
++++ b/build/gulpfile.reh.js
+@@ -421,6 +421,7 @@ function packageTask(type, platform, arch, sourceFolderName, destinationFolderNa
+ 		return result.pipe(vfs.dest(destination));
+ 	};
+ }
++exports.packageRehTask = packageTask;
+ 
+ /**
+  * @param {object} product The parsed product.json file contents
+diff --git a/build/gulpfile.vscode.js b/build/gulpfile.vscode.js
+index 7046ee004bb..7e8cacd204c 100644
+--- a/build/gulpfile.vscode.js
++++ b/build/gulpfile.vscode.js
+@@ -439,6 +439,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
+ 		return result.pipe(vfs.dest(destination));
+ 	};
+ }
++exports.packageClientTask = packageTask;
+ 
+ function patchWin32DependenciesTask(destinationFolderName) {
+ 	const cwd = path.join(path.dirname(root), destinationFolderName);

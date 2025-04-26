@@ -4,19 +4,22 @@
 
 set -e
 
-cd ${0:a:h}
+WORKDIR="$(realpath ${0:a:h})"
+cd "$WORKDIR"
+
+VSCODE_REPO=work/vscode
 
 # get some basic info about our base
-BASE_TAG=$(packaging/scripts/get-base-commit.sh --no-resolve-hash)
+BASE_TAG=$(scripts/get-base-commit.sh --no-resolve-hash)
 
 # clone VSCode if not exist
-if ! [ -d vscode ]
+if ! [ -d $VSCODE_REPO ]
 then
     echo "vscode repository does not exist. cloning ..."
-    git clone --depth 1 https://github.com/microsoft/vscode.git vscode
+    git clone --depth 1 https://github.com/microsoft/vscode.git $VSCODE_REPO
 fi
 
-cd vscode
+cd $VSCODE_REPO
 
 # check if the desired tag exists in the repository
 if ! git rev-list -n 0 ${BASE_TAG} -- 2>/dev/null
@@ -35,13 +38,13 @@ then
     git branch -D patched
 fi
 
-cd ..
+cd "$WORKDIR"
 echo "Applying patches ..."
-spm/spm.py patches vscode
+spm/spm.py patches $VSCODE_REPO
 
 echo "Applying doctor ..."
-packaging/scripts/doctor-product-info.py --pre
-cd vscode
+scripts/doctor-product-info.py --pre $VSCODE_REPO
+cd $VSCODE_REPO
 git add '*.json'
 git commit --no-verify -m 'Doctor product.json and package.json'
 

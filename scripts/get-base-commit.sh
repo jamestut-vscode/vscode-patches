@@ -3,8 +3,8 @@
 # Retreives the base commit hash specified in patches.list
 
 set -e
-cd ${0:a:h}
-cd ../..
+cd "${0:a:h}"
+cd "$(git rev-parse --show-toplevel)"
 
 PATCHLINE=$(grep -F 'base-commit:' patches/patches.list | head -1)
 if [[ ${${(s: :)PATCHLINE}[1]} != "base-commit:" ]]

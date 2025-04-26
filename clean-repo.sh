@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 cd "${0:a:h}"
+VSCODE_REPO=work/vscode
 
 function show_help() {
     echo "Usage: ${0:a:t} [deep]"
@@ -10,7 +11,7 @@ function show_help() {
     exit 1
 }
 
-if ! [ -d vscode/.git ]
+if ! [ -d $VSCODE_REPO/.git ]
 then
     echo "vscode repository does not exist. Nothing to do."
     exit
@@ -37,7 +38,7 @@ read ANSWER\?"Type 'yes' to proceed: "
 if [[ "$ANSWER" == 'yes' ]]
 then
     echo "Cleaning repository ..."
-    cd vscode
+    cd $VSCODE_REPO
     if [[ $DEEPCLEAN -eq 1 ]]
     then
         echo "Cleaning ..."
