@@ -2,9 +2,9 @@ def pre_run(doctorfn):
     print("Updating darwin bundle ID ...")
     target_key = 'darwinBundleIdentifier'
     target_bundle_id = 'com.saylor.vscode.oss'
-    with doctorfn('product.json') as data:
+    with doctorfn('product.json') as context:
         # deliberate as we expect this plugin to be run on '--pre'
-        if data[0][target_key] == target_bundle_id:
+        if context.data[target_key] == target_bundle_id:
             print("macOS bundle identifier already set. Skipping.")
-        data[0][target_key] = target_bundle_id
-        data[1] = True
+        context.data[target_key] = target_bundle_id
+        context.modified = True

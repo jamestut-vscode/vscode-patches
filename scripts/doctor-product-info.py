@@ -9,8 +9,19 @@ import argparse
 import contextlib
 import subprocess
 import json
+import typing
 from os import path
 import importlib.util
+
+class DoctorContext:
+    data: dict | list = {}
+    modified: bool = False
+    filepath: str = ""
+
+    def __init__(self, data: dict | list, modified: bool, filepath: str):
+        self.data = data
+        self.modified = modified
+        self.filepath = filepath
 
 def scan_modules(script_path):
     os.chdir(path.dirname(sys.argv[0]))
@@ -77,15 +88,14 @@ def main():
     doctorplugins = scan_modules(script_path)
 
     @contextlib.contextmanager
-    def doctor(json_name):
-        pth = path.join(target_base_dir, target_dir, json_name)
+    def doctor(json_name) -> typing.Generator[DoctorContext]:
+        base_path = path.join(target_base_dir, target_dir)
+        pth = path.join(base_path, json_name)
         with open(pth, 'r') as f:
             d = json.load(f)
-        # context manager user should set the 2nd element to True if the given
-        # dictionary is edited.
-        ret = [d, False]
-        yield ret
-        if ret[1]:
+        context = DoctorContext(d, False, pth)
+        yield context
+        if context.modified:
             with open(pth, 'w') as f:
                 json.dump(d, f, indent='\t')
 
