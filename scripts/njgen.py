@@ -7,10 +7,16 @@ import multiprocessing
 from pathlib import Path
 import subprocess
 from ninja_syntax import Writer as NinjaWriter
+from typing import Dict, List, Union
 
-class NinjaWriterWrapper:
-    def __init__(self, wr: NinjaWriter):
-        self.wr = wr
+def append_to_kwargs(kwargs:Dict, key:str, value:str):
+    '''
+    Append to kwargs[key], converting it to a list of string first if it is of
+    string type.
+    '''
+    if type(kwargs.setdefault(key, [])) is str:
+        kwargs[key] = [kwargs[key]]
+    kwargs[key].append(value)
 
 def main():
     # constants
@@ -70,20 +76,32 @@ def main():
             'codesign --force --verify --verbose --deep --sign "$certname" "$appbundle"',
             description="macOS app bundle sign"
         )
+        wr.rule(
+            "npmi",
+            'cd $vscodedir && npm i',
+            description="npm install"
+        )
 
         wr.newline()
 
+        # common to all gulp targets
+        npmi_target = "$vscodedir/node_modules"
+        wr.build(npmi_target, "npmi")
+
+        def add_gulp_build(outputs: Union[str, List[str]], gulptarget:str, rimraf:Union[str, None]=None, **kwargs):
+            append_to_kwargs(kwargs, "order_only", npmi_target)
+            variables:Dict = kwargs.setdefault("variables", {})
+            variables["gulptarget"] = gulptarget
+            if rimraf is not None:
+                variables["rimraf"] = rimraf
+            wr.build(outputs, "gulp", **kwargs)
+
         # common targets
         base_js_target = "$vscodedir/out-build"
-        wr.build(base_js_target, "gulp", variables={
-            "gulptarget": "compile-build-with-mangling" if args.mangle else "compile-build-without-mangling",
-            "rimraf": base_js_target
-        })
+        add_gulp_build(base_js_target, rimraf=base_js_target,
+            gulptarget="compile-build-with-mangling" if args.mangle else "compile-build-without-mangling")
         ext_target = "$vscodedir/.build/extensions"
-        wr.build(ext_target, "gulp", variables={
-            "gulptarget": "compile-all-extensions",
-            "rimraf": ext_target
-        })
+        add_gulp_build(ext_target, "compile-all-extensions", ext_target)
 
         # primary targets (REH and app for the primary target platform)
         target = '-'.join(PRIMARY_TARGET)
@@ -91,21 +109,13 @@ def main():
             # REH targets
             variant = 'reh' if reh else ''
             primary_js = f"$vscodedir/out-vscode{dashify(variant)}-min"
-            wr.build(
-                primary_js, "gulp",
-                variables={"gulptarget": f"minify-vscode{dashify(variant)}"},
-                implicit=[base_js_target, ext_target]
-            )
+            add_gulp_build(primary_js, f"minify-vscode{dashify(variant)}",
+                implicit=[base_js_target, ext_target])
             primary_target_prefix = "vscode-reh" if reh else "VSCode"
             primary_package = Path(f"$workdir/{primary_target_prefix}-{target}")
-            wr.build(
-                str(primary_package), "gulp",
-                variables={
-                    "gulptarget": f"package-vscode{dashify(variant)}-{target}",
-                    "rimraf": str(primary_package)
-                },
-                implicit=[primary_js]
-            )
+            add_gulp_build(str(primary_package), rimraf=str(primary_package),
+                gulptarget=f"package-vscode{dashify(variant)}-{target}",
+                implicit=[primary_js])
             # macOS app bundle sign
             archive_implicit_dep = []
             if not reh and args.signcertname and PRIMARY_TARGET[0] == 'darwin':
