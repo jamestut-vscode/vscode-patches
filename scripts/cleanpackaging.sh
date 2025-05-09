@@ -15,4 +15,4 @@ for I in work/VSCode-*(N) work/vscode-*(N) work/vscode/out-*(N)
 do
     rimraf "$I"
 done
-rimraf work/vscode/.build/extensions
+rimraf work/vscode/.build
