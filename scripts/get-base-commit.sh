@@ -17,7 +17,7 @@ BASE_COMMIT=${${(s: :)PATCHLINE}[2]}
 # resolve tag -> hash unless we're told to not do so
 if [[ "${1}" != "--no-resolve-hash" ]]
 then
-    cd vscode
+    cd work/vscode
     BASE_COMMIT=$(git rev-list -n 1 ${BASE_COMMIT})
 fi
 
