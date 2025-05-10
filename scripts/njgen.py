@@ -63,7 +63,7 @@ def main():
         # rules
         wr.rule(
             "gulp",
-            f'cd $vscodedir && if [[ -z "$rimraf" ]]; then rm -rf "$rimraf"; fi && npx gulp $gulptarget',
+            f'cd $vscodedir && if ! [[ -z "$rimraf" ]]; then rm -rf "$rimraf"; fi && npx gulp $gulptarget',
             description="gulp $gulptarget"
         )
         wr.rule(
@@ -113,9 +113,15 @@ def main():
                 implicit=[base_js_target, ext_target])
             primary_target_prefix = "vscode-reh" if reh else "VSCode"
             primary_package = Path(f"$workdir/{primary_target_prefix}-{target}")
+            primary_package_impl_dep = [primary_js]
+            if reh:
+                # node.js main binary
+                node_target = f"$vscodedir/.build/node"
+                add_gulp_build(node_target, f"node-{target}")
+                primary_package_impl_dep.append(node_target)
             add_gulp_build(str(primary_package), rimraf=str(primary_package),
                 gulptarget=f"package-vscode{dashify(variant)}-{target}",
-                implicit=[primary_js])
+                implicit=primary_package_impl_dep)
             # macOS app bundle sign
             archive_implicit_dep = []
             if not reh and args.signcertname and PRIMARY_TARGET[0] == 'darwin':
