@@ -11,6 +11,7 @@ function rimraf {
 }
 
 rimraf work/packaging
+rimraf work/derivedreh
 for I in work/VSCode-*(N) work/vscode-*(N) work/vscode/out-*(N)
 do
     rimraf "$I"
