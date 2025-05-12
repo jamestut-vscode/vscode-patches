@@ -42,7 +42,7 @@ def main():
         "The resulting work/packaging directory is ephemeral and must be deleted when attempting to package a new version.")
     ap.add_argument("--signcertname",
         help="Keychain certificate name for signing macOS app bundle.")
-    ap.add_argument("--mangle", "-m",
+    ap.add_argument("--mangle", "-m", action='store_true',
         help="Enable JavaScript name mangling optimisation. "
         "This will significantly increase build time.")
     args = ap.parse_args()
