@@ -86,7 +86,7 @@ def clonefile(src: str | Path, tgt: str | Path):
     '''
     tgt = topath(tgt)
     if tgt.exists(): return
-    subprocess.check_output(["cp", "-c", "-r", src, tgt])
+    subprocess.check_output(["cp", "-c", "-R", src, tgt])
 
 def replace_file(basefrom: str | Path, baseto: str | Path, fn: str | Path):
     basefrom, baseto = topath(basefrom), topath(baseto)

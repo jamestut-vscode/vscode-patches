@@ -67,13 +67,14 @@ def main():
             description="gulp $gulptarget"
         )
         wr.rule(
-            "zip",
-            'rm -rf $out; 7z -tzip -mmt$cpucount a $out $in',
-            description="zip $out"
+            "archive",
+            'rm -rf $out; tar --uid 0 -C "$cwd" --gid 0 -cJ -f $out "$input"',
+            description="archive $out"
         )
         wr.rule(
             "darwinsign",
-            'codesign --force --verify --verbose --deep --sign "$certname" "$appbundle"',
+            # update time before sign
+            'find "$appbundle" -exec touch {} +; codesign --force --verify --verbose --deep --sign "$certname" "$appbundle"',
             description="macOS app bundle sign"
         )
         wr.rule(
@@ -123,7 +124,7 @@ def main():
                 gulptarget=f"package-vscode{dashify(variant)}-{target}",
                 implicit=primary_package_impl_dep)
             # macOS app bundle sign
-            archive_implicit_dep = []
+            archive_implicit_dep = [str(primary_package)]
             if not reh and args.signcertname and PRIMARY_TARGET[0] == 'darwin':
                 app_bundle_path = primary_package/f"{product_info['nameLong']}.app"
                 app_bundle_sign_target = app_bundle_path/"Contents/_CodeSignature"
@@ -135,9 +136,11 @@ def main():
                     }
                 )
                 archive_implicit_dep.append(str(app_bundle_sign_target))
-            primary_archive = os.path.basename(f'{primary_package}.zip')
-            wr.build(primary_archive, "zip", inputs=[str(primary_package)],
-                implicit=archive_implicit_dep)
+            primary_archive = os.path.basename(f'{primary_package}.tar.xz')
+            wr.build(primary_archive, "archive", implicit=archive_implicit_dep, variables={
+                "cwd": os.path.dirname(primary_package),
+                "input": os.path.basename(primary_package),
+            })
             wr.default(primary_archive)
 
 
