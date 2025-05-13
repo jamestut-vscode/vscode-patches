@@ -38,7 +38,6 @@ ipc-version/0002-Show-IPC-version.patch
 
 reh/0001-Disable-shorten-reconnection-grace-time.patch
 reh/0002-daemon-support.patch
-reh/0003-stdout-err-logging-redir.patch
 reh/0004-Adjustable-reconnection-grace.patch
 reh/0005-No-connection-token-by-default.patch
 
