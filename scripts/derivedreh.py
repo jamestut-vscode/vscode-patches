@@ -6,6 +6,7 @@ import subprocess
 import shutil
 import multiprocessing
 import threading
+import json
 from pathlib import Path
 
 # constants
@@ -76,6 +77,15 @@ def lazydynconst(fn):
 def REH_OBJ_LIST() -> list[str]:
     return [fn for fn in find_macho(REPODIR/BASE_REH_PATH) if str(fn) not in EXCLUDE_BINS]
 
+@lazydynconst
+def VSCODE_PRODUCT_INFO() -> dict:
+    with open(REPODIR/BASE_VSCODE_PATH/"product.json") as f:
+        return json.load(f)
+
+@lazydynconst
+def SERVER_APP_NAME() -> str:
+    return VSCODE_PRODUCT_INFO()['serverApplicationName']
+
 # helper functions
 def topath(p: str | Path) -> Path:
     return Path(p) if type(p) is not Path else p
@@ -95,6 +105,9 @@ def replace_file(basefrom: str | Path, baseto: str | Path, fn: str | Path):
 
 def rimraf(target: str | Path):
     subprocess.check_output(["rm", "-rf", target])
+
+def make_executable(target: str | Path):
+    subprocess.check_output(["chmod", "+x", target])
 
 def find_macho(basedir: str | Path):
     macho_magics = {
@@ -168,12 +181,19 @@ class LinuxGeneric:
             print("  Stripping ELF binaries ...")
             strip_elf_binaries(workdir/self.extract_name, REH_OBJ_LIST())
         print("  Processing ...")
-        clonefile(REPODIR/BASE_REH_PATH, workdir/self.output_name)
+        target_dir = workdir/self.output_name
+        clonefile(REPODIR/BASE_REH_PATH, target_dir)
+        # replace the `code-server-oss` script with the Linux version
+        server_bootstrap_script_path = target_dir/"bin"/SERVER_APP_NAME()
+        os.unlink(server_bootstrap_script_path)
+        clonefile(REPODIR/BASE_VSCODE_PATH/"resources/server/bin/code-server-linux.sh",
+            server_bootstrap_script_path)
+        make_executable(server_bootstrap_script_path)
         # remove uneeded binaries
         for exclbin in EXCLUDE_BINS:
-            os.unlink(workdir/self.output_name/exclbin)
+            os.unlink(target_dir/exclbin)
         for objfile in REH_OBJ_LIST():
-            replace_file(target_extract_dir, workdir/self.output_name, objfile)
+            replace_file(target_extract_dir, target_dir, objfile)
 
 class GnuLinuxLegacy:
     def __init__(self, target: str):
@@ -197,7 +217,7 @@ class GnuLinuxLegacy:
             print("  Stripping legacy node.js binary ...")
             strip_elf_binaries(legacy_node_bin_dir, ["node"])
         print("  Processing ...")
-        depworkdir = deps[0]/f"vscode-server-linux-{self.arch}"
+        depworkdir = deps[0]/f"vscode-reh-linux-{self.arch}"
         clonefile(depworkdir, workdir/self.output_name)
         replace_file(legacy_node_bin_dir, workdir/self.output_name, "node")
 
