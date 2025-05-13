@@ -209,7 +209,8 @@ targets = {
     'linux-alpine-x64': LinuxGeneric,
     'linux-alpine-arm64': LinuxGeneric,
     # legacy GNU/Linux targets (glibc 2.17 used in Enterprise Linux 7)
-    'linux-gnulegacy-x64': GnuLinuxLegacy,
+    # disabled for now as the current approach won't work
+    # 'linux-gnulegacy-x64': GnuLinuxLegacy,
 }
 
 class ParallelArchiver:
