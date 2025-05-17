@@ -74,7 +74,7 @@ def lazydynconst(fn):
     return wrapper
 
 @lazydynconst
-def REH_OBJ_LIST() -> list[str]:
+def REH_OBJ_LIST() -> list[Path]:
     return [fn for fn in find_macho(REPODIR/BASE_REH_PATH) if str(fn) not in EXCLUDE_BINS]
 
 @lazydynconst
