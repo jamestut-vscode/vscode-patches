@@ -28,6 +28,8 @@ BASE_PACKAGING_DIR = "work/packaging"
 EXCLUDE_BINS = {'node_modules/node-pty/build/Release/spawn-helper'}
 # strip ELF binaries (can be modified via command-line args)
 STRIP = False
+# commit hash to base for VSDA
+VSDA_BASE_COMMIT = 'ddc367ed5c8936efe395cffeec279b04ffd7db78'
 
 # dynamic constants
 # for declaring dynamic constants
@@ -76,6 +78,11 @@ def lazydynconst(fn):
 @lazydynconst
 def REH_OBJ_LIST() -> list[Path]:
     return [fn for fn in find_macho(REPODIR/BASE_REH_PATH) if str(fn) not in EXCLUDE_BINS]
+
+@lazydynconst
+def VSDA_OBJ_SET() -> set[Path]:
+    vsda_base_path = Path("node_modules/vsda")
+    return {i for i in REH_OBJ_LIST() if i.is_relative_to(vsda_base_path)}
 
 @lazydynconst
 def VSCODE_PRODUCT_INFO() -> dict:
@@ -166,12 +173,14 @@ class LinuxGeneric:
             raise NotImplementedError()
         self.extract_name = f"vscode-server-{out_name_suff}"
         self.tarball_name = f"server-{out_name_suff}.tarball"
+        self.tarball_name_vsda = f"server-{out_name_suff}-vsda.tarball"
 
         self.output_name = f"vscode-reh-{out_name_suff}"
         self.deps = []
-        self.downloads = [(
-            f"https://update.code.visualstudio.com/commit:{BASE_COMMIT}/server-{out_name_suff}/{REL_REH_CHANNEL}",
-            self.tarball_name)]
+        self.downloads = [
+            (f"https://update.code.visualstudio.com/commit:{BASE_COMMIT}/server-{out_name_suff}/{REL_REH_CHANNEL}", self.tarball_name),
+            (f"https://update.code.visualstudio.com/commit:{VSDA_BASE_COMMIT}/server-{out_name_suff}/{REL_REH_CHANNEL}", self.tarball_name_vsda),
+        ]
 
     def run(self, workdir: Path, *_):
         target_extract_dir = workdir/self.extract_name
@@ -179,7 +188,16 @@ class LinuxGeneric:
             print("  Extracting ...")
             subprocess.check_call(["tar", "-xf", self.tarball_name], cwd=workdir)
             print("  Stripping ELF binaries ...")
-            strip_elf_binaries(workdir/self.extract_name, REH_OBJ_LIST())
+            strip_elf_binaries(target_extract_dir, REH_OBJ_LIST())
+        vsda_work_dir = workdir/"reh-vsda"
+        target_vsda_extract_dir = vsda_work_dir/self.extract_name
+        if not target_vsda_extract_dir.exists():
+            os.makedirs(vsda_work_dir, exist_ok=True)
+            print("  Extracting REH for VSDA ...")
+            subprocess.check_call(["tar", "-xf",
+                workdir.relative_to(vsda_work_dir, walk_up=True)/self.tarball_name_vsda], cwd=vsda_work_dir)
+            print("  Stripping VSDA ELF binaries ...")
+            strip_elf_binaries(target_vsda_extract_dir, VSDA_OBJ_SET())
         print("  Processing ...")
         target_dir = workdir/self.output_name
         clonefile(REPODIR/BASE_REH_PATH, target_dir)
@@ -193,7 +211,9 @@ class LinuxGeneric:
         for exclbin in EXCLUDE_BINS:
             os.unlink(target_dir/exclbin)
         for objfile in REH_OBJ_LIST():
-            replace_file(target_extract_dir, target_dir, objfile)
+            replace_file(
+                target_vsda_extract_dir if objfile in VSDA_OBJ_SET() else target_extract_dir,
+                target_dir, objfile)
 
 class GnuLinuxLegacy:
     def __init__(self, target: str):
