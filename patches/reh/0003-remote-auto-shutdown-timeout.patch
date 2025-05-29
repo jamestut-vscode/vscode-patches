@@ -1,0 +1,75 @@
+From d0f307240276d25c55077e1be6f396ffc482d9f0 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sun, 25 May 2025 23:55:16 +1000
+Subject: Configurable timeout for remote auto shutdown
+
+---
+ src/vs/server/node/remoteExtensionHostAgentServer.ts | 9 ++++-----
+ src/vs/server/node/serverEnvironmentService.ts       | 4 ++--
+ 2 files changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/src/vs/server/node/remoteExtensionHostAgentServer.ts b/src/vs/server/node/remoteExtensionHostAgentServer.ts
+index 548c57b0c28..0dbe650d450 100644
+--- a/src/vs/server/node/remoteExtensionHostAgentServer.ts
++++ b/src/vs/server/node/remoteExtensionHostAgentServer.ts
+@@ -42,8 +42,6 @@ import { CacheControl, serveError, serveFile, WebClientServer } from './webClien
+ import { createRequire } from 'node:module';
+ const require = createRequire(import.meta.url);
+ 
+-const SHUTDOWN_TIMEOUT = 5 * 60 * 1000;
+-
+ declare module vsda {
+ 	// the signer is a native module that for historical reasons uses a lower case class name
+ 	// eslint-disable-next-line @typescript-eslint/naming-convention
+@@ -577,7 +575,7 @@ class RemoteExtensionHostAgentServer extends Disposable implements IServerAPI {
+ 	}
+ 
+ 	private async _onDidCloseExtHostConnection(): Promise<void> {
+-		if (!this._environmentService.args['enable-remote-auto-shutdown']) {
++		if (this._environmentService.args['remote-auto-shutdown-timeout'] === undefined) {
+ 			return;
+ 		}
+ 
+@@ -592,7 +590,8 @@ class RemoteExtensionHostAgentServer extends Disposable implements IServerAPI {
+ 	}
+ 
+ 	private _waitThenShutdown(initial = false): void {
+-		if (!this._environmentService.args['enable-remote-auto-shutdown']) {
++		const autoShutdownTimeout: number = parseInt(this._environmentService.args['remote-auto-shutdown-timeout'] ?? '');
++		if (isNaN(autoShutdownTimeout)) {
+ 			return;
+ 		}
+ 
+@@ -603,7 +602,7 @@ class RemoteExtensionHostAgentServer extends Disposable implements IServerAPI {
+ 				this.shutdownTimer = undefined;
+ 
+ 				this._shutdown();
+-			}, SHUTDOWN_TIMEOUT);
++			}, autoShutdownTimeout * 1000);
+ 		}
+ 	}
+ 
+diff --git a/src/vs/server/node/serverEnvironmentService.ts b/src/vs/server/node/serverEnvironmentService.ts
+index aca19e3c187..efbd2d045fe 100644
+--- a/src/vs/server/node/serverEnvironmentService.ts
++++ b/src/vs/server/node/serverEnvironmentService.ts
+@@ -77,7 +77,7 @@ export const serverOptions: OptionDescriptions<Required<ServerParsedArgs>> = {
+ 
+ 	/* ----- remote development options ----- */
+ 
+-	'enable-remote-auto-shutdown': { type: 'boolean' },
++	'remote-auto-shutdown-timeout': { type: 'string' },
+ 	'remote-auto-shutdown-without-delay': { type: 'boolean' },
+ 
+ 	'use-host-proxy': { type: 'boolean' },
+@@ -205,7 +205,7 @@ export interface ServerParsedArgs {
+ 
+ 	/* ----- remote development options ----- */
+ 
+-	'enable-remote-auto-shutdown'?: boolean;
++	'remote-auto-shutdown-timeout'?: string;
+ 	'remote-auto-shutdown-without-delay'?: boolean;
+ 
+ 	'use-host-proxy'?: boolean;
+-- 
+2.39.5 (Apple Git-154)
