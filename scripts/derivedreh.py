@@ -6,8 +6,10 @@ import subprocess
 import shutil
 import multiprocessing
 import threading
+import itertools
 import json
 from pathlib import Path
+from contextlib import contextmanager
 
 # constants
 # mainline VSCode release channel
@@ -215,6 +217,147 @@ class LinuxGeneric:
                 target_vsda_extract_dir if objfile in VSDA_OBJ_SET() else target_extract_dir,
                 target_dir, objfile)
 
+class LinuxPortable:
+    def __init__(self, target: str):
+        _, kind, self.arch = target.split("-")
+        assert kind == 'portable'
+        # alternative architecture name, commonly used in `uname -m`
+        self.linux_arch_name = {'arm64': 'aarch64', 'x64': 'x86_64'}[self.arch]
+
+        self.cont_name = 'vscode-portable-libs-' + self.arch
+
+        out_name_suff = f'linux-{kind}-{self.arch}'
+        self.output_name = f"vscode-reh-{out_name_suff}"
+
+        dep = f'linux-alpine-{self.arch}'
+        self.deps = [dep]
+
+        # obtain dependency's output name
+        self.dep_output_name = LinuxGeneric(dep).output_name
+
+        patchelf_url = f'https://github.com/NixOS/patchelf/releases/download/0.18.0/patchelf-0.18.0-{self.linux_arch_name}.tar.gz'
+        self.patchelf_archive = patchelf_url.rsplit('/', maxsplit=1)[-1]
+        self.downloads = [(patchelf_url, self.patchelf_archive)]
+
+    def _get_container_state(self):
+        contstat = subprocess.check_output(['podman', 'container', 'inspect', self.cont_name], stderr=subprocess.DEVNULL)
+        return json.loads(contstat)
+
+    @contextmanager
+    def _start_container(self):
+        # check if it is already started
+        try:
+            contstat = self._get_container_state()
+        except subprocess.CalledProcessError:
+            # container does not exist
+            self._maybe_create_container()
+            contstat = self._get_container_state()
+
+        if contstat[0]['State']['Status'] != 'running':
+            subprocess.check_output(['podman', 'start', self.cont_name])
+        try:
+            yield
+        finally:
+            # stop the container afterwards
+            subprocess.check_output(['podman', 'stop', self.cont_name])
+
+    def _maybe_create_container(self):
+        podman_platform = None
+        if self.arch == 'arm64':
+            # use the default platform
+            pass
+        elif self.arch == 'x64':
+            podman_platform = 'linux/amd64'
+        else:
+            raise RuntimeError(f"Platform {self.arch} not supported")
+        
+        try:
+            subprocess.check_output(['podman', 'container', 'inspect', self.cont_name], stderr=subprocess.DEVNULL)
+            # container already exists
+            return
+        except subprocess.CalledProcessError:
+            pass
+
+        # container is not present, try building it
+        # first, fetch the base image
+        IMG_NAME_PREFIX = "alpine"
+        img_name = f'{IMG_NAME_PREFIX}-{self.arch}'
+        try:
+            subprocess.check_output(['podman', 'image', 'inspect', img_name], stderr=subprocess.DEVNULL)
+        except subprocess.CalledProcessError:
+            # download the container
+            pullcmd = ['podman', 'pull']
+            if podman_platform:
+                pullcmd.extend(['--platform', podman_platform])
+            pullcmd.append(IMG_NAME_PREFIX)
+            subprocess.check_call(pullcmd)
+            # tag the container
+            subprocess.check_call(['podman', 'tag', IMG_NAME_PREFIX, img_name])
+        
+        # proceed to run the container
+        subprocess.check_call([
+            'podman', 'run', '-d', '--stop-signal=SIGKILL', '--name', self.cont_name,
+            img_name, 'sleep', 'infinity'
+        ])
+
+        # install dependencies
+        subprocess.check_call(['podman', 'exec', self.cont_name, 'apk', 'add', 'libstdc++'])
+
+    def _container_discover_symlink(self, target: Path):
+        return subprocess.check_output(['podman', 'exec', self.cont_name, 'realpath', str(target)])[:-1].decode('utf8')
+    
+    def _copy_from_container(self, src: Path, target: Path):
+        subprocess.check_call(['podman', 'cp', f'{self.cont_name}:{src}',str(target)])
+
+    def run(self, workdir: Path, *deps: list[Path]):
+        clonefile(deps[0]/self.dep_output_name, workdir/self.output_name)
+        output_dir = workdir/self.output_name
+        target_sysroot_dir = output_dir/"sysroot"
+        
+        ld_path = Path(f'/lib/ld-musl-{self.linux_arch_name}.so.1')
+        libc_name = f'libc.musl-{self.linux_arch_name}.so.1'
+        
+        # copy alpine sysroot from container
+        with self._start_container():
+            os.makedirs(target_sysroot_dir, exist_ok=True)
+            self._copy_from_container(ld_path, target_sysroot_dir/ld_path.name)
+            os.symlink(ld_path.name, target_sysroot_dir/libc_name)
+            self._copy_from_container('/usr/lib/libgcc_s.so.1', target_sysroot_dir/'libgcc_s.so.1')
+            stdcpp_common_path = Path('/usr/lib/libstdc++.so.6')
+            stdcpp_path = Path(self._container_discover_symlink(stdcpp_common_path))
+            self._copy_from_container(stdcpp_path, target_sysroot_dir/stdcpp_path.name)
+            os.symlink(stdcpp_path.name, target_sysroot_dir/stdcpp_common_path.name)
+        
+        # put patchelf
+        patchelf_extract_dir = workdir/'patchelf'
+        if not patchelf_extract_dir.exists():
+            os.makedirs(patchelf_extract_dir, exist_ok=True)
+            subprocess.check_call([ 'tar', '-C', patchelf_extract_dir.relative_to(workdir),
+                '-xf', self.patchelf_archive], cwd=workdir)
+        clonefile(patchelf_extract_dir/'bin/patchelf', output_dir/'patchelf')
+        
+        # patch 'launcher' and 'code-server-oss'
+        with open(REPODIR/"scripts/reh-supplemental/portable-modifier.sh") as f:
+            patch_in_script = f.read().replace("$$LD_NAME$$", ld_path.name)
+        # put after the first encounter of ROOT=
+        for fn in [VSCODE_PRODUCT_INFO()['serverApplicationName'], 'launcher']:
+            fullpath = output_dir/"bin"/fn
+            with open(fullpath) as f:
+                original_script_lines = f.readlines()
+            root_def_ln = None
+            for i, l in enumerate(original_script_lines):
+                if l.startswith('ROOT='):
+                    root_def_ln = i + 1
+                    break
+            else:
+                raise RuntimeError("Cannot find 'ROOT=' in the target script to patch")
+            with open(fullpath, 'w') as f:
+                f.writelines(itertools.chain(
+                    original_script_lines[:root_def_ln], ['\n'],
+                    (f'{line}\n' for line in patch_in_script.splitlines()), ['\n'],
+                    original_script_lines[root_def_ln:]
+                ))
+
 targets = {
     # GNU/Linux targets officially supported by mainline VSCode
     'linux-gnu-x64': LinuxGeneric,
@@ -222,6 +365,9 @@ targets = {
     # alpine/MUSL targets
     'linux-alpine-x64': LinuxGeneric,
     'linux-alpine-arm64': LinuxGeneric,
+    # portable targets based on alpine targets
+    'linux-portable-x64': LinuxPortable,
+    'linux-portable-arm64': LinuxPortable,
 }
 
 class ParallelArchiver:
