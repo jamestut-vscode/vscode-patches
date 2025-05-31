@@ -12,9 +12,9 @@ index e7c898fc1fe..5f9baccf873 100644
 --- a/package.json
 +++ b/package.json
 @@ -94,3 +94,3 @@
-     "@xterm/headless": "^5.6.0-beta.99",
--    "@xterm/xterm": "^5.6.0-beta.99",
-+    "@xterm/xterm": "https://github.com/jamestut-vscode/xterm.js-patches/releases/download/5.6.0-beta.99-m1s/xtermjs.tar.gz",
+     "@xterm/headless": "^5.6.0-beta.101",
+-    "@xterm/xterm": "^5.6.0-beta.101",
++    "@xterm/xterm": "https://github.com/jamestut-vscode/xterm.js-patches/releases/download/5.6.0-beta.101-m1s/xtermjs.tar.gz",
      "http-proxy-agent": "^7.0.0",
 -- 
 2.39.2 (Apple Git-144)
