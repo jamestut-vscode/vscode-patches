@@ -333,6 +333,7 @@ def main():
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-strip-elf", action='store_true')
+    ap.add_argument("--no-archive", action='store_true', help="Disable archiving (for debug)")
     ap.add_argument("--jobs", "-j", type=int, default=multiprocessing.cpu_count(),
         help="Max number of archival jobs")
     ap.add_argument("targets", choices=targets, nargs='*')
@@ -364,10 +365,11 @@ def main():
     for tgt in selected_targets:
         print("building", tgt, "...")
         bldinst.do_build(tgt)
-    for tgt in selected_targets:
-        print("archive", tgt, "...")
-        bldinst.do_archive(tgt, archiver)
-    archiver.wait_all_jobs()
+    if not args.no_archive:
+        for tgt in selected_targets:
+            print("archive", tgt, "...")
+            bldinst.do_archive(tgt, archiver)
+        archiver.wait_all_jobs()
 
 if __name__ == "__main__":
     sys.exit(main())
