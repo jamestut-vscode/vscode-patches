@@ -1,4 +1,4 @@
-From 5e33a687fbdbc4add70bce750313db8bfc075ff1 Mon Sep 17 00:00:00 2001
+From f2d97a0c522e07c4a261eab4c51124ab87612d3c Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
 Date: Sun, 25 May 2025 21:28:19 +1000
 Subject: Add proxy launcher for stdio transport method
@@ -6,8 +6,8 @@ Subject: Add proxy launcher for stdio transport method
 ---
  build/gulpfile.reh.js                        |   6 +-
  resources/server/bin/code-server-launcher.sh |   4 +
- src/server-launcher-main.ts                  | 271 +++++++++++++++++++
- 3 files changed, 280 insertions(+), 1 deletion(-)
+ src/server-launcher-main.ts                  | 268 +++++++++++++++++++
+ 3 files changed, 277 insertions(+), 1 deletion(-)
  create mode 100644 resources/server/bin/code-server-launcher.sh
  create mode 100644 src/server-launcher-main.ts
 
@@ -47,10 +47,10 @@ index 00000000000..3c29af44c39
 +"$ROOT/node" ${INSPECT:-} "$ROOT/out/server-launcher-main.js" "$@"
 diff --git a/src/server-launcher-main.ts b/src/server-launcher-main.ts
 new file mode 100644
-index 00000000000..cec0201afe5
+index 00000000000..0f43a4fcb6c
 --- /dev/null
 +++ b/src/server-launcher-main.ts
-@@ -0,0 +1,271 @@
+@@ -0,0 +1,268 @@
 +import * as fs from 'fs';
 +import * as path from 'path';
 +import * as os from 'os';
@@ -115,12 +115,10 @@ index 00000000000..cec0201afe5
 +const ap = new ArgumentParser();
 +ap.addArgument('--daemon', { action: 'store_true' });
 +ap.addArgument('--help', { action: 'store_true' });
-+ap.addArgument('--remote-data-dir', { action: 'value' });
++ap.addArgument('--server-data-dir', { action: 'value' });
 +ap.addArgument('--socket-path', { action: 'value' });
 +ap.addArgument('--remote-auto-shutdown-timeout', { action: 'value' });
 +// block user from passing these arguments
-+ap.addArgument('--user-data-dir', { action: 'value' });
-+ap.addArgument('--extensions-dir', { action: 'value' });
 +ap.addArgument('--daemonize', { action: 'store_true' });
 +ap.parseArgs();
 +
@@ -207,10 +205,10 @@ index 00000000000..cec0201afe5
 +	console.log('    Run in daemon mode');
 +	console.log('  --help');
 +	console.log('    Show this help message');
-+	console.log('  --remote-data-dir DIR');
-+	console.log(`    Set remote data directory (default: ~/${serverDataFolderName})`);
++	console.log('  --server-data-dir DIR');
++	console.log(`    Set remote server's data directory (default: ~/${serverDataFolderName})`);
 +	console.log('  --socket-path PATH');
-+	console.log('    Set socket path (default: <remote-data-dir>/vscode-server.sock)');
++	console.log('    Set socket path (default: <server-data-dir>/vscode-server.sock)');
 +	console.log('  --remote-auto-shutdown-timeout SEC');
 +	console.log(`    Set server auto shutdown timeout (default: ${DEFAULT_SHUTDOWN_TIMEOUT} seconds)`);
 +	console.log('');
@@ -244,8 +242,7 @@ index 00000000000..cec0201afe5
 +
 +	const autoShutdownTimeout = ap.get('--remote-auto-shutdown-timeout') ?? DEFAULT_SHUTDOWN_TIMEOUT.toString();
 +	const serverArgs: string[] = [
-+		'--user-data-dir', `${remoteDataDir}/data`,
-+		'--extensions-dir', `${remoteDataDir}/extensions`,
++		'--server-data-dir', remoteDataDir,
 +		'--socket-path', socketPath,
 +		'--remote-auto-shutdown-timeout', autoShutdownTimeout
 +	];
@@ -270,7 +267,7 @@ index 00000000000..cec0201afe5
 +	}
 +
 +	// populate remote data dir
-+	const userRemoteDataDir = ap.get('--remote-data-dir');
++	const userRemoteDataDir = ap.get('--server-data-dir');
 +	if (userRemoteDataDir !== undefined) {
 +		remoteDataDir = path.resolve(userRemoteDataDir);
 +	} else {
