@@ -304,6 +304,7 @@ class Builder:
     def do_build(self, target):
         if target in self.targets_built:
             return
+        print("building", target, "...")
         bldinst = self.target_instances[target]
         workdir = self.target_workdir(target)
         # skip if output directory already exists
@@ -363,7 +364,6 @@ def main():
         print("prereqs download for", tgt, "...")
         bldinst.download_prereqs(tgt)
     for tgt in selected_targets:
-        print("building", tgt, "...")
         bldinst.do_build(tgt)
     if not args.no_archive:
         for tgt in selected_targets:
