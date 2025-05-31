@@ -215,32 +215,6 @@ class LinuxGeneric:
                 target_vsda_extract_dir if objfile in VSDA_OBJ_SET() else target_extract_dir,
                 target_dir, objfile)
 
-class GnuLinuxLegacy:
-    def __init__(self, target: str):
-        _, _, self.arch = target.split("-")
-        self.node_legacy_dir_name = f"node-v{REH_NODE_VERSION}-linux-{self.arch}-glibc-217"
-        self.node_legacy_tarball_name = self.node_legacy_dir_name + ".tar.xz"
-
-        self.output_name = f"vscode-reh-linux-legacy-{self.arch}"
-        self.deps = [f'linux-gnu-{self.arch}']
-        self.downloads = [(
-            f"https://unofficial-builds.nodejs.org/download/release/v{REH_NODE_VERSION}/{self.node_legacy_tarball_name}",
-            self.node_legacy_tarball_name
-        )]
-
-    def run(self, workdir: Path, *deps: list[Path]):
-        legacy_node_extract_dir = workdir/self.node_legacy_dir_name
-        legacy_node_bin_dir = legacy_node_extract_dir/"bin"
-        if not legacy_node_extract_dir.exists():
-            print("  Extracting legacy node.js package ...")
-            subprocess.check_call(["tar", "-xf", self.node_legacy_tarball_name], cwd=workdir)
-            print("  Stripping legacy node.js binary ...")
-            strip_elf_binaries(legacy_node_bin_dir, ["node"])
-        print("  Processing ...")
-        depworkdir = deps[0]/f"vscode-reh-linux-{self.arch}"
-        clonefile(depworkdir, workdir/self.output_name)
-        replace_file(legacy_node_bin_dir, workdir/self.output_name, "node")
-
 targets = {
     # GNU/Linux targets officially supported by mainline VSCode
     'linux-gnu-x64': LinuxGeneric,
@@ -248,9 +222,6 @@ targets = {
     # alpine/MUSL targets
     'linux-alpine-x64': LinuxGeneric,
     'linux-alpine-arm64': LinuxGeneric,
-    # legacy GNU/Linux targets (glibc 2.17 used in Enterprise Linux 7)
-    # disabled for now as the current approach won't work
-    # 'linux-gnulegacy-x64': GnuLinuxLegacy,
 }
 
 class ParallelArchiver:
