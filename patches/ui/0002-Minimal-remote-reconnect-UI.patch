@@ -21,7 +21,7 @@ index b308fa22f6b..4c843b7277b 100644
 -
  			let visibleProgress: VisibleProgress | null = null;
  			let reconnectWaitEvent: ReconnectionWaitEvent | null = null;
- 			let disposableListener: IDisposable | null = null;
+ 			const disposableListener = this._register(new MutableDisposable());
  
 -			function showProgress(location: ProgressLocation.Dialog | ProgressLocation.Notification | null, buttons: { label: string; callback: () => void }[], initialReport: string | null = null): VisibleProgress {
 +			function showProgress(buttons: { label: string; callback: () => void }[], initialReport: string | null = null) {
@@ -99,8 +99,7 @@ index b308fa22f6b..4c843b7277b 100644
  			// Possible state transitions:
  			// ConnectionGain      -> ConnectionLost
  			// ConnectionLost      -> ReconnectionWait, ReconnectionRunning
-@@ -890,10 +845,6 @@ export class RemoteAgentConnectionStatusListener extends Disposable implements I
- 				}
+@@ -890,9 +845,5 @@ export class RemoteAgentConnectionStatusListener extends Disposable implements I
  				switch (e.type) {
  					case PersistentConnectionEventType.ConnectionLost:
 -						reconnectionToken = e.reconnectionToken;
@@ -149,7 +148,7 @@ index b308fa22f6b..4c843b7277b 100644
 -						visibleProgress.report(nls.localize('reconnectionRunning', "Disconnected. Attempting to reconnect..."));
 -
 -						// Register to listen for quick input is opened
--						disposableListener = quickInputService.onShow(() => {
+-						disposableListener.value = quickInputService.onShow(() => {
 -							// Need to move from dialog if being shown and user needs to type in a prompt
 -							if (visibleProgress && visibleProgress.location === ProgressLocation.Dialog) {
 -								visibleProgress = showProgress(ProgressLocation.Notification, [reloadButton], visibleProgress.lastReport);

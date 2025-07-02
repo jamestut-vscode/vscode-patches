@@ -50,7 +50,7 @@ index 58084f9711e..840180f19de 100644
 +						visibleProgress.report(nls.localize('reconnectionRunning', "Disconnected. Attempting to reconnect..."));
 
 -							// Register to listen for quick input is opened
--							disposableListener = quickInputService.onShow(() => {
+-							disposableListener.value = quickInputService.onShow(() => {
 -								// Need to move from dialog if being shown and user needs to type in a prompt
 -								if (visibleProgress && visibleProgress.location === ProgressLocation.Dialog) {
 -									visibleProgress = showProgress(ProgressLocation.Notification, [reloadButton], visibleProgress.lastReport);
@@ -58,7 +58,7 @@ index 58084f9711e..840180f19de 100644
 -							});
 -						}
 +						// Register to listen for quick input is opened
-+						disposableListener = quickInputService.onShow(() => {
++						disposableListener.value = quickInputService.onShow(() => {
 +							// Need to move from dialog if being shown and user needs to type in a prompt
 +							if (visibleProgress && visibleProgress.location === ProgressLocation.Dialog) {
 +								visibleProgress = showProgress(ProgressLocation.Notification, [reloadButton], visibleProgress.lastReport);
