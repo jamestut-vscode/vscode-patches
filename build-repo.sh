@@ -44,12 +44,16 @@ spm/spm.py patches $VSCODE_REPO
 
 echo "Applying icon ..."
 cp assets/icon.icns $VSCODE_REPO/resources/darwin/code.icns
+cd $VSCODE_REPO
+git add .
+git commit --no-verify -m 'Icon customisation'
+cd "$WORKDIR"
 
 echo "Applying doctor ..."
 scripts/doctor-product-info.py --pre $VSCODE_REPO
 cd $VSCODE_REPO
 git add '*.json'
-git commit --no-verify -m 'Doctor icon, product.json, package.json'
+git commit --no-verify -m 'Doctor product.json, package.json'
 
 echo "Updating submodules ..."
 git submodule update --init
