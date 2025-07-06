@@ -49,6 +49,13 @@ git add .
 git commit --no-verify -m 'Icon customisation'
 cd "$WORKDIR"
 
+# maybe update Electron
+scripts/updateelectron.py
+cd $VSCODE_REPO
+git add .
+git diff-index --quiet HEAD || git commit --no-verify -m 'Update Electron'
+cd "$WORKDIR"
+
 echo "Applying doctor ..."
 scripts/doctor-product-info.py --pre $VSCODE_REPO
 cd $VSCODE_REPO
