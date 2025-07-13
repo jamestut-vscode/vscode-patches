@@ -106,7 +106,7 @@ index 00000000000..44b543aeca0
 +import { isLinuxSnap } from '../base/common/platform.js';
 +import { IProductService } from '../platform/product/common/productService.js';
 +import { IOSProperties } from '../platform/native/common/native.js';
-+import { process } from '../base/parts/sandbox/electron-sandbox/globals.js';
++import { process } from '../base/parts/sandbox/electron-browser/globals.js';
 +
 +export const aboutString = (osProps: IOSProperties, productService: IProductService, useAgo: boolean): string => {
 +	return localize({ key: 'aboutDetail', comment: ['Electron, Chromium, Node.js and V8 are product names that need no translation'] },
@@ -122,10 +122,10 @@ index 00000000000..44b543aeca0
 +		`${osProps.type} ${osProps.arch} ${osProps.release}${isLinuxSnap ? ' snap' : ''}`
 +	);
 +};
-diff --git a/src/vs/workbench/electron-sandbox/parts/dialogs/dialog.contribution.ts b/src/vs/workbench/electron-sandbox/parts/dialogs/dialog.contribution.ts
+diff --git a/src/vs/workbench/electron-browser/parts/dialogs/dialog.contribution.ts b/src/vs/workbench/electron-browser/parts/dialogs/dialog.contribution.ts
 index d9493a6453d..33dbdfeade5 100644
---- a/src/vs/workbench/electron-sandbox/parts/dialogs/dialog.contribution.ts
-+++ b/src/vs/workbench/electron-sandbox/parts/dialogs/dialog.contribution.ts
+--- a/src/vs/workbench/electron-browser/parts/dialogs/dialog.contribution.ts
++++ b/src/vs/workbench/electron-browser/parts/dialogs/dialog.contribution.ts
 @@ -43,7 +43,7 @@ export class DialogHandlerContribution extends Disposable implements IWorkbenchC
  	) {
  		super();
@@ -135,10 +135,10 @@ index d9493a6453d..33dbdfeade5 100644
  		this.nativeImpl = new Lazy(() => new NativeDialogHandler(logService, nativeHostService, productService, clipboardService));
  
  		this.model = (this.dialogService as DialogService).model;
-diff --git a/src/vs/workbench/electron-sandbox/parts/dialogs/dialogHandler.ts b/src/vs/workbench/electron-sandbox/parts/dialogs/dialogHandler.ts
+diff --git a/src/vs/workbench/electron-browser/parts/dialogs/dialogHandler.ts b/src/vs/workbench/electron-browser/parts/dialogs/dialogHandler.ts
 index f2cc82ab8c5..a3d2da88c68 100644
---- a/src/vs/workbench/electron-sandbox/parts/dialogs/dialogHandler.ts
-+++ b/src/vs/workbench/electron-sandbox/parts/dialogs/dialogHandler.ts
+--- a/src/vs/workbench/electron-browser/parts/dialogs/dialogHandler.ts
++++ b/src/vs/workbench/electron-browser/parts/dialogs/dialogHandler.ts
 @@ -4,14 +4,12 @@
   *--------------------------------------------------------------------------------------------*/
  
@@ -151,7 +151,7 @@ index f2cc82ab8c5..a3d2da88c68 100644
  import { ILogService } from '../../../../platform/log/common/log.js';
  import { INativeHostService } from '../../../../platform/native/common/native.js';
  import { IProductService } from '../../../../platform/product/common/productService.js';
--import { process } from '../../../../base/parts/sandbox/electron-sandbox/globals.js';
+-import { process } from '../../../../base/parts/sandbox/electron-browser/globals.js';
  import { getActiveWindow } from '../../../../base/browser/dom.js';
  
  export class NativeDialogHandler extends AbstractDialogHandler {

@@ -7,10 +7,10 @@ Subject: Fix reload on workspace change
  .../workspaceEditingService.ts                 | 18 +++++++-----------
  1 file changed, 7 insertions(+), 11 deletions(-)
 
-diff --git a/src/vs/workbench/services/workspaces/electron-sandbox/workspaceEditingService.ts b/src/vs/workbench/services/workspaces/electron-sandbox/workspaceEditingService.ts
+diff --git a/src/vs/workbench/services/workspaces/electron-browser/workspaceEditingService.ts b/src/vs/workbench/services/workspaces/electron-browser/workspaceEditingService.ts
 index 625f69f60b9..eeebceea967 100644
---- a/src/vs/workbench/services/workspaces/electron-sandbox/workspaceEditingService.ts
-+++ b/src/vs/workbench/services/workspaces/electron-sandbox/workspaceEditingService.ts
+--- a/src/vs/workbench/services/workspaces/electron-browser/workspaceEditingService.ts
++++ b/src/vs/workbench/services/workspaces/electron-browser/workspaceEditingService.ts
 @@ -174,11 +174,6 @@ export class NativeWorkspaceEditingService extends AbstractWorkspaceEditingServi
  	}
  

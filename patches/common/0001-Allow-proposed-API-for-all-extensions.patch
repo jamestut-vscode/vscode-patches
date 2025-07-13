@@ -1,27 +1,44 @@
-From 5752db2273f200c724a5c38b505b2fd12424ff93 Mon Sep 17 00:00:00 2001
+From 4ba6b22a95d966d6d85ec38caae36da3f4f15af4 Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
-Date: Mon, 10 Apr 2023 14:32:25 +1000
+Date: Sun, 13 Jul 2025 17:58:15 +1000
 Subject: Allow proposed API for all extensions
 
 ---
+ src/vs/workbench/services/extensions/common/extensions.ts    | 5 +----
  .../services/extensions/common/extensionsProposedApi.ts      | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ 2 files changed, 2 insertions(+), 8 deletions(-)
 
+diff --git a/src/vs/workbench/services/extensions/common/extensions.ts b/src/vs/workbench/services/extensions/common/extensions.ts
+index c439964..3b22eb4 100644
+--- a/src/vs/workbench/services/extensions/common/extensions.ts
++++ b/src/vs/workbench/services/extensions/common/extensions.ts
+@@ -314,10 +314,7 @@ function extensionDescriptionArrayToMap(extensions: IExtensionDescription[]): Ex
+ }
+ 
+ export function isProposedApiEnabled(extension: IExtensionDescription, proposal: ApiProposalName): boolean {
+-	if (!extension.enabledApiProposals) {
+-		return false;
+-	}
+-	return extension.enabledApiProposals.includes(proposal);
++	return true;
+ }
+ 
+ export function checkProposedApiEnabled(extension: IExtensionDescription, proposal: ApiProposalName): void {
 diff --git a/src/vs/workbench/services/extensions/common/extensionsProposedApi.ts b/src/vs/workbench/services/extensions/common/extensionsProposedApi.ts
-index e92c5e0a50e..a51f6831076 100644
+index 6de2983..1fb09b3 100644
 --- a/src/vs/workbench/services/extensions/common/extensionsProposedApi.ts
 +++ b/src/vs/workbench/services/extensions/common/extensionsProposedApi.ts
-@@ -24,10 +24,7 @@ export class ExtensionsProposedApi {
-
+@@ -31,10 +31,7 @@ export class ExtensionsProposedApi {
+ 
  		this._envEnabledExtensions = new Set((_environmentService.extensionEnabledProposedApi ?? []).map(id => ExtensionIdentifier.toKey(id)));
-
+ 
 -		this._envEnablesProposedApiForAll =
 -			!_environmentService.isBuilt || // always allow proposed API when running out of sources
 -			(_environmentService.isExtensionDevelopment && productService.quality !== 'stable') || // do not allow proposed API against stable builds when developing an extension
 -			(this._envEnabledExtensions.size === 0 && Array.isArray(_environmentService.extensionEnabledProposedApi)); // always allow proposed API if --enable-proposed-api is provided without extension ID
 +		this._envEnablesProposedApiForAll = true;
-
+ 
  		this._productEnabledExtensions = new Map<string, ApiProposalName[]>();
-
---
-2.37.1 (Apple Git-137.1)
+ 
+-- 
+2.39.5 (Apple Git-154)

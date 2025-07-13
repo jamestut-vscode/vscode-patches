@@ -1,6 +1,6 @@
-From 494c5b2dde9f14db36c1344df481567eee07297e Mon Sep 17 00:00:00 2001
+From 101539e9ae7a50e17f86df75439fdde11ee928fc Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
-Date: Sat, 6 Apr 2024 10:43:39 +1100
+Date: Sun, 13 Jul 2025 14:11:53 +1000
 Subject: Show IPC version on help and about
 
 ---
@@ -9,18 +9,18 @@ Subject: Show IPC version on help and about
  resources/server/bin/helpers/browser-linux.sh     | 3 ++-
  resources/server/bin/remote-cli/code-darwin.sh    | 3 ++-
  resources/server/bin/remote-cli/code-linux.sh     | 3 ++-
- src/vs/code/node/cli.ts                           | 2 +-
+ src/vs/code/node/cli.ts                           | 4 ++--
  src/vs/platform/environment/node/argv.ts          | 3 ++-
  src/vs/server/node/remoteExtensionHostAgentCli.ts | 2 +-
  src/vs/server/node/server.cli.ts                  | 7 ++++---
  src/vs/workbench/constants.ts                     | 3 ++-
- 10 files changed, 20 insertions(+), 11 deletions(-)
+ 10 files changed, 21 insertions(+), 12 deletions(-)
 
 diff --git a/build/gulpfile.reh.js b/build/gulpfile.reh.js
-index 1be3305..c3f31e4 100644
+index 023fc1a..4dea08d 100644
 --- a/build/gulpfile.reh.js
 +++ b/build/gulpfile.reh.js
-@@ -357,12 +357,14 @@ function packageTask(type, platform, arch, sourceFolderName, destinationFolderNa
+@@ -388,12 +388,14 @@ function packageTask(type, platform, arch, sourceFolderName, destinationFolderNa
  			result = es.merge(result,
  				gulp.src(`resources/server/bin/remote-cli/${platform === 'darwin' ? 'code-darwin.sh' : 'code-linux.sh'}`, { base: '.' })
  					.pipe(replace('@@VERSION@@', version))
@@ -92,41 +92,49 @@ index dd3e6f1..1796e19 100644
 -"$ROOT/node" "$CLI_SCRIPT" "$APP_NAME" "$VERSION" "$COMMIT" "$EXEC_NAME" "$@"
 +"$ROOT/node" "$CLI_SCRIPT" "$APP_NAME" "$VERSION" "$IPCVERSION" "$COMMIT" "$EXEC_NAME" "$@"
 diff --git a/src/vs/code/node/cli.ts b/src/vs/code/node/cli.ts
-index 578bf1a..3a8873f 100644
+index 6d2e397..d530833 100644
 --- a/src/vs/code/node/cli.ts
 +++ b/src/vs/code/node/cli.ts
-@@ -85,7 +85,7 @@ export async function main(argv: string[]): Promise<any> {
- 	// Help
+@@ -91,13 +91,13 @@ export async function main(argv: string[]): Promise<any> {
+ 	// Help (general)
  	if (args.help) {
  		const executable = `${product.applicationName}${isWindows ? '.exe' : ''}`;
 -		console.log(buildHelpMessage(product.nameLong, executable, product.version, OPTIONS));
 +		console.log(buildHelpMessage(product.nameLong, executable, product.version, product.ipcVersion, OPTIONS));
  	}
  
+ 	// Help (chat)
+ 	else if (args.chat?.help) {
+ 		const executable = `${product.applicationName}${isWindows ? '.exe' : ''}`;
+-		console.log(buildHelpMessage(product.nameLong, executable, product.version, OPTIONS.chat.options, { isChat: true }));
++		console.log(buildHelpMessage(product.nameLong, executable, product.version, product.ipcVersion, OPTIONS.chat.options, { isChat: true }));
+ 	}
+ 
  	// Version Info
 diff --git a/src/vs/platform/environment/node/argv.ts b/src/vs/platform/environment/node/argv.ts
-index 0d3a979..9b379d3 100644
+index 2f30fbe..8b429eb 100644
 --- a/src/vs/platform/environment/node/argv.ts
 +++ b/src/vs/platform/environment/node/argv.ts
-@@ -408,11 +408,12 @@ function wrapText(text: string, columns: number): string[] {
+@@ -441,12 +441,13 @@ function wrapText(text: string, columns: number): string[] {
  	return lines;
  }
  
--export function buildHelpMessage(productName: string, executableName: string, version: string, options: OptionDescriptions<any>, capabilities?: { noPipe?: boolean; noInputFiles: boolean }): string {
-+export function buildHelpMessage(productName: string, executableName: string, version: string, ipcVersion: string, options: OptionDescriptions<any>, capabilities?: { noPipe?: boolean; noInputFiles: boolean }): string {
+-export function buildHelpMessage(productName: string, executableName: string, version: string, options: OptionDescriptions<any>, capabilities?: { noPipe?: boolean; noInputFiles?: boolean; isChat?: boolean }): string {
++export function buildHelpMessage(productName: string, executableName: string, version: string, ipcVersion: string, options: OptionDescriptions<any>, capabilities?: { noPipe?: boolean; noInputFiles?: boolean; isChat?: boolean }): string {
  	const columns = (process.stdout).isTTY && (process.stdout).columns || 80;
- 	const inputFiles = capabilities?.noInputFiles !== true ? `[${localize('paths', 'paths')}...]` : '';
+ 	const inputFiles = capabilities?.noInputFiles ? '' : capabilities?.isChat ? ` [${localize('cliPrompt', 'prompt')}]` : ` [${localize('paths', 'paths')}...]`;
+ 	const subcommand = capabilities?.isChat ? ' chat' : '';
  
  	const help = [`${productName} ${version}`];
 +	help.push(`IPC version ${ipcVersion}`);
  	help.push('');
- 	help.push(`${localize('usage', "Usage")}: ${executableName} [${localize('options', "options")}]${inputFiles}`);
+ 	help.push(`${localize('usage', "Usage")}: ${executableName}${subcommand} [${localize('options', "options")}]${inputFiles}`);
  	help.push('');
 diff --git a/src/vs/server/node/remoteExtensionHostAgentCli.ts b/src/vs/server/node/remoteExtensionHostAgentCli.ts
-index b489ca7..82ce1b1 100644
+index abc8a46..dd3a7e2 100644
 --- a/src/vs/server/node/remoteExtensionHostAgentCli.ts
 +++ b/src/vs/server/node/remoteExtensionHostAgentCli.ts
-@@ -182,7 +182,7 @@ function eventuallyExit(code: number): void {
+@@ -186,7 +186,7 @@ function eventuallyExit(code: number): void {
  export async function run(args: ServerParsedArgs, REMOTE_DATA_FOLDER: string, optionDescriptions: OptionDescriptions<ServerParsedArgs>): Promise<void> {
  	if (args.help) {
  		const executable = product.serverApplicationName + (isWindows ? '.cmd' : '');
@@ -134,12 +142,12 @@ index b489ca7..82ce1b1 100644
 +		console.log(buildHelpMessage(product.nameLong, executable, product.version, product.ipcVersion, optionDescriptions, { noInputFiles: true, noPipe: true }));
  		return;
  	}
- 	// Version Info
+ 
 diff --git a/src/vs/server/node/server.cli.ts b/src/vs/server/node/server.cli.ts
-index 6695c4b..96a055e 100644
+index 0535ddd..89789ca 100644
 --- a/src/vs/server/node/server.cli.ts
 +++ b/src/vs/server/node/server.cli.ts
-@@ -28,6 +28,7 @@ import { hasStdinWithoutTty, getStdinFilePath, readFromStdin } from 'vs/platform
+@@ -29,6 +29,7 @@ import { FileAccess } from '../../base/common/network.js';
  interface ProductDescription {
  	productName: string;
  	version: string;
@@ -147,7 +155,7 @@ index 6695c4b..96a055e 100644
  	commit: string;
  	executableName: string;
  }
-@@ -128,7 +129,7 @@ export async function main(desc: ProductDescription, args: string[]): Promise<vo
+@@ -130,7 +131,7 @@ export async function main(desc: ProductDescription, args: string[]): Promise<vo
  	const verbose = !!parsedArgs['verbose'];
  
  	if (parsedArgs.help) {
@@ -156,7 +164,8 @@ index 6695c4b..96a055e 100644
  		return;
  	}
  	if (parsedArgs.version) {
-@@ -483,6 +484,6 @@ function mapFileToRemoteUri(uri: string): string {
+@@ -512,7 +513,7 @@ function getAppRoot() {
+ 	return dirname(FileAccess.asFileUri('').fsPath);
  }
  
 -const [, , productName, version, commit, executableName, ...remainingArgs] = process.argv;
@@ -166,10 +175,10 @@ index 6695c4b..96a055e 100644
  	console.error(err.message || err.stack || err);
  });
 diff --git a/src/vs/workbench/constants.ts b/src/vs/workbench/constants.ts
-index 44b543a..8968608 100644
+index c87143f..94f24d3 100644
 --- a/src/vs/workbench/constants.ts
 +++ b/src/vs/workbench/constants.ts
-@@ -7,8 +7,9 @@ import { process } from 'vs/base/parts/sandbox/electron-sandbox/globals';
+@@ -7,8 +7,9 @@ import { process } from '../base/parts/sandbox/electron-browser/globals.js';
  
  export const aboutString = (osProps: IOSProperties, productService: IProductService, useAgo: boolean): string => {
  	return localize({ key: 'aboutDetail', comment: ['Electron, Chromium, Node.js and V8 are product names that need no translation'] },
@@ -181,4 +190,4 @@ index 44b543a..8968608 100644
  		productService.date ? `${productService.date}${useAgo ? ' (' + fromNow(new Date(productService.date), true) + ')' : ''}` : 'Unknown',
  		process.versions['electron'],
 -- 
-2.39.3 (Apple Git-145)
+2.39.5 (Apple Git-154)
