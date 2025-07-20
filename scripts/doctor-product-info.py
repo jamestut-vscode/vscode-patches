@@ -88,7 +88,7 @@ def main():
     doctorplugins = scan_modules(script_path)
 
     @contextlib.contextmanager
-    def doctor(json_name) -> typing.Generator[DoctorContext]:
+    def doctor(json_name) -> typing.Generator[DoctorContext, None, None]:
         base_path = path.join(target_base_dir, target_dir)
         pth = path.join(base_path, json_name)
         with open(pth, 'r') as f:

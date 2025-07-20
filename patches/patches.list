@@ -1,4 +1,4 @@
-base-commit: 1.102.0
+base-commit: 1.102.1
 final-commit: ignore
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
