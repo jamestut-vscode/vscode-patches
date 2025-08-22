@@ -46,8 +46,8 @@ index 7046ee004bb..7e8cacd204c 100644
 --- a/build/gulpfile.vscode.js
 +++ b/build/gulpfile.vscode.js
 @@ -439,6 +439,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
- 		return result.pipe(vfs.dest(destination));
- 	};
+ 	task.taskName = `package-${platform}-${arch}`;
+ 	return task;
  }
 +exports.packageClientTask = packageTask;
  

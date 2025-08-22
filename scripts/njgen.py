@@ -7,7 +7,7 @@ import multiprocessing
 from pathlib import Path
 import subprocess
 from ninja_syntax import Writer as NinjaWriter
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 
 def append_to_kwargs(kwargs:Dict, key:str, value:str):
     '''
@@ -63,7 +63,7 @@ def main():
         # rules
         wr.rule(
             "gulp",
-            f'cd $vscodedir && if ! [[ -z "$rimraf" ]]; then rm -rf "$rimraf"; fi && npx gulp $gulptarget',
+            'cd $vscodedir && if ! [[ -z "$rimraf" ]]; then rm -rf "$rimraf"; fi && npx gulp $gulptarget && if ! [[ -z "$touchtarget" ]]; then find "$touchtarget" -exec touch {} +; fi',
             description="gulp $gulptarget"
         )
         wr.rule(
@@ -74,7 +74,7 @@ def main():
         wr.rule(
             "darwinsign",
             # update time before sign
-            'find "$appbundle" -exec touch {} +; codesign --force --verify --verbose --deep --sign "$certname" "$appbundle"',
+            'codesign --force --verify --verbose --deep --sign "$certname" "$appbundle"',
             description="macOS app bundle sign"
         )
         wr.rule(
@@ -89,12 +89,19 @@ def main():
         npmi_target = "$vscodedir/node_modules"
         wr.build(npmi_target, "npmi")
 
-        def add_gulp_build(outputs: Union[str, List[str]], gulptarget:str, rimraf:Union[str, None]=None, **kwargs):
+        def add_gulp_build(
+            outputs: Union[str, List[str]],
+            gulptarget:str,
+            rimraf:Optional[str]=None,
+            touchtarget:Optional[str] = None,
+            **kwargs):
             append_to_kwargs(kwargs, "order_only", npmi_target)
             variables:Dict = kwargs.setdefault("variables", {})
             variables["gulptarget"] = gulptarget
             if rimraf is not None:
                 variables["rimraf"] = rimraf
+            if touchtarget is not None:
+                variables["touchtarget"] = touchtarget
             wr.build(outputs, "gulp", **kwargs)
 
         # common targets
@@ -120,8 +127,10 @@ def main():
                 node_target = f"$vscodedir/.build/node"
                 add_gulp_build(node_target, f"node-{target}")
                 primary_package_impl_dep.append(node_target)
-            add_gulp_build(str(primary_package), rimraf=str(primary_package),
+            add_gulp_build(str(primary_package),
+                rimraf=str(primary_package),
                 gulptarget=f"package-vscode{dashify(variant)}-{target}",
+                touchtarget=str(primary_package),
                 implicit=primary_package_impl_dep)
             # macOS app bundle sign
             archive_implicit_dep = [str(primary_package)]
