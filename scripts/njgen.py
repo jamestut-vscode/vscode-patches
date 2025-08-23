@@ -27,6 +27,8 @@ def main():
     VSCODEDIR = WORKDIR/"vscode"
     PACKAGINGDIR = WORKDIR/"packaging"
 
+    DARWIN_SELF_SIGN_SCRIPT = "macos-self-sign.sh"
+
     # paths relative to the build.ninja
     VSCODEDIR_REL = VSCODEDIR.relative_to(PACKAGINGDIR, walk_up=True)
     WORKDIR_REL = WORKDIR.relative_to(PACKAGINGDIR, walk_up=True)
@@ -82,6 +84,11 @@ def main():
             'cd $vscodedir && npm i',
             description="npm install"
         )
+        wr.rule(
+            "copyfile",
+            'cp "$source" "$out"',
+            description="copy file"
+        )
 
         wr.newline()
 
@@ -134,17 +141,24 @@ def main():
                 implicit=primary_package_impl_dep)
             # macOS app bundle sign
             archive_implicit_dep = [str(primary_package)]
-            if not reh and args.signcertname and PRIMARY_TARGET[0] == 'darwin':
-                app_bundle_path = primary_package/f"{product_info['nameLong']}.app"
-                app_bundle_sign_target = app_bundle_path/"Contents/_CodeSignature"
-                wr.build(
-                    str(app_bundle_sign_target), "darwinsign", inputs=[str(primary_package)],
-                    variables={
-                        "certname": args.signcertname,
-                        "appbundle": str(app_bundle_path)
-                    }
-                )
-                archive_implicit_dep.append(str(app_bundle_sign_target))
+            if not reh and PRIMARY_TARGET[0] == 'darwin':
+                if args.signcertname:
+                    app_bundle_path = primary_package/f"{product_info['nameLong']}.app"
+                    app_bundle_sign_target = app_bundle_path/"Contents/_CodeSignature"
+                    wr.build(
+                        str(app_bundle_sign_target), "darwinsign", inputs=[str(primary_package)],
+                        variables={
+                            "certname": args.signcertname,
+                            "appbundle": str(app_bundle_path)
+                        }
+                    )
+                    archive_implicit_dep.append(str(app_bundle_sign_target))
+                else:
+                    # copy the self-signing script
+                    self_sign_target = str(primary_package/DARWIN_SELF_SIGN_SCRIPT)
+                    wr.build(self_sign_target, "copyfile",
+                        variables={"source": BASEDIR/"scripts"/DARWIN_SELF_SIGN_SCRIPT})
+                    archive_implicit_dep.append(str(self_sign_target))
             primary_archive = os.path.basename(f'{primary_package}.tar.xz')
             wr.build(primary_archive, "archive", implicit=archive_implicit_dep, variables={
                 "cwd": os.path.dirname(primary_package),
