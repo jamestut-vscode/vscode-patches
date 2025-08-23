@@ -97,11 +97,11 @@ def main():
         wr.build(npmi_target, "npmi")
 
         def add_gulp_build(
-            outputs: Union[str, List[str]],
-            gulptarget:str,
-            rimraf:Optional[str]=None,
-            touchtarget:Optional[str] = None,
-            **kwargs):
+                outputs: Union[str, List[str]],
+                gulptarget:str,
+                rimraf:Optional[str]=None,
+                touchtarget:Optional[str] = None,
+                **kwargs):
             append_to_kwargs(kwargs, "order_only", npmi_target)
             variables:Dict = kwargs.setdefault("variables", {})
             variables["gulptarget"] = gulptarget
