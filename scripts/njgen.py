@@ -154,9 +154,13 @@ def main():
                     )
                     archive_implicit_dep.append(str(app_bundle_sign_target))
                 else:
-                    # copy the self-signing script
+                    # The archive will depend on self_sign_target, which in turn depends on primary_package.
+                    # This makes primary_package a transitive dependency of the archive.
+                    archive_implicit_dep.remove(str(primary_package))
+                    # copy the self-signing script, making it depend on the package
                     self_sign_target = str(primary_package/DARWIN_SELF_SIGN_SCRIPT)
                     wr.build(self_sign_target, "copyfile",
+                        implicit=[str(primary_package)],
                         variables={"source": BASEDIR/"scripts"/DARWIN_SELF_SIGN_SCRIPT})
                     archive_implicit_dep.append(str(self_sign_target))
             primary_archive = os.path.basename(f'{primary_package}.tar.xz')
