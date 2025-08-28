@@ -27,7 +27,7 @@ def main():
     VSCODEDIR = WORKDIR/"vscode"
     PACKAGINGDIR = WORKDIR/"packaging"
 
-    DARWIN_SELF_SIGN_SCRIPT = "macos-self-sign.sh"
+    DARWIN_SELF_SIGN_SCRIPT = "macos-self-sign.command"
 
     # paths relative to the build.ninja
     VSCODEDIR_REL = VSCODEDIR.relative_to(PACKAGINGDIR, walk_up=True)
