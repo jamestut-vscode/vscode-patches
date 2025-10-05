@@ -28,7 +28,11 @@ BASE_DR_WORKDIR = "work/derivedreh"
 # final output packaging dir
 BASE_PACKAGING_DIR = "work/packaging"
 # these binaries are not required to be present on Linux REHs
-EXCLUDE_BINS = {'node_modules/node-pty/build/Release/spawn-helper'}
+EXCLUDE_BINS = {
+    'node_modules/node-pty/build/Release/spawn-helper',
+    'extensions/microsoft-authentication/dist/libmsalruntime.dylib',
+    'extensions/microsoft-authentication/dist/msal-node-runtime.node',
+}
 # strip ELF binaries (can be modified via command-line args)
 STRIP = False
 # commit hash to base for VSDA
