@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import sys
 import os
+from os import path
 import json
 import subprocess
 from urllib.request import urlopen
-from pathlib import Path
 
 NPMRC_PATH = 'work/vscode/.npmrc'
 ELECTRON_CHECKSUM_PATH = 'work/vscode/build/checksums/electron.txt'
@@ -41,19 +41,19 @@ def update_electron_checksum(electron_version: str):
         f.write(content)
         f.write('\n')
 
-if __name__ == "__main__":
-    cwd = Path(__file__).parent
+def main():
+    cwd = path.dirname(__file__)
     repodir = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], cwd=cwd)[:-1]
     os.chdir(repodir)
 
     if not os.path.exists(NPMRC_PATH):
         print("Please clone the vscode repo first by invoking 'build-repo.sh'.")
         sys.exit(1)
-    
+
     with open('version.json') as f:
         version_info = json.load(f)
     target_electron_version = version_info.get('electronVersion')
-    
+
     if target_electron_version is None:
         # use the default electron version
         sys.exit(0)
@@ -69,3 +69,6 @@ if __name__ == "__main__":
 
     # step 2: update checksum
     update_electron_checksum(target_electron_version)
+
+if __name__ == "__main__":
+    main()

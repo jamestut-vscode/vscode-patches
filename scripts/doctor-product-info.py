@@ -9,22 +9,23 @@ import argparse
 import contextlib
 import subprocess
 import json
-import typing
+from typing import Generator, Union, Dict, List
 from os import path
 import importlib.util
 
 class DoctorContext:
-    data: dict | list = {}
+    data: Union[Dict, List] = {}
     modified: bool = False
     filepath: str = ""
 
-    def __init__(self, data: dict | list, modified: bool, filepath: str):
+    def __init__(self, data: Union[Dict, List], modified: bool, filepath: str):
         self.data = data
         self.modified = modified
         self.filepath = filepath
 
 def scan_modules(script_path):
-    os.chdir(path.dirname(sys.argv[0]))
+    newcwd = path.dirname(sys.argv[0])
+    if newcwd: os.chdir(newcwd)
     ret = []
     for dir_to_scan_name in ('', 'external'):
         dir_to_scan = path.join(script_path, 'doctorplugins', dir_to_scan_name)
@@ -88,7 +89,7 @@ def main():
     doctorplugins = scan_modules(script_path)
 
     @contextlib.contextmanager
-    def doctor(json_name) -> typing.Generator[DoctorContext, None, None]:
+    def doctor(json_name) -> Generator[DoctorContext, None, None]:
         base_path = path.join(target_base_dir, target_dir)
         pth = path.join(base_path, json_name)
         with open(pth, 'r') as f:

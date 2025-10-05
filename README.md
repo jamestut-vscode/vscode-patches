@@ -55,8 +55,8 @@ This repo assumes that the host system is macOS arm64. Follow these instructions
 Packaging this project also requires additional dependencies:
 
 - [Ninja build](https://github.com/ninja-build/ninja/releases)
-- [Python](https://www.python.org/downloads/macos) 3.12 or newer  
-  As of macOS 15, system Python version is 3.9, hence a newer Python version must be installed. Ensure that the `python3` binary from the official installer takes precedence over system's Python.
+- [Python](https://www.python.org/downloads/macos) 3.9 or newer  
+  The one shipped with macOS' CLDT or Xcode is sufficient.
 - [Podman](https://podman.io)  
   Podman is optional. It is required to run GNU binutils to strip ELF binaries in the derived Linux binaries.
 
