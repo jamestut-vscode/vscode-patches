@@ -1,4 +1,4 @@
-base-commit: 1.103.2
+base-commit: 1.104.3
 final-commit: ignore
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
@@ -29,7 +29,6 @@ remote/0005-Reconnecting-timeout-logic-tweak.patch
 remote/0006-Tighten-timeout.patch
 remote/0007-soft-error-handling.patch
 
-ui/0001-Unify-about-message.patch
 ui/0002-Minimal-remote-reconnect-UI.patch
 
 ipc-version/0001-IPC-version.patch

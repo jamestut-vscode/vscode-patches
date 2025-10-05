@@ -12,8 +12,7 @@ diff --git a/src/vs/server/node/remoteExtensionHostAgentServer.ts b/src/vs/serve
 index 548c57b0c28..0dbe650d450 100644
 --- a/src/vs/server/node/remoteExtensionHostAgentServer.ts
 +++ b/src/vs/server/node/remoteExtensionHostAgentServer.ts
-@@ -42,8 +42,6 @@ import { CacheControl, serveError, serveFile, WebClientServer } from './webClien
- import { createRequire } from 'node:module';
+@@ -42,7 +42,5 @@ import { CacheControl, serveError, serveFile, WebClientServer } from './webClien
  const require = createRequire(import.meta.url);
  
 -const SHUTDOWN_TIMEOUT = 5 * 60 * 1000;

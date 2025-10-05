@@ -127,18 +127,6 @@ index 45ed7f5..75d5e2f 100644
  					quality: this.initData.quality,
  					logService: this.logService,
  					ipcLogger: null,
-diff --git a/src/vs/workbench/services/coreExperimentation/test/browser/coreExperimentationService.test.ts b/src/vs/workbench/services/coreExperimentation/test/browser/coreExperimentationService.test.ts
-index 77e44c5..f925fea 100644
---- a/src/vs/workbench/services/coreExperimentation/test/browser/coreExperimentationService.test.ts
-+++ b/src/vs/workbench/services/coreExperimentation/test/browser/coreExperimentationService.test.ts
-@@ -55,6 +55,7 @@ class MockProductService implements IProductService {
- 	public quality: string = 'stable';
- 
- 	get version() { return '1.0.0'; }
-+	get ipcVersion() { return '1.0.0'; }
- 	get commit() { return 'test-commit'; }
- 	get nameLong() { return 'Test VSCode'; }
- 	get nameShort() { return 'VSCode'; }
 diff --git a/src/vs/workbench/services/extensions/browser/webWorkerExtensionHost.ts b/src/vs/workbench/services/extensions/browser/webWorkerExtensionHost.ts
 index c16323e..3eb473a 100644
 --- a/src/vs/workbench/services/extensions/browser/webWorkerExtensionHost.ts

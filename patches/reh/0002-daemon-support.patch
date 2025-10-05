@@ -14,12 +14,12 @@ index f1fad8f0b51..769daa4301d 100644
 +++ b/src/server-main.ts
 @@ -14,6 +14,7 @@
  import './bootstrap-server.js'; // this MUST come before other imports as it changes global state
- import * as path from 'path';
- import * as http from 'http';
-+import * as cp from 'child_process';
- import { AddressInfo } from 'net';
- import * as os from 'os';
- import * as readline from 'readline';
+ import * as path from 'node:path';
+ import * as http from 'node:http';
++import * as cp from 'node:child_process';
+ import type { AddressInfo } from 'node:net';
+ import * as os from 'node:os';
+ import * as readline from 'node:readline';
 @@ -49,10 +50,21 @@ async function start() {
  
  // Do a quick parse to determine if a server or the cli needs to be started

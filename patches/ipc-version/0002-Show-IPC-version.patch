@@ -174,20 +174,20 @@ index 0535ddd..89789ca 100644
 +main({ productName, version, ipcVersion, commit, executableName }, remainingArgs).then(null, err => {
  	console.error(err.message || err.stack || err);
  });
-diff --git a/src/vs/workbench/constants.ts b/src/vs/workbench/constants.ts
-index c87143f..94f24d3 100644
---- a/src/vs/workbench/constants.ts
-+++ b/src/vs/workbench/constants.ts
-@@ -7,8 +7,9 @@ import { process } from '../base/parts/sandbox/electron-browser/globals.js';
+diff --git a/src/vs/platform/dialogs/electron-browser/dialog.ts b/src/vs/platform/dialogs/electron-browser/dialog.ts
+index ec26804c..e419bbb5 100644
+--- a/src/vs/platform/dialogs/electron-browser/dialog.ts
++++ b/src/vs/platform/dialogs/electron-browser/dialog.ts
+@@ -20,8 +20,9 @@ export function createNativeAboutDialogDetails(productService: IProductService,
  
- export const aboutString = (osProps: IOSProperties, productService: IProductService, useAgo: boolean): string => {
- 	return localize({ key: 'aboutDetail', comment: ['Electron, Chromium, Node.js and V8 are product names that need no translation'] },
--		"Version: {0}\nCommit: {1}\nDate: {2}\nElectron: {3}\nElectronBuildId: {4}\nChromium: {5}\nNode.js: {6}\nV8: {7}\nOS: {8}",
-+		"Version: {0}\nIPC Version: {1}\nCommit: {2}\nDate: {3}\nElectron: {4}\nElectronBuildId: {5}\nChromium: {6}\nNode.js: {7}\nV8: {8}\nOS: {9}",
- 		productService.version,
-+		productService.ipcVersion,
- 		productService.commit || '(development)',
- 		productService.date ? `${productService.date}${useAgo ? ' (' + fromNow(new Date(productService.date), true) + ')' : ''}` : 'Unknown',
- 		process.versions['electron'],
+ 	const getDetails = (useAgo: boolean): string => {
+ 		return localize({ key: 'aboutDetail', comment: ['Electron, Chromium, Node.js and V8 are product names that need no translation'] },
+-			"Version: {0}\nCommit: {1}\nDate: {2}\nElectron: {3}\nElectronBuildId: {4}\nChromium: {5}\nNode.js: {6}\nV8: {7}\nOS: {8}",
++			"Version: {0}\nIPC Version: {1}\nCommit: {2}\nDate: {3}\nElectron: {4}\nElectronBuildId: {5}\nChromium: {6}\nNode.js: {7}\nV8: {8}\nOS: {9}",
+ 			version,
++			productService.ipcVersion,
+ 			productService.commit || 'Unknown',
+ 			productService.date ? `${productService.date}${useAgo ? ' (' + fromNow(new Date(productService.date), true) + ')' : ''}` : 'Unknown',
+ 			process.versions['electron'],
 -- 
 2.39.5 (Apple Git-154)
