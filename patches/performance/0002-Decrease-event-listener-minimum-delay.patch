@@ -24,8 +24,8 @@ index e31eedaaabd..b8ee93133ab 100644
 
 -const MINIMUM_TIME_MS = 8;
 +const MINIMUM_TIME_MS = 4;
- const DEFAULT_EVENT_MERGER: IEventMerger<Event, Event> = function (lastEvent: Event | null, currentEvent: Event) {
+ function DEFAULT_EVENT_MERGER<T>(_lastEvent: unknown, currentEvent: T) {
  	return currentEvent;
- };
+ }
 --
 2.37.1 (Apple Git-137.1)

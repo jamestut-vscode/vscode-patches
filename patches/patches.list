@@ -1,4 +1,4 @@
-base-commit: 1.104.3
+base-commit: 1.106.2
 final-commit: ignore
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
@@ -46,3 +46,5 @@ workspace/0002-Fix-terminal-remote-workspace-cwd.patch
 workspace/0003-Fix-open-saved-remote-workspace.patch
 
 extensions/0001-vscode-remote-resolver.patch
+
+misc/0001-Electron-39.patch

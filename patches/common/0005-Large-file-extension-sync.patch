@@ -88,14 +88,14 @@ index c0293db8390..b5c79d23ef0 100644
 --- a/src/vs/editor/common/services/modelService.ts
 +++ b/src/vs/editor/common/services/modelService.ts
 @@ -56,6 +56,7 @@ interface IRawEditorConfig {
- 	trimAutoWhitespace?: any;
- 	creationOptions?: any;
- 	largeFileOptimizations?: any;
-+	largeFileSync?: any;
- 	bracketPairColorization?: any;
+ 	trimAutoWhitespace?: unknown;
+ 	creationOptions?: unknown;
+ 	largeFileOptimizations?: unknown;
++	largeFileSync?: unknown;
+ 	bracketPairColorization?: unknown;
  }
  
-@@ -166,6 +167,11 @@ export class ModelService extends Disposable implements IModelService {
+@@ -166,5 +167,10 @@ export class ModelService extends Disposable implements IModelService {
  		if (config.editor && typeof config.editor.largeFileOptimizations !== 'undefined') {
  			largeFileOptimizations = (config.editor.largeFileOptimizations === 'false' ? false : Boolean(config.editor.largeFileOptimizations));
  		}
@@ -106,7 +106,6 @@ index c0293db8390..b5c79d23ef0 100644
 +		}
  		let bracketPairColorizationOptions = EDITOR_MODEL_DEFAULTS.bracketPairColorizationOptions;
  		if (config.editor?.bracketPairColorization && typeof config.editor.bracketPairColorization === 'object') {
- 			bracketPairColorizationOptions = {
 @@ -183,6 +189,7 @@ export class ModelService extends Disposable implements IModelService {
  			defaultEOL: newDefaultEOL,
  			trimAutoWhitespace: trimAutoWhitespace,
