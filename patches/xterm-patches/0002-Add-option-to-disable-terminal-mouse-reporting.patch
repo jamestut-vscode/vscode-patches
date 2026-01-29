@@ -26,14 +26,13 @@ diff --git a/src/vs/workbench/contrib/terminal/browser/xterm/xtermTerminal.ts b/
 index 9dd835124d6..60a6e92387e 100644
 --- a/src/vs/workbench/contrib/terminal/browser/xterm/xtermTerminal.ts
 +++ b/src/vs/workbench/contrib/terminal/browser/xterm/xtermTerminal.ts
-@@ -235,6 +235,7 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
+@@ -235,5 +235,6 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
  			cursorInactiveStyle: vscodeToXtermCursorStyle(config.cursorStyleInactive),
  			cursorWidth: config.cursorWidth,
  			macOptionIsMeta: config.macOptionIsMeta,
 +			allowMouseReporting: config.allowMouseReporting,
  			macOptionClickForcesSelection: config.macOptionClickForcesSelection,
  			rightClickSelectsWord: config.rightClickBehavior === 'selectWord',
- 			fastScrollModifier: 'alt',
 @@ -348,6 +349,7 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
  		this.raw.options.fastScrollSensitivity = config.fastScrollSensitivity;
  		this.raw.options.scrollSensitivity = config.mouseWheelScrollSensitivity;

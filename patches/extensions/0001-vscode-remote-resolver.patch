@@ -21,10 +21,10 @@ index 0000000..4c789d0
 +[submodule "ext-vscode-remote-resolver"]
 +    path = extensions/vscode-remote-resolver
 +    url = https://github.com/jamestut-vscode/vscode-remote-resolver.git
-diff --git a/build/gulpfile.extensions.js b/build/gulpfile.extensions.js
+diff --git a/build/gulpfile.extensions.ts b/build/gulpfile.extensions.ts
 index 4f745ae..94f4b1d 100644
---- a/build/gulpfile.extensions.js
-+++ b/build/gulpfile.extensions.js
+--- a/build/gulpfile.extensions.ts
++++ b/build/gulpfile.extensions.ts
 @@ -66,6 +66,7 @@ const compilations = [
  	'extensions/vscode-colorize-tests/tsconfig.json',
  	'extensions/vscode-colorize-perf-tests/tsconfig.json',
@@ -33,10 +33,10 @@ index 4f745ae..94f4b1d 100644
  
  	'.vscode/extensions/vscode-selfhost-test-provider/tsconfig.json',
  	'.vscode/extensions/vscode-selfhost-import-aid/tsconfig.json',
-diff --git a/build/npm/dirs.js b/build/npm/dirs.js
+diff --git a/build/npm/dirs.ts b/build/npm/dirs.ts
 index b9645e6..3582b8c 100644
---- a/build/npm/dirs.js
-+++ b/build/npm/dirs.js
+--- a/build/npm/dirs.ts
++++ b/build/npm/dirs.ts
 @@ -45,6 +45,7 @@ const dirs = [
  	'extensions/vscode-colorize-tests',
  	'extensions/vscode-colorize-perf-tests',

@@ -17,7 +17,7 @@ index 548c57b0c28..0dbe650d450 100644
  
 -const SHUTDOWN_TIMEOUT = 5 * 60 * 1000;
 -
- declare module vsda {
+ declare namespace vsda {
  	// the signer is a native module that for historical reasons uses a lower case class name
  	// eslint-disable-next-line @typescript-eslint/naming-convention
 @@ -577,7 +575,7 @@ class RemoteExtensionHostAgentServer extends Disposable implements IServerAPI {
@@ -59,8 +59,8 @@ index aca19e3c187..efbd2d045fe 100644
 -	'enable-remote-auto-shutdown': { type: 'boolean' },
 +	'remote-auto-shutdown-timeout': { type: 'string' },
  	'remote-auto-shutdown-without-delay': { type: 'boolean' },
+ 	'inspect-ptyhost': { type: 'string', allowEmptyValue: true },
  
- 	'use-host-proxy': { type: 'boolean' },
 @@ -205,7 +205,7 @@ export interface ServerParsedArgs {
  
  	/* ----- remote development options ----- */
@@ -68,7 +68,7 @@ index aca19e3c187..efbd2d045fe 100644
 -	'enable-remote-auto-shutdown'?: boolean;
 +	'remote-auto-shutdown-timeout'?: string;
  	'remote-auto-shutdown-without-delay'?: boolean;
+ 	'inspect-ptyhost'?: string;
  
- 	'use-host-proxy'?: boolean;
 -- 
 2.39.5 (Apple Git-154)

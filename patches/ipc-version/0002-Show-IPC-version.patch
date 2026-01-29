@@ -4,7 +4,7 @@ Date: Sun, 13 Jul 2025 14:11:53 +1000
 Subject: Show IPC version on help and about
 
 ---
- build/gulpfile.reh.js                             | 2 ++
+ build/gulpfile.reh.ts                             | 2 ++
  resources/server/bin/helpers/browser-darwin.sh    | 3 ++-
  resources/server/bin/helpers/browser-linux.sh     | 3 ++-
  resources/server/bin/remote-cli/code-darwin.sh    | 3 ++-
@@ -16,23 +16,23 @@ Subject: Show IPC version on help and about
  src/vs/workbench/constants.ts                     | 3 ++-
  10 files changed, 21 insertions(+), 12 deletions(-)
 
-diff --git a/build/gulpfile.reh.js b/build/gulpfile.reh.js
+diff --git a/build/gulpfile.reh.ts b/build/gulpfile.reh.ts
 index 023fc1a..4dea08d 100644
---- a/build/gulpfile.reh.js
-+++ b/build/gulpfile.reh.js
+--- a/build/gulpfile.reh.ts
++++ b/build/gulpfile.reh.ts
 @@ -388,12 +388,14 @@ function packageTask(type, platform, arch, sourceFolderName, destinationFolderNa
  			result = es.merge(result,
  				gulp.src(`resources/server/bin/remote-cli/${platform === 'darwin' ? 'code-darwin.sh' : 'code-linux.sh'}`, { base: '.' })
  					.pipe(replace('@@VERSION@@', version))
 +					.pipe(replace('@@IPCVERSION@@', product.ipcVersion))
- 					.pipe(replace('@@COMMIT@@', commit))
+ 					.pipe(replace('@@COMMIT@@', commit || ''))
  					.pipe(replace('@@APPNAME@@', product.applicationName))
  					.pipe(rename(`bin/remote-cli/${product.applicationName}`))
  					.pipe(util.setExecutableBit()),
  				gulp.src(`resources/server/bin/helpers/${platform === 'darwin' ? 'browser-darwin.sh' : 'browser-linux.sh'}`, { base: '.' })
  					.pipe(replace('@@VERSION@@', version))
 +					.pipe(replace('@@IPCVERSION@@', product.ipcVersion))
- 					.pipe(replace('@@COMMIT@@', commit))
+ 					.pipe(replace('@@COMMIT@@', commit || ''))
  					.pipe(replace('@@APPNAME@@', product.applicationName))
  					.pipe(rename(`bin/helpers/browser.sh`))
 diff --git a/resources/server/bin/helpers/browser-darwin.sh b/resources/server/bin/helpers/browser-darwin.sh

@@ -1,4 +1,4 @@
-base-commit: 1.106.2
+base-commit: 1.108.2
 final-commit: ignore
 
 common/0001-Allow-proposed-API-for-all-extensions.patch
@@ -23,7 +23,6 @@ xterm-patches/0002-Add-option-to-disable-terminal-mouse-reporting.patch
 
 remote/0001-Statusbar-reconnecting-state.patch
 remote/0002-Make-reconnection-attempts-less-frequent.patch
-remote/0003-Disable-client-side-assumption-of-reconnection-grace.patch
 remote/0004-Show-reconnection-progress-instantly.patch
 remote/0005-Reconnecting-timeout-logic-tweak.patch
 remote/0006-Tighten-timeout.patch
@@ -37,7 +36,7 @@ ipc-version/0002-Show-IPC-version.patch
 reh/0001-Disable-shorten-reconnection-grace-time.patch
 reh/0002-daemon-support.patch
 reh/0003-remote-auto-shutdown-timeout.patch
-reh/0004-Adjustable-reconnection-grace.patch
+reh/0004-Default-connection-grace-period.patch
 reh/0005-No-connection-token-by-default.patch
 reh/0006-stdio-launcher.patch
 
@@ -46,5 +45,3 @@ workspace/0002-Fix-terminal-remote-workspace-cwd.patch
 workspace/0003-Fix-open-saved-remote-workspace.patch
 
 extensions/0001-vscode-remote-resolver.patch
-
-misc/0001-Electron-39.patch

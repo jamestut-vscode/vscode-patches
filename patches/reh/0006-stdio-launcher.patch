@@ -4,17 +4,17 @@ Date: Sun, 25 May 2025 21:28:19 +1000
 Subject: Add proxy launcher for stdio transport method
 
 ---
- build/gulpfile.reh.js                        |   6 +-
+ build/gulpfile.reh.ts                        |   6 +-
  resources/server/bin/code-server-launcher.sh |   4 +
  src/server-launcher-main.ts                  | 268 +++++++++++++++++++
  3 files changed, 277 insertions(+), 1 deletion(-)
  create mode 100644 resources/server/bin/code-server-launcher.sh
  create mode 100644 src/server-launcher-main.ts
 
-diff --git a/build/gulpfile.reh.js b/build/gulpfile.reh.js
+diff --git a/build/gulpfile.reh.ts b/build/gulpfile.reh.ts
 index f9c269aa1ff..c5b85b64e3c 100644
---- a/build/gulpfile.reh.js
-+++ b/build/gulpfile.reh.js
+--- a/build/gulpfile.reh.ts
++++ b/build/gulpfile.reh.ts
 @@ -132,7 +132,8 @@ const serverWithWebEntryPoints = [
  const bootstrapEntryPoints = [
  	'out-build/server-main.js',

@@ -24,8 +24,8 @@ index b9861444caf..ecf2f316914 100644
 -			const minorVersion = glibcVersion ? parseInt(glibcVersion.split('.')[1]) : 28;
 -			isUnsupportedGlibc = (minorVersion <= 27) || !!process.env['VSCODE_SERVER_CUSTOM_GLIBC_LINKER'];
 -		}
+ 		this._logService.trace(`[reconnection-grace-time] Server sending grace time to client: ${this._environmentService.reconnectionGraceTime}ms (${Math.floor(this._environmentService.reconnectionGraceTime / 1000)}s)`);
  		return {
  			pid: process.pid,
- 			connectionToken: (this._connectionToken.type !== ServerConnectionTokenType.None ? this._connectionToken.value : ''),
 -- 
 2.39.3 (Apple Git-145)

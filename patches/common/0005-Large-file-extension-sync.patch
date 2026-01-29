@@ -28,7 +28,7 @@ index 436daa7e04c..d0cfadb7a33 100644
 +			description: nls.localize('largeFileSync', "Enable web workers and extensions to access large files.")
 +		},
  		'editor.wordBasedSuggestions': {
- 			enum: ['off', 'currentDocument', 'matchingDocuments', 'allDocuments'],
+ 			enum: ['off', 'offWithInlineSuggestions', 'currentDocument', 'matchingDocuments', 'allDocuments'],
  			default: 'matchingDocuments',
 diff --git a/src/vs/editor/common/core/textModelDefaults.ts b/src/vs/editor/common/core/textModelDefaults.ts
 index cb0150baacf..e4694cc7fdb 100644
@@ -75,8 +75,7 @@ index 0313e5c208a..fe1e07d9621 100644
  		} else {
  			this._isTooLargeForTokenization = false;
  			this._isTooLargeForHeapOperation = false;
-@@ -355,6 +355,6 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
- 		);
+@@ -356,5 +356,5 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
  
 -		this._isTooLargeForSyncing = (bufferTextLength > TextModel._MODEL_SYNC_LIMIT);
 +		this._isTooLargeForSyncing = creationOptions.largeFileSync ? false : (bufferTextLength > TextModel._MODEL_SYNC_LIMIT);

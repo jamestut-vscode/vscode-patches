@@ -1,0 +1,38 @@
+From 2a0f18024f83156a253ba02b6cb2f81f22fe872f Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Thu, 29 Jan 2026 00:20:54 +1100
+Subject: Set default connection grace time to 24h
+
+---
+ src/vs/base/parts/ipc/common/ipc.net.ts        | 2 +-
+ src/vs/server/node/serverEnvironmentService.ts | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/vs/base/parts/ipc/common/ipc.net.ts b/src/vs/base/parts/ipc/common/ipc.net.ts
+index 80b60d13ddb..2b8eea53c21 100644
+--- a/src/vs/base/parts/ipc/common/ipc.net.ts
++++ b/src/vs/base/parts/ipc/common/ipc.net.ts
+@@ -295,7 +295,7 @@ export const enum ProtocolConstants {
+ 	/**
+ 	 * If there is no reconnection within this time-frame, consider the connection permanently closed...
+ 	 */
+-	ReconnectionGraceTime = 3 * 60 * 60 * 1000, // 3hrs
++	ReconnectionGraceTime = 24 * 60 * 60 * 1000, // 24hrs
+ 	/**
+ 	 * Maximal grace time between the first and the last reconnection...
+ 	 */
+diff --git a/src/vs/server/node/serverEnvironmentService.ts b/src/vs/server/node/serverEnvironmentService.ts
+index 317c00db022..1af3a939c79 100644
+--- a/src/vs/server/node/serverEnvironmentService.ts
++++ b/src/vs/server/node/serverEnvironmentService.ts
+@@ -88,7 +88,7 @@ export const serverOptions: OptionDescriptions<Required<ServerParsedArgs>> = {
+ 
+ 	'use-host-proxy': { type: 'boolean' },
+ 	'without-browser-env-var': { type: 'boolean' },
+-	'reconnection-grace-time': { type: 'string', cat: 'o', args: 'seconds', description: nls.localize('reconnection-grace-time', "Override the reconnection grace time window in seconds. Defaults to 10800 (3 hours).") },
++	'reconnection-grace-time': { type: 'string', cat: 'o', args: 'seconds', description: nls.localize('reconnection-grace-time', "Override the reconnection grace time window in seconds. Defaults to {0} ({1} hours).", Math.floor(ProtocolConstants.ReconnectionGraceTime / 1000).toString(), Math.floor(ProtocolConstants.ReconnectionGraceTime / 1000 / 3600).toString()) },
+ 
+ 	/* ----- server cli ----- */
+ 
+-- 
+2.50.1 (Apple Git-155)

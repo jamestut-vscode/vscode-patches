@@ -11,14 +11,12 @@ diff --git a/src/vs/platform/remote/common/remoteAgentConnection.ts b/src/vs/pla
 index c2d24eab3d9..c577a7a704c 100644
 --- a/src/vs/platform/remote/common/remoteAgentConnection.ts
 +++ b/src/vs/platform/remote/common/remoteAgentConnection.ts
-@@ -664,7 +664,7 @@ export abstract class PersistentConnection extends Disposable {
+@@ -664,5 +664,5 @@ export abstract class PersistentConnection extends Disposable {
  		const logPrefix = commonLogPrefix(this._connectionType, this.reconnectionToken, true);
  		this._options.logService.info(`${logPrefix} starting reconnecting loop. You can get more information with the trace log level.`);
  		this._onDidStateChange.fire(new ConnectionLostEvent(this.reconnectionToken, this.protocol.getMillisSinceLastIncomingData()));
 -		const TIMES = [0, 5, 5, 10, 10, 10, 10, 10, 30];
 +		const TIMES = [0, 5, 30, 60];
- 		let attempt = -1;
- 		do {
- 			attempt++;
+ 		const graceTime = this._reconnectionGraceTime;
 --
 2.37.1 (Apple Git-137.1)

@@ -195,8 +195,8 @@ index 0b8b538..c6348c2 100644
  	) {
  		super();
  		if (this._environmentService.remoteAuthority) {
--			this._connection = this._register(new RemoteAgentConnection(this._environmentService.remoteAuthority, productService.commit, productService.quality, this.remoteSocketFactoryService, this._remoteAuthorityResolverService, signService, logService));
-+			this._connection = this._register(new RemoteAgentConnection(this._environmentService.remoteAuthority, productService.ipcVersion, productService.quality, this.remoteSocketFactoryService, this._remoteAuthorityResolverService, signService, logService));
+-			this._connection = this._register(new RemoteAgentConnection(this._environmentService.remoteAuthority, productService.commit, productService.quality, this.remoteSocketFactoryService, this._remoteAuthorityResolverService, signService, this._logService));
++			this._connection = this._register(new RemoteAgentConnection(this._environmentService.remoteAuthority, productService.ipcVersion, productService.quality, this.remoteSocketFactoryService, this._remoteAuthorityResolverService, signService, this._logService));
  		} else {
  			this._connection = null;
  		}
