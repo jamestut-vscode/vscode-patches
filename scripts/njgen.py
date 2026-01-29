@@ -65,7 +65,7 @@ def main():
         # rules
         wr.rule(
             "gulp",
-            'cd $vscodedir && if ! [[ -z "$rimraf" ]]; then rm -rf "$rimraf"; fi && npx gulp $gulptarget && if ! [[ -z "$touchtarget" ]]; then find "$touchtarget" -exec touch {} +; fi',
+            'cd $vscodedir && if ! [[ -z "$rimraf" ]]; then rm -rf "$rimraf"; fi && npm run gulp $gulptarget && if ! [[ -z "$touchtarget" ]]; then find "$touchtarget" -exec touch {} +; fi',
             description="gulp $gulptarget"
         )
         wr.rule(
