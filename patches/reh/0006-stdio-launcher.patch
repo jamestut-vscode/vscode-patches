@@ -41,8 +41,8 @@ index 00000000000..3c29af44c39
 --- /dev/null
 +++ b/resources/server/bin/code-server-launcher.sh
 @@ -0,0 +1,4 @@
-+#!/usr/bin/env bash
-+ROOT="$(dirname "$(realpath "$0")")"/..
++#!/usr/bin/env sh
++ROOT="$(dirname "$(dirname "$(readlink -f "$0")")")"
 +
 +"$ROOT/node" ${INSPECT:-} "$ROOT/out/server-launcher-main.js" "$@"
 diff --git a/src/server-launcher-main.ts b/src/server-launcher-main.ts
