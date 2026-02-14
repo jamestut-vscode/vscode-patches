@@ -1,5 +1,5 @@
 {
-    "productVersion": "1.108.2-m1",
+    "productVersion": "1.108.2-m2",
     "ipcVersion": "1.108.2-m1",
-    "electronVersion": "39.3.0"
+    "electronVersion": "39.6.0"
 }

@@ -39,6 +39,8 @@ reh/0003-remote-auto-shutdown-timeout.patch
 reh/0004-Default-connection-grace-period.patch
 reh/0005-No-connection-token-by-default.patch
 reh/0006-stdio-launcher.patch
+reh/0007-reh-launcher-legacy.patch
+reh/0008-reh-args.patch
 
 workspace/0001-Fix-reload-on-workspace-change.patch
 workspace/0002-Fix-terminal-remote-workspace-cwd.patch

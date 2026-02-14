@@ -1,0 +1,67 @@
+From f7f612c85d0e51a2c6f92d7145045d4ea0d20797 Mon Sep 17 00:00:00 2001
+From: James <aslan.jnn@gmail.com>
+Date: Sat, 14 Feb 2026 13:07:51 +1100
+Subject: REH: require absolute path for data dir and hide unused arguments
+
+---
+ src/vs/server/node/server.main.ts              | 11 ++++++++++-
+ src/vs/server/node/serverEnvironmentService.ts |  8 ++++----
+ 2 files changed, 14 insertions(+), 5 deletions(-)
+
+diff --git a/src/vs/server/node/server.main.ts b/src/vs/server/node/server.main.ts
+index c0ccc85d027..241b7590ecd 100644
+--- a/src/vs/server/node/server.main.ts
++++ b/src/vs/server/node/server.main.ts
+@@ -10,7 +10,7 @@ import { FileAccess } from '../../base/common/network.js';
+ import { run as runCli } from './remoteExtensionHostAgentCli.js';
+ import { createServer as doCreateServer, IServerAPI } from './remoteExtensionHostAgentServer.js';
+ import { parseArgs, ErrorReporter } from '../../platform/environment/node/argv.js';
+-import { join, dirname } from '../../base/common/path.js';
++import { join, dirname, isAbsolute } from '../../base/common/path.js';
+ import { performance } from 'perf_hooks';
+ import { serverOptions } from './serverEnvironmentService.js';
+ import product from '../../platform/product/common/product.js';
+@@ -36,6 +36,15 @@ const errorReporter: ErrorReporter = {
+ 
+ const args = parseArgs(process.argv.slice(2), serverOptions, errorReporter);
+ 
++if (args['server-data-dir'] && !isAbsolute(args['server-data-dir'])) {
++	console.error('Error: --server-data-dir must be an absolute path');
++	process.exit(1);
++}
++if (args['socket-path'] && !isAbsolute(args['socket-path'])) {
++	console.error('Error: --socket-path must be an absolute path');
++	process.exit(1);
++}
++
+ const REMOTE_DATA_FOLDER = args['server-data-dir'] || process.env['VSCODE_AGENT_FOLDER'] || join(os.homedir(), product.serverDataFolderName || '.vscode-remote');
+ const USER_DATA_PATH = join(REMOTE_DATA_FOLDER, 'data');
+ const APP_SETTINGS_HOME = join(USER_DATA_PATH, 'User');
+diff --git a/src/vs/server/node/serverEnvironmentService.ts b/src/vs/server/node/serverEnvironmentService.ts
+index 1af3a939c79..03f5ba4cb5d 100644
+--- a/src/vs/server/node/serverEnvironmentService.ts
++++ b/src/vs/server/node/serverEnvironmentService.ts
+@@ -36,7 +36,7 @@ export const serverOptions: OptionDescriptions<Required<ServerParsedArgs>> = {
+ 
+ 	/* ----- vs code options ---	-- */
+ 
+-	'user-data-dir': OPTIONS['user-data-dir'],
++	'user-data-dir': { type: 'string' },
+ 	'enable-smoke-test-driver': OPTIONS['enable-smoke-test-driver'],
+ 	'disable-telemetry': OPTIONS['disable-telemetry'],
+ 	'disable-experiments': OPTIONS['disable-experiments'],
+@@ -61,9 +61,9 @@ export const serverOptions: OptionDescriptions<Required<ServerParsedArgs>> = {
+ 
+ 	/* ----- extension management ----- */
+ 
+-	'extensions-dir': OPTIONS['extensions-dir'],
+-	'extensions-download-dir': OPTIONS['extensions-download-dir'],
+-	'builtin-extensions-dir': OPTIONS['builtin-extensions-dir'],
++	'extensions-dir': { type: 'string' },
++	'extensions-download-dir': { type: 'string' },
++	'builtin-extensions-dir': { type: 'string' },
+ 	'install-extension': OPTIONS['install-extension'],
+ 	'install-builtin-extension': OPTIONS['install-builtin-extension'],
+ 	'update-extensions': OPTIONS['update-extensions'],
+-- 
+2.50.1 (Apple Git-155)

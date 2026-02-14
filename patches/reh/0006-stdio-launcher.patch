@@ -1,21 +1,15 @@
 From f2d97a0c522e07c4a261eab4c51124ab87612d3c Mon Sep 17 00:00:00 2001
 From: James <aslan.jnn@gmail.com>
-Date: Sun, 25 May 2025 21:28:19 +1000
+Date: Sun, 14 Feb 2026 14:00:00 +1100
 Subject: Add proxy launcher for stdio transport method
 
 ---
- build/gulpfile.reh.ts                        |   6 +-
- resources/server/bin/code-server-launcher.sh |   4 +
- src/server-launcher-main.ts                  | 268 +++++++++++++++++++
- 3 files changed, 277 insertions(+), 1 deletion(-)
- create mode 100644 resources/server/bin/code-server-launcher.sh
- create mode 100644 src/server-launcher-main.ts
 
 diff --git a/build/gulpfile.reh.ts b/build/gulpfile.reh.ts
-index f9c269aa1ff..c5b85b64e3c 100644
+index d25f48054a6..7b09fbd3c1f 100644
 --- a/build/gulpfile.reh.ts
 +++ b/build/gulpfile.reh.ts
-@@ -132,7 +132,8 @@ const serverWithWebEntryPoints = [
+@@ -135,7 +135,8 @@ const serverWithWebEntryPoints = [
  const bootstrapEntryPoints = [
  	'out-build/server-main.js',
  	'out-build/server-cli.js',
@@ -25,7 +19,7 @@ index f9c269aa1ff..c5b85b64e3c 100644
  ];
  
  function getNodeVersion() {
-@@ -400,6 +401,9 @@ function packageTask(type, platform, arch, sourceFolderName, destinationFolderNa
+@@ -402,6 +403,9 @@ function packageTask(type: string, platform: string, arch: string, sourceFolderN
  					.pipe(util.setExecutableBit()),
  				gulp.src(`resources/server/bin/${platform === 'darwin' ? 'code-server-darwin.sh' : 'code-server-linux.sh'}`, { base: '.' })
  					.pipe(rename(`bin/${product.serverApplicationName}`))
@@ -37,20 +31,20 @@ index f9c269aa1ff..c5b85b64e3c 100644
  		}
 diff --git a/resources/server/bin/code-server-launcher.sh b/resources/server/bin/code-server-launcher.sh
 new file mode 100644
-index 00000000000..3c29af44c39
+index 00000000000..a20e4029114
 --- /dev/null
 +++ b/resources/server/bin/code-server-launcher.sh
 @@ -0,0 +1,4 @@
 +#!/usr/bin/env sh
 +ROOT="$(dirname "$(dirname "$(readlink -f "$0")")")"
-+
-+"$ROOT/node" ${INSPECT:-} "$ROOT/out/server-launcher-main.js" "$@"
++cd "$ROOT" || exit 1
++./node ${INSPECT:-} "out/server-launcher-main.js" "$@"
 diff --git a/src/server-launcher-main.ts b/src/server-launcher-main.ts
 new file mode 100644
-index 00000000000..0f43a4fcb6c
+index 00000000000..0b0b77aad4e
 --- /dev/null
 +++ b/src/server-launcher-main.ts
-@@ -0,0 +1,268 @@
+@@ -0,0 +1,274 @@
 +import * as fs from 'fs';
 +import * as path from 'path';
 +import * as os from 'os';
@@ -130,6 +124,20 @@ index 00000000000..0f43a4fcb6c
 +			throw error;
 +		}
 +	}
++}
++
++function resolveAbsolutePath(
++	userValue: string | undefined,
++	argumentName: string
++): string | undefined {
++	if (userValue === undefined) {
++		return undefined;
++	}
++	if (!path.isAbsolute(userValue)) {
++		console.error(`Error: ${argumentName} must be an absolute path`);
++		process.exit(1);
++	}
++	return path.resolve(userValue);
 +}
 +
 +function isSocketInUse(socketPath: string): Promise<boolean> {
@@ -267,20 +275,12 @@ index 00000000000..0f43a4fcb6c
 +	}
 +
 +	// populate remote data dir
-+	const userRemoteDataDir = ap.get('--server-data-dir');
-+	if (userRemoteDataDir !== undefined) {
-+		remoteDataDir = path.resolve(userRemoteDataDir);
-+	} else {
-+		remoteDataDir = path.resolve(os.homedir(), serverDataFolderName);
-+	}
++	const userRemoteDataDir = resolveAbsolutePath(ap.get('--server-data-dir'), '--server-data-dir');
++	remoteDataDir = userRemoteDataDir ?? path.resolve(os.homedir(), serverDataFolderName);
 +
 +	// also socket directory
-+	const userSocketPath = ap.get('--socket-path');
-+	if (userSocketPath !== undefined) {
-+		socketPath = path.resolve(userSocketPath);
-+	} else {
-+		socketPath = path.resolve(remoteDataDir, 'vscode-server.sock');
-+	}
++	const userSocketPath = resolveAbsolutePath(ap.get('--socket-path'), '--socket-path');
++	socketPath = userSocketPath ?? path.resolve(remoteDataDir, 'vscode-server.sock');
 +
 +	// run in daemon mode if needed
 +	if (ap.has('--daemon')) {

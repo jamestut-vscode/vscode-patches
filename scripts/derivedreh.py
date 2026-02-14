@@ -6,7 +6,6 @@ import subprocess
 import shutil
 import multiprocessing
 import threading
-import itertools
 import json
 from typing import Iterable
 from os import path
@@ -224,11 +223,17 @@ class LinuxGeneric:
                 target_dir, objfile)
 
 class LinuxPortable:
+    # patchelf container for patching node binary
+    PATCHELF_CONT_NAME = "elfpatcher"
+    PATCHELF_CONT_BLD_FILE = "scripts/containerfiles/patchelf.containerfile"
+
     def __init__(self, target: str):
         _, kind, self.arch = target.split("-")
         assert kind == 'portable'
         # alternative architecture name, commonly used in `uname -m`
         self.linux_arch_name = {'arm64': 'aarch64', 'x64': 'x86_64'}[self.arch]
+
+        self.ld_path = f'/lib/ld-musl-{self.linux_arch_name}.so.1'
 
         self.cont_name = 'vscode-portable-libs-' + self.arch
 
@@ -241,9 +246,7 @@ class LinuxPortable:
         # obtain dependency's output name
         self.dep_output_name = LinuxGeneric(dep).output_name
 
-        patchelf_url = f'https://github.com/NixOS/patchelf/releases/download/0.18.0/patchelf-0.18.0-{self.linux_arch_name}.tar.gz'
-        self.patchelf_archive = patchelf_url.rsplit('/', maxsplit=1)[-1]
-        self.downloads = [(patchelf_url, self.patchelf_archive)]
+        self.downloads = []
 
     def _get_container_state(self):
         contstat = subprocess.check_output(['podman', 'container', 'inspect', self.cont_name], stderr=subprocess.DEVNULL)
@@ -315,54 +318,58 @@ class LinuxPortable:
     def _copy_from_container(self, src: str, target: str):
         subprocess.check_call(['podman', 'cp', f'{self.cont_name}:{src}', target])
 
+    def _maybe_build_patchelf_container(self):
+        cont_name = self.__class__.PATCHELF_CONT_NAME
+        try:
+            subprocess.check_output(['podman', 'image', 'inspect', cont_name], stderr=subprocess.DEVNULL)
+        except subprocess.CalledProcessError:
+            # build the container
+            subprocess.check_call([
+                'podman', 'build', '--tag', cont_name,
+                '--file', path.join(REPODIR, self.__class__.PATCHELF_CONT_BLD_FILE)
+            ])
+
+    def _patch_node_binary(self, output_dir: str):
+        cont_name = self.__class__.PATCHELF_CONT_NAME
+        output_dir_abs = path.abspath(output_dir)
+        cont_output_dir = '/target'
+        node_path = path.join(cont_output_dir, 'node')
+
+        # Run patchelf commands to set rpath and interpreter
+        subprocess.check_call([
+            'podman', 'run', '--rm',
+            '-v', f'{output_dir_abs}:{cont_output_dir}',
+            cont_name,
+            'patchelf', '--set-rpath', '$ORIGIN/sysroot', node_path
+        ])
+        subprocess.check_call([
+            'podman', 'run', '--rm',
+            '-v', f'{output_dir_abs}:{cont_output_dir}',
+            cont_name,
+            'patchelf', '--set-interpreter', f'./sysroot/{path.basename(self.ld_path)}', node_path
+        ])
+
     def run(self, workdir: str, *deps: list[str]):
         clonefile(path.join(deps[0], self.dep_output_name), path.join(workdir, self.output_name))
         output_dir = path.join(workdir, self.output_name)
         target_sysroot_dir = path.join(output_dir, "sysroot")
 
-        ld_path = f'/lib/ld-musl-{self.linux_arch_name}.so.1'
         libc_name = f'libc.musl-{self.linux_arch_name}.so.1'
 
         # copy alpine sysroot from container
         with self._start_container():
             os.makedirs(target_sysroot_dir, exist_ok=True)
-            self._copy_from_container(ld_path, path.join(target_sysroot_dir, path.basename(ld_path)))
-            os.symlink(path.basename(ld_path), path.join(target_sysroot_dir, libc_name))
+            self._copy_from_container(self.ld_path, path.join(target_sysroot_dir, path.basename(self.ld_path)))
+            os.symlink(path.basename(self.ld_path), path.join(target_sysroot_dir, libc_name))
             self._copy_from_container('/usr/lib/libgcc_s.so.1', path.join(target_sysroot_dir, 'libgcc_s.so.1'))
             stdcpp_common_path = '/usr/lib/libstdc++.so.6'
             stdcpp_path = self._container_discover_symlink(stdcpp_common_path)
             self._copy_from_container(stdcpp_path, path.join(target_sysroot_dir, path.basename(stdcpp_path)))
             os.symlink(path.basename(stdcpp_path), path.join(target_sysroot_dir, path.basename(stdcpp_common_path)))
 
-        # put patchelf
-        patchelf_extract_dir = path.join(workdir, 'patchelf')
-        if not path.exists(patchelf_extract_dir):
-            os.makedirs(patchelf_extract_dir, exist_ok=True)
-            subprocess.check_call([ 'tar', '-C', path.relpath(patchelf_extract_dir, workdir),
-                '-xf', self.patchelf_archive], cwd=workdir)
-        clonefile(path.join(patchelf_extract_dir, 'bin/patchelf'), path.join(output_dir, 'patchelf'))
-
-        # patch 'launcher' and 'code-server-oss'
-        with open(path.join(REPODIR, "scripts/reh-supplemental/portable-modifier.sh")) as f:
-            patch_in_script = f.read().replace("$$LD_NAME$$", path.basename(ld_path))
-        # put after the first encounter of ROOT=
-        for fn in [VSCODE_PRODUCT_INFO()['serverApplicationName'], 'launcher']:
-            fullpath = path.join(output_dir, "bin", fn)
-            with open(fullpath) as f:
-                original_script_lines = f.readlines()
-            root_def_ln = None
-            for i, l in enumerate(original_script_lines):
-                if l.startswith('ROOT='):
-                    root_def_ln = i + 1
-                    break
-            else:
-                raise RuntimeError("Cannot find 'ROOT=' in the target script to patch")
-            with open(fullpath, 'w') as f:
-                f.writelines(itertools.chain(
-                    original_script_lines[:root_def_ln], ['\n'],
-                    (f'{line}\n' for line in patch_in_script.splitlines()), ['\n'],
-                    original_script_lines[root_def_ln:]
-                ))
+        # patch node binary using patchelf container
+        self._maybe_build_patchelf_container()
+        self._patch_node_binary(output_dir)
 
 targets = {
     # GNU/Linux targets officially supported by mainline VSCode
