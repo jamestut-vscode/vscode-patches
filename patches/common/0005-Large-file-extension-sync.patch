@@ -29,7 +29,7 @@ index 436daa7e04c..d0cfadb7a33 100644
 +		},
  		'editor.wordBasedSuggestions': {
  			enum: ['off', 'offWithInlineSuggestions', 'currentDocument', 'matchingDocuments', 'allDocuments'],
- 			default: 'matchingDocuments',
+ 			default: 'offWithInlineSuggestions',
 diff --git a/src/vs/editor/common/core/textModelDefaults.ts b/src/vs/editor/common/core/textModelDefaults.ts
 index cb0150baacf..e4694cc7fdb 100644
 --- a/src/vs/editor/common/core/misc/textModelDefaults.ts

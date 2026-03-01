@@ -8,17 +8,18 @@ Subject: Do not trim file name when opening simple open dialog
  1 file changed, 2 deletions(-)
 
 diff --git a/src/vs/workbench/services/dialogs/browser/abstractFileDialogService.ts b/src/vs/workbench/services/dialogs/browser/abstractFileDialogService.ts
-index 9cfbfab9cfb..0da670e56fb 100644
+index bb082edfd8d..87cf7b07607 100644
 --- a/src/vs/workbench/services/dialogs/browser/abstractFileDialogService.ts
 +++ b/src/vs/workbench/services/dialogs/browser/abstractFileDialogService.ts
-@@ -64,8 +64,6 @@ export abstract class AbstractFileDialogService implements IFileDialogService {
- 		// ...then for last active file root
- 		if (!candidate) {
- 			candidate = this.historyService.getLastActiveWorkspaceRoot(schemeFilter, authorityFilter);
+@@ -68,9 +68,6 @@ export abstract class AbstractFileDialogService implements IFileDialogService {
+ 			if (candidate) {
+ 				this.logService.debug(`[FileDialogService] Default file path using last active workspace root: ${candidate}`);
+ 			}
 -		} else {
+-			this.logService.debug(`[FileDialogService] Default file path using parent of last active file: ${candidate}`);
 -			candidate = resources.dirname(candidate);
  		}
-
+ 
  		if (!candidate) {
 --
 2.37.1 (Apple Git-137.1)
